@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body >
+<div >
+    <div>
+        <form method="post"  th:object="${loginForm}">
+            <div class="col">
+                <div  class=" m-4">
+                    <label >email:</label>
+                    <input type="text" >
+                </div>
+                <div class=" m-4">
+                    <label >Password:</label>
+                    <input type="password">
+                </div>
+            </div>
+            <div class=" m-2" style="text-align:center height: auto">
+                <div><a href="signUp"> 회원가입</a></div>
+            </div>
+            <div class=" m-2" style="text-align:center height: auto">
+                <input type="submit">
+            </div>
+
+        </form>
+    </div>
+
+</div>
+</body>
+</html>
