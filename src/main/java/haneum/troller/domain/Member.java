@@ -17,4 +17,10 @@ public class Member {
     @Id
     @Column(name = "member_id")
     private Long memberId;
+
+    private String eMail;
+
+    private String password;
+
+    private String lolName;
 }
