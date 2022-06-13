@@ -1,19 +1,19 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html >
 <body>
 <div>
-    <form class=" m-5" action="" method="post" th:object="${signUpForm}">
+    <form  action="/signUp" method="post">
         <div >
-            <label th:for="email">Email:</label>
-            <input type="email" th:field="*{eMail}">
+            <label>Email:</label>
+            <input type="email" name="eMail">
         </div>
         <div >
-            <label th:for="password">*Password:</label>
-            <input type="password" th:field="*{password}">
+            <label >*Password:</label>
+            <input type="password"name="password">
         </div>
         <div >
-            <label th:for="name">*NAME:</label>
-            <input type="text" th:field="*{lolName}">
+            <label >*NAME:</label>
+            <input type="text" name="lolName">
         </div>
         <div>
             <input type="submit" value="회원가입">
