@@ -4,8 +4,10 @@ import haneum.troller.domain.Member;
 import haneum.troller.dto.LoginForm;
 import haneum.troller.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.RequestParam;
 
 @Service
 @Transactional(readOnly = true)
@@ -13,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class MemberService {
 
     private final MemberRepository memberRepository;
+    private final PasswordEncoder passwordEncoder;
 
     //회원가입
     @Transactional(readOnly = false)
@@ -25,7 +28,7 @@ public class MemberService {
     //로그인
     public boolean validLogin(LoginForm loginForm) {
         Member member = memberRepository.findByEmail(loginForm.getEMail());
-        if (member.getPassword().equals(loginForm.getPassword())) {
+        if (passwordEncoder.matches(loginForm.getPassword(), member.getPassword())) {
             return true;
         }
         else {
