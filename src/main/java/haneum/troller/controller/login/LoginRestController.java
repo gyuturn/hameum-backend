@@ -4,8 +4,10 @@ import haneum.troller.domain.Member;
 import haneum.troller.dto.LoginForm;
 import haneum.troller.dto.SignUpForm;
 import haneum.troller.security.SecurityService;
+import haneum.troller.service.EmailServiceImpl;
 import haneum.troller.service.MemberService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -23,9 +25,11 @@ public class LoginRestController {
     private final MemberService memberService;
     private final PasswordEncoder passwordEncoder;
     private final SecurityService securityService;
+    private final EmailServiceImpl emailService;
 
 
-    @PostMapping("signUp")
+
+    @PostMapping("sign_up")
     public Member signUp( SignUpForm signUpForm) {
 
         Member member = new Member();
@@ -35,12 +39,18 @@ public class LoginRestController {
         member.setPassword(encode);
         member.setLolName(signUpForm.getLolName());
 
+        if(EmailServiceImpl.ePw.equals(signUpForm.getCode())) {
+            member.setEmailAuth(true);
+        }
+
         memberService.join(member);
+
+
 
         return member;
     }
 
-    @PostMapping("login")
+    @PostMapping("sign_in")
     public boolean login(@RequestParam(value = "eMail") String eMail, @RequestParam(value="password") String password,
                          HttpServletResponse response) {
         LoginForm loginForm = new LoginForm(eMail, password);
@@ -55,6 +65,31 @@ public class LoginRestController {
         response.addCookie(idCookie);
 
         return true;//최종적으로 로그인 성공
+    }
+
+
+    @PostMapping("/mail_auth")
+    public void emailConfirm(String userId)throws Exception{
+        System.out.println("전달 받은 이메일 : "+userId);
+        emailService.sendSimpleMessage(userId);
+    }
+
+    @PostMapping("/verifyCode")
+    public boolean verifyCode(String code) {
+        boolean result = false;
+        System.out.println("code : "+code);
+        System.out.println("code match : "+ EmailServiceImpl.ePw.equals(code));
+        if(EmailServiceImpl.ePw.equals(code)) {
+            result =true;
+        }
+
+        return result;
+    }
+
+    //중복이메일 검증 true=>중복된 이메일 없음
+    @PostMapping("/check_dup_email")
+    public boolean checkDupEmail(String email){
+        return memberService.validDuplicateEmail(email);
     }
 
 }
