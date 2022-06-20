@@ -35,4 +35,17 @@ public class MemberService {
             throw new IllegalStateException("비밀번호가 일치하지 않습니다.");
         }
     }
+
+    //이메일 중복인증
+    public boolean validDuplicateEmail(String email){
+        boolean result=false;
+        try {
+            memberRepository.findByEmail(email);
+        } catch (Exception e) {
+            result=true;
+        }
+        finally {
+            return result;
+        }
+    }
 }
