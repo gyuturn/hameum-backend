@@ -20,4 +20,9 @@ public class Member {
     private String password;
 
     private String lolName;
+
+    private boolean emailAuth=false;
+
+
+
 }
