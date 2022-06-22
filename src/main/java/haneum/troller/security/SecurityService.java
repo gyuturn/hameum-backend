@@ -42,15 +42,30 @@ public class SecurityService {
                 .compact();
     }
 
-    //토큰 검증 메서드를 boolean
-    public boolean getSubject(String token) {
+
+    public String getEmailByToken(String token) {
+        String eMail = null;
         Claims claims = Jwts.parserBuilder()
                 .setSigningKey(DatatypeConverter.parseBase64Binary(secretKey))
                 .build()
                 .parseClaimsJws(token)
                 .getBody();
-        String subject = claims.getSubject();
-        if (memberRepository.findByEmail(subject).getPassword() == secretKey) return true;
+        eMail = claims.getSubject();
+
+        return eMail;
+
+    }
+
+    //토큰 검증 메서드를 boolean
+    public boolean validToken(String token) {
+        String email = getEmailByToken(token);
+        if (email!=null) return true;
         else return false;
+    }
+
+    public String findLolNameByToken(String token) throws IllegalAccessException {
+        String email = getEmailByToken(token);
+        Member member = memberRepository.findByEmail(email);
+        return member.getLolName();
     }
 }
