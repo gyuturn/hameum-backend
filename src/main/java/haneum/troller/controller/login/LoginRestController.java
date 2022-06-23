@@ -1,15 +1,16 @@
 package haneum.troller.controller.login;
 
 import haneum.troller.domain.Member;
-import haneum.troller.dto.LoginForm;
-import haneum.troller.dto.SignUpForm;
+import haneum.troller.dto.member.CheckLoLNameDto;
+import haneum.troller.dto.member.LoginForm;
+import haneum.troller.dto.member.SignUpForm;
 import haneum.troller.security.SecurityService;
 import haneum.troller.service.EmailServiceImpl;
 import haneum.troller.service.MemberService;
+import haneum.troller.service.MyPageService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.json.simple.parser.ParseException;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -26,7 +27,7 @@ public class LoginRestController {
     private final PasswordEncoder passwordEncoder;
     private final SecurityService securityService;
     private final EmailServiceImpl emailService;
-
+    private final MyPageService myPageService;
 
 
     @PostMapping("sign_up")
@@ -42,10 +43,7 @@ public class LoginRestController {
         if(EmailServiceImpl.ePw.equals(signUpForm.getCode())) {
             member.setEmailAuth(true);
         }
-
         memberService.join(member);
-
-
 
         return member;
     }
@@ -74,7 +72,7 @@ public class LoginRestController {
         emailService.sendSimpleMessage(userId);
     }
 
-    @PostMapping("/verifyCode")
+    @PostMapping("/verify_code")
     public boolean verifyCode(String code) {
         boolean result = false;
         System.out.println("code : "+code);
@@ -89,7 +87,17 @@ public class LoginRestController {
     //중복이메일 검증 true=>중복된 이메일 없음
     @PostMapping("/check_dup_email")
     public boolean checkDupEmail(String email){
-        return memberService.validDuplicateEmail(email);
+        return memberService.checkDuplicateEmail(email);
+    }
+
+    //롤 닉네임 있는지 validateCheck
+    @PostMapping("/check_lol_name")
+    public CheckLoLNameDto checkLoLName(String lolName) throws ParseException {
+        CheckLoLNameDto checkLoLNameDto = new CheckLoLNameDto();
+        checkLoLNameDto.setDupLolName(memberService.checkDuplicateLolName(lolName)); //이미 등록되어 있는 롤 닉네임
+        checkLoLNameDto.setValidLolName(myPageService.checkLolName(lolName)); //롤 게임상 유효하지 않은 롤 닉네임
+
+        return checkLoLNameDto;
     }
 
 }

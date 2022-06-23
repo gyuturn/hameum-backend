@@ -1,4 +1,4 @@
-package haneum.troller.dto;
+package haneum.troller.dto.member;
 
 import lombok.Getter;
 import lombok.Setter;

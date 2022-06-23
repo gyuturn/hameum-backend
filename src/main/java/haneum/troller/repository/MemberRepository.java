@@ -30,5 +30,12 @@ public class MemberRepository {
         return memberList.get(0);
     }
 
+    public List<Member> findByLolName(String lolName) {
+        List<Member> memberList = em.createQuery("select m from Member m where m.lolName=:lolName", Member.class)
+                .setParameter("lolName", lolName)
+                .getResultList();
+        return memberList;
+    }
+
 
 }
