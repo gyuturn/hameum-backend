@@ -21,7 +21,6 @@ public class Member {
 
     private String lolName;
 
-    private boolean emailAuth=false;
 
 
 

@@ -13,7 +13,6 @@ public class SignUpForm {
 
     private String lolName;
 
-    private String code;
 
     @Override
     public String toString() {
