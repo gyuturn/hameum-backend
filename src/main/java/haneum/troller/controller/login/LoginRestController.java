@@ -40,9 +40,6 @@ public class LoginRestController {
         member.setPassword(encode);
         member.setLolName(signUpForm.getLolName());
 
-        if(EmailServiceImpl.ePw.equals(signUpForm.getCode())) {
-            member.setEmailAuth(true);
-        }
         memberService.join(member);
 
         return member;
