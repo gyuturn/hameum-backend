@@ -19,7 +19,7 @@ public class MyPageResController {
     private final MyPageService myPageService;
     private final MyPageImgService myPageImgService;
 
-    @GetMapping("/my_page")
+    @GetMapping("/my_page/kda")
     public MyPageDto getTokenForMyPage(@RequestParam(value = "userToken") String userToken) throws IllegalAccessException, ParseException, IOException {
         if (!securityService.validToken(userToken)) {
             throw new IllegalAccessException("토큰이 유효하지 않습니다!");
