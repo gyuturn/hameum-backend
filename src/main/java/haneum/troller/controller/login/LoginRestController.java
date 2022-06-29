@@ -11,6 +11,7 @@ import haneum.troller.service.MyPageService;
 import lombok.RequiredArgsConstructor;
 import org.json.simple.parser.ParseException;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -49,8 +50,17 @@ public class LoginRestController {
     public boolean login(@RequestParam(value = "eMail") String eMail, @RequestParam(value="password") String password,
                          HttpServletResponse response) {
         LoginForm loginForm = new LoginForm(eMail, password);
-        boolean checkLogin = memberService.validLogin(loginForm);
-        if(!checkLogin) return false; //비밀번호가 틀린 경우
+        try {
+            boolean checkLogin = memberService.validPassword(loginForm);
+            if (!checkLogin || !memberService.checkDuplicateEmail(eMail)) return false; //비밀번호 or 아이디가 틀린 경우
+        } catch (Exception e) {
+            System.out.println(e.toString());
+            return false;
+        }
+        finally {
+
+        }
+
 
         String token=securityService.createToken(eMail,2*1000*60); //토큰 주기 2분으로 설정 (test)
         Map<String, Object> map = new LinkedHashMap<>();

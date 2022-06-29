@@ -26,14 +26,14 @@ public class MemberService {
     }
 
 
-    //로그인
-    public boolean validLogin(LoginForm loginForm) {
+    //로그인(비밀번호)
+    public boolean validPassword(LoginForm loginForm) {
         Member member = memberRepository.findByEmail(loginForm.getEMail());
         if (passwordEncoder.matches(loginForm.getPassword(), member.getPassword())) {
             return true;
         }
         else {
-            throw new IllegalStateException("비밀번호가 일치하지 않습니다.");
+            return false;
         }
     }
 
