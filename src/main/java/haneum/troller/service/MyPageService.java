@@ -32,7 +32,7 @@ public class MyPageService {
     private static final String AcceptLanguage="ko-KR,ko;q=0.9,en-US;q=0.8,en;q=0.7";
     private static final String AcceptCharset="application/x-www-form-urlencoded; charset=UTF-8";
     private static final String Origin="https://developer.riotgames.com";
-    private static final String ApiKey="RGAPI-0910ad71-47e0-46f1-a4d1-37e58adb1bd8";
+    private static final String ApiKey="RGAPI-7df149b2-9941-4e54-ac86-ff5ce929d859";
 
 
     public boolean checkLolName(String userName) throws ParseException {
@@ -82,27 +82,15 @@ public class MyPageService {
         myPageDto.setWin(jsonObj.get("wins").toString());
         myPageDto.setLose(jsonObj.get("losses").toString());
         int wins = Integer.parseInt(jsonObj.get("wins").toString());
-        System.out.println("wins = " + wins);
         int losses = Integer.parseInt(jsonObj.get("losses").toString());
-        System.out.println("losses = " + losses);
         int winRate = (int)((double)wins / (double)(losses + wins) * 100);
-        System.out.println("winRate = " + winRate);
         myPageDto.setWinRate(String.valueOf(winRate)+"%");
 
         myPageDto.setTier(jsonObj.get("tier").toString());
-//        System.out.println("jsonObj.get(\"tier\").toString() = " + jsonObj.get("tier").toString());
-//        File sourceImage = new File("./dataDragon/tierImg/"+jsonObj.get("tier").toString()+".png");
-//        System.out.println("sourceImage = " + sourceImage);
-//        Image tierImage = ImageIO.read(sourceImage);
-//        myPageDto.setTierImg(tierImage);
-//        티어 이미지경로를 모르겠음
-
         myPageDto.setRank(jsonObj.get("rank").toString());
         myPageDto.setPoint(jsonObj.get("leaguePoints").toString());
 
         return myPageDto;
-
-
 
     }
 
