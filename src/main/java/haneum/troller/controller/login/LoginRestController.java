@@ -62,11 +62,11 @@ public class LoginRestController {
         }
 
 
-        String token=securityService.createToken(eMail,2*1000*60); //토큰 주기 2분으로 설정 (test)
+        String token=securityService.createToken(eMail,20*1000*60); //토큰 주기 2분으로 설정 (test)
         Map<String, Object> map = new LinkedHashMap<>();
         map.put("result", token);
         Cookie idCookie = new Cookie("loginToken", token);
-        idCookie.setMaxAge(60*2); //쿠키 세션 만료 2분 test
+        idCookie.setMaxAge(60*20); //쿠키 세션 만료 2분 test
         response.addCookie(idCookie);
 
         return true;//최종적으로 로그인 성공
@@ -80,10 +80,10 @@ public class LoginRestController {
     }
 
     @PostMapping("/verify_code")
-    public boolean verifyCode(String code) {
+    public boolean verifyCode(@RequestParam(value = "code") String code,@RequestParam(value = "expiredTime") String expiredTime) {
         boolean result = false;
-        System.out.println("code : "+code);
-        System.out.println("code match : "+ EmailServiceImpl.ePw.equals(code));
+        int time = Integer.parseInt(expiredTime);
+        if(time>180) return false;
         if(EmailServiceImpl.ePw.equals(code)) {
             result =true;
         }
