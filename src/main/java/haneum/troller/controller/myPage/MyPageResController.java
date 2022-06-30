@@ -6,11 +6,13 @@ import haneum.troller.service.MyPageService;
 import haneum.troller.service.dataDragon.MyPageImgService;
 import lombok.RequiredArgsConstructor;
 import org.json.simple.parser.ParseException;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.util.FileCopyUtils;
+import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletResponse;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 
 @RestController
 @RequiredArgsConstructor
@@ -19,17 +21,38 @@ public class MyPageResController {
     private final MyPageService myPageService;
     private final MyPageImgService myPageImgService;
 
-    @GetMapping("/my_page/kda")
-    public MyPageDto getTokenForMyPage(@RequestParam(value = "userToken") String userToken) throws IllegalAccessException, ParseException, IOException {
-        if (!securityService.validToken(userToken)) {
-            throw new IllegalAccessException("토큰이 유효하지 않습니다!");
-        }
-        String lolName = securityService.findLolNameByToken(userToken);
-        MyPageDto myPageDto = myPageService.getEncryptedLolName(lolName); //level,icon,name 저장
+    @GetMapping("/my_page")
+    public MyPageDto getTokenForMyPage(@RequestParam(value = "userName") String userName) throws IllegalAccessException, ParseException, IOException {
+        MyPageDto myPageDto = myPageService.getEncryptedLolName(userName); //level,icon,name 저장
         MyPageDto myPageDtoFinal = myPageService.getMyPageAttr(myPageDto);
-
-
         return myPageDtoFinal;
+    }
+
+
+
+    @GetMapping(
+            path = "/tier_img", produces = "image/png"
+    )
+    public void getTierImg(HttpServletResponse response, @RequestParam(value="tier") String tier) throws IOException {
+        OutputStream out = response.getOutputStream();
+        FileInputStream fis = null;
+
+
+        try {
+            fis = new FileInputStream("../../service/dataDragon");
+            FileCopyUtils.copy(fis, out);
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            if (fis != null) {
+                try {
+                    fis.close();
+                } catch (IOException ioe) {
+                    ioe.printStackTrace();
+                }
+            }
+            out.flush();
+        }
 
     }
 }
