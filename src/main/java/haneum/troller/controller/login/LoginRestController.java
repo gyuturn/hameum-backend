@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -32,14 +33,14 @@ public class LoginRestController {
 
 
     @PostMapping("sign_up")
-    public Member signUp( SignUpForm signUpForm) {
+    public Member signUp(HttpServletRequest request, @RequestParam("eMail")String eMail, @RequestParam("password")String password, @RequestParam("lolName")String lolName) {
+        System.out.println(request);
 
         Member member = new Member();
-        member.setEMail(signUpForm.getEMail());
-        String password = signUpForm.getPassword();
+        member.setEMail(eMail);
         String encode = passwordEncoder.encode(password);
         member.setPassword(encode);
-        member.setLolName(signUpForm.getLolName());
+        member.setLolName(lolName);
 
         memberService.join(member);
 
