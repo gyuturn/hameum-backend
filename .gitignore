@@ -35,3 +35,7 @@ out/
 
 ### VS Code ###
 .vscode/
+
+###구글이메일 인증###
+application.properties
+

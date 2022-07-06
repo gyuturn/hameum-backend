@@ -1,4 +1,4 @@
-package haneum.troller.dto;
+package haneum.troller.dto.member;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -12,6 +12,7 @@ public class SignUpForm {
     private String password;
 
     private String lolName;
+
 
     @Override
     public String toString() {
