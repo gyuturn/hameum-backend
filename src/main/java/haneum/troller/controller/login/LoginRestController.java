@@ -75,7 +75,7 @@ public class LoginRestController {
 
 
     @PostMapping("/mail_auth")
-    public void emailConfirm(String userId)throws Exception{
+    public void emailConfirm(@RequestParam("userId")String userId)throws Exception{
         System.out.println("전달 받은 이메일 : "+userId);
         emailService.sendSimpleMessage(userId);
     }
@@ -94,13 +94,13 @@ public class LoginRestController {
 
     //중복이메일 검증 true=>중복된 이메일 없음
     @PostMapping("/check_dup_email")
-    public boolean checkDupEmail(String email){
+    public boolean checkDupEmail(@RequestParam("email") String email){
         return memberService.checkDuplicateEmail(email);
     }
 
     //롤 닉네임 있는지 validateCheck
     @PostMapping("/check_lol_name")
-    public CheckLoLNameDto checkLoLName(String lolName) throws ParseException {
+    public CheckLoLNameDto checkLoLName(@RequestParam("lolName") String lolName) throws ParseException {
         CheckLoLNameDto checkLoLNameDto = new CheckLoLNameDto();
         checkLoLNameDto.setDupLolName(memberService.checkDuplicateLolName(lolName)); //이미 등록되어 있는 롤 닉네임
         checkLoLNameDto.setValidLolName(myPageService.checkLolName(lolName)); //롤 게임상 유효하지 않은 롤 닉네임
