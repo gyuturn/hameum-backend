@@ -25,7 +25,6 @@ public class EmailServiceImpl{
         System.out.println("인증 번호 : "+ePw);
         MimeMessage  message = emailSender.createMimeMessage();
 
-        System.out.println("to = " + to);
         message.addRecipients(RecipientType.TO,to);//보내는 대상
         message.setSubject("BZshop 인증번호가 도착했습니다.");//제목
 

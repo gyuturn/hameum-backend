@@ -33,7 +33,7 @@ public class LoginRestController {
 
 
     @PostMapping("sign_up")
-    public Member signUp(HttpServletRequest request, @RequestParam("email")String eMail, @RequestParam("password")String password, @RequestParam("lolName")String lolName) {
+    public Member signUp(HttpServletRequest request, @RequestParam(value = "email")String eMail, @RequestParam(value = "password")String password, @RequestParam(value = "lolName")String lolName) {
         System.out.println(request);
 
         Member member = new Member();
@@ -74,8 +74,8 @@ public class LoginRestController {
     }
 
 
-    @PostMapping("/mail_auth")
-    public void emailConfirm(@RequestParam("email")String userId)throws Exception{
+    @PostMapping("/email_auth")
+    public void emailConfirm(@RequestParam(value = "email")String userId)throws Exception{
         emailService.sendSimpleMessage(userId);
     }
 
@@ -93,13 +93,13 @@ public class LoginRestController {
 
     //중복이메일 검증 true=>중복된 이메일 없음
     @PostMapping("/check_dup_email")
-    public boolean checkDupEmail(@RequestParam("email") String email){
+    public boolean checkDupEmail(@RequestParam(value = "email") String email){
         return memberService.checkDuplicateEmail(email);
     }
 
     //롤 닉네임 있는지 validateCheck
     @PostMapping("/check_lol_name")
-    public CheckLoLNameDto checkLoLName(@RequestParam("lolName") String lolName) throws ParseException {
+    public CheckLoLNameDto checkLoLName(@RequestParam(value = "lolName") String lolName) throws ParseException {
         CheckLoLNameDto checkLoLNameDto = new CheckLoLNameDto();
         checkLoLNameDto.setDupLolName(memberService.checkDuplicateLolName(lolName)); //이미 등록되어 있는 롤 닉네임
         checkLoLNameDto.setValidLolName(myPageService.checkLolName(lolName)); //롤 게임상 유효하지 않은 롤 닉네임
