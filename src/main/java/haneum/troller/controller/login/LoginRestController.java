@@ -75,8 +75,9 @@ public class LoginRestController {
 
 
     @PostMapping("/email_auth")
-    public void emailConfirm(@RequestParam(value = "email")String userId)throws Exception{
+    public boolean emailConfirm(@RequestParam(value = "email")String userId)throws Exception{
         emailService.sendSimpleMessage(userId);
+        return true;
     }
 
     @PostMapping("/verify_code")
