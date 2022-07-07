@@ -1,9 +1,7 @@
 package haneum.troller.service;
 
-import com.mysql.cj.xdevapi.JsonArray;
-import haneum.troller.dto.member.myPage.MyPageDto;
+import haneum.troller.dto.myPage.MyPageDto;
 import haneum.troller.service.dataDragon.MyPageImgService;
-import lombok.RequiredArgsConstructor;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -16,10 +14,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
-import javax.imageio.ImageIO;
-import java.awt.*;
-import java.awt.image.BufferedImage;
-import java.io.File;
 import java.io.IOException;
 
 

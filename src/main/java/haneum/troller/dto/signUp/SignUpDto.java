@@ -1,13 +1,15 @@
-package haneum.troller.dto.member;
+package haneum.troller.dto.signUp;
 
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Getter
+@NoArgsConstructor
 @Setter
-public class SignUpForm {
+public class SignUpDto {
 
-    private String eMail;
+    private String email;
 
     private String password;
 
@@ -17,7 +19,7 @@ public class SignUpForm {
     @Override
     public String toString() {
         return "SignUpForm{" +
-                "eMail='" + eMail + '\'' +
+                "eMail='" + email + '\'' +
                 ", password='" + password + '\'' +
                 ", lolName='" + lolName + '\'' +
                 '}';

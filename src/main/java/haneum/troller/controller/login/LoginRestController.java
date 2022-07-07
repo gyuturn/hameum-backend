@@ -1,9 +1,8 @@
 package haneum.troller.controller.login;
 
 import haneum.troller.domain.Member;
-import haneum.troller.dto.member.CheckLoLNameDto;
-import haneum.troller.dto.member.LoginForm;
-import haneum.troller.dto.member.SignUpForm;
+import haneum.troller.dto.signUp.*;
+import haneum.troller.dto.login.LoginDto;
 import haneum.troller.security.SecurityService;
 import haneum.troller.service.EmailServiceImpl;
 import haneum.troller.service.MemberService;
@@ -11,10 +10,7 @@ import haneum.troller.service.MyPageService;
 import lombok.RequiredArgsConstructor;
 import org.json.simple.parser.ParseException;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
@@ -33,14 +29,14 @@ public class LoginRestController {
 
 
     @PostMapping("sign_up")
-    public Member signUp(HttpServletRequest request, @RequestParam(value = "email")String eMail, @RequestParam(value = "password")String password, @RequestParam(value = "lolName")String lolName) {
+    public Member signUp(HttpServletRequest request, @RequestBody SignUpDto signUpDto) {
         System.out.println(request);
 
         Member member = new Member();
-        member.setEMail(eMail);
-        String encode = passwordEncoder.encode(password);
+        member.setEMail(signUpDto.getEmail());
+        String encode = passwordEncoder.encode(signUpDto.getPassword());
         member.setPassword(encode);
-        member.setLolName(lolName);
+        member.setLolName(signUpDto.getLolName());
 
         memberService.join(member);
 
@@ -48,12 +44,12 @@ public class LoginRestController {
     }
 
     @PostMapping("sign_in")
-    public boolean login(@RequestParam(value = "email") String eMail, @RequestParam(value="password") String password,
+    public boolean login(@RequestBody SignUpDto signUpDto,
                          HttpServletResponse response) {
-        LoginForm loginForm = new LoginForm(eMail, password);
+        LoginDto loginDto = new LoginDto(signUpDto.getEmail(), signUpDto.getPassword());
         try {
-            boolean checkLogin = memberService.validPassword(loginForm);
-            if (!checkLogin || !memberService.checkDuplicateEmail(eMail)) return false; //비밀번호 or 아이디가 틀린 경우
+            boolean checkLogin = memberService.validPassword(loginDto);
+            if (!checkLogin || !memberService.checkDuplicateEmail(signUpDto.getEmail())) return false; //비밀번호 or 아이디가 틀린 경우
         } catch (Exception e) {
             System.out.println(e.toString());
             return false;
@@ -63,7 +59,7 @@ public class LoginRestController {
         }
 
 
-        String token=securityService.createToken(eMail,20*1000*60); //토큰 주기 2분으로 설정 (test)
+        String token=securityService.createToken(signUpDto.getEmail(),20*1000*60); //토큰 주기 2분으로 설정 (test)
         Map<String, Object> map = new LinkedHashMap<>();
         map.put("result", token);
         Cookie idCookie = new Cookie("loginToken", token);
@@ -74,18 +70,19 @@ public class LoginRestController {
     }
 
 
+
     @PostMapping("/email_auth")
-    public boolean emailConfirm(@RequestParam(value = "email")String userId)throws Exception{
-        emailService.sendSimpleMessage(userId);
+    public boolean emailConfirm(@RequestBody EmailAuthDto emailAuthDto)throws Exception{
+        emailService.sendSimpleMessage(emailAuthDto.getEmail());
         return true;
     }
 
     @PostMapping("/verify_code")
-    public boolean verifyCode(@RequestParam(value = "code") String code,@RequestParam(value = "expiredTime") String expiredTime) {
+    public boolean verifyCode(@RequestBody VerifyCodeDto verifyCodeDto) {
         boolean result = false;
-        int time = Integer.parseInt(expiredTime);
+        int time = Integer.parseInt(verifyCodeDto.getExpiredTime());
         if(time>180) return false;
-        if(EmailServiceImpl.ePw.equals(code)) {
+        if(EmailServiceImpl.ePw.equals(verifyCodeDto.getCode())) {
             result =true;
         }
 
@@ -94,17 +91,15 @@ public class LoginRestController {
 
     //중복이메일 검증 true=>중복된 이메일 없음
     @PostMapping("/check_dup_email")
-    public boolean checkDupEmail(@RequestParam(value = "email") String email){
-        return memberService.checkDuplicateEmail(email);
+    public boolean checkDupEmail(@RequestBody DupEmailDto dupEmailDto){
+        return memberService.checkDuplicateEmail(dupEmailDto.getEmail());
     }
 
     //롤 닉네임 있는지 validateCheck
     @PostMapping("/check_lol_name")
-    public CheckLoLNameDto checkLoLName(@RequestParam(value = "lolName") String lolName) throws ParseException {
-        CheckLoLNameDto checkLoLNameDto = new CheckLoLNameDto();
-        checkLoLNameDto.setDupLolName(memberService.checkDuplicateLolName(lolName)); //이미 등록되어 있는 롤 닉네임
-        checkLoLNameDto.setValidLolName(myPageService.checkLolName(lolName)); //롤 게임상 유효하지 않은 롤 닉네임
-
+    public CheckLoLNameDto checkLoLName(@RequestBody CheckLoLNameDto checkLoLNameDto) throws ParseException {
+        checkLoLNameDto.setDupLolName(memberService.checkDuplicateLolName(checkLoLNameDto.getLolName())); //이미 등록되어 있는 롤 닉네임
+        checkLoLNameDto.setValidLolName(myPageService.checkLolName(checkLoLNameDto.getLolName())); //롤 게임상 유효하지 않은 롤 닉네임
         return checkLoLNameDto;
     }
 
