@@ -1,6 +1,6 @@
 package haneum.troller.controller.myPage;
 
-import haneum.troller.dto.member.myPage.MyPageDto;
+import haneum.troller.dto.myPage.MyPageDto;
 import haneum.troller.security.SecurityService;
 import haneum.troller.service.MyPageService;
 import haneum.troller.service.dataDragon.MyPageImgService;

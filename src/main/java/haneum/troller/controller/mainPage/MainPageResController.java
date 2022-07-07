@@ -1,6 +1,6 @@
 package haneum.troller.controller.mainPage;
 
-import haneum.troller.dto.member.mainPage.MainPageDto;
+import haneum.troller.dto.mainPage.MainPageDto;
 import haneum.troller.service.MainPageService;
 import org.json.simple.parser.ParseException;
 import org.springframework.web.bind.annotation.GetMapping;

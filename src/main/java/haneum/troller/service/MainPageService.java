@@ -1,6 +1,6 @@
 package haneum.troller.service;
 
-import haneum.troller.dto.member.mainPage.MainPageDto;
+import haneum.troller.dto.mainPage.MainPageDto;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;

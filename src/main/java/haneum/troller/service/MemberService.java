@@ -1,7 +1,7 @@
 package haneum.troller.service;
 
 import haneum.troller.domain.Member;
-import haneum.troller.dto.member.LoginForm;
+import haneum.troller.dto.login.LoginDto;
 import haneum.troller.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -27,9 +27,9 @@ public class MemberService {
 
 
     //로그인(비밀번호)
-    public boolean validPassword(LoginForm loginForm) {
-        Member member = memberRepository.findByEmail(loginForm.getEMail());
-        if (passwordEncoder.matches(loginForm.getPassword(), member.getPassword())) {
+    public boolean validPassword(LoginDto loginDto) {
+        Member member = memberRepository.findByEmail(loginDto.getEMail());
+        if (passwordEncoder.matches(loginDto.getPassword(), member.getPassword())) {
             return true;
         }
         else {

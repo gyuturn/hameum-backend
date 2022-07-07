@@ -1,11 +1,13 @@
-package haneum.troller.dto.member.myPage;
+package haneum.troller.dto.myPage;
 
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.awt.*;
 
 @Getter
+@NoArgsConstructor
 @Setter
 public class MyPageDto {
     private String encryptedLolName;
