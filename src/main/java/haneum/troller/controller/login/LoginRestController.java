@@ -33,7 +33,7 @@ public class LoginRestController {
 
 
     @PostMapping("sign_up")
-    public Member signUp(HttpServletRequest request, @RequestParam("eMail")String eMail, @RequestParam("password")String password, @RequestParam("lolName")String lolName) {
+    public Member signUp(HttpServletRequest request, @RequestParam("email")String eMail, @RequestParam("password")String password, @RequestParam("lolName")String lolName) {
         System.out.println(request);
 
         Member member = new Member();
@@ -48,7 +48,7 @@ public class LoginRestController {
     }
 
     @PostMapping("sign_in")
-    public boolean login(@RequestParam(value = "eMail") String eMail, @RequestParam(value="password") String password,
+    public boolean login(@RequestParam(value = "email") String eMail, @RequestParam(value="password") String password,
                          HttpServletResponse response) {
         LoginForm loginForm = new LoginForm(eMail, password);
         try {
@@ -75,8 +75,7 @@ public class LoginRestController {
 
 
     @PostMapping("/mail_auth")
-    public void emailConfirm(@RequestParam("userId")String userId)throws Exception{
-        System.out.println("전달 받은 이메일 : "+userId);
+    public void emailConfirm(@RequestParam("email")String userId)throws Exception{
         emailService.sendSimpleMessage(userId);
     }
 

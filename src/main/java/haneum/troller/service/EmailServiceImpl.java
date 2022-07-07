@@ -2,6 +2,7 @@ package haneum.troller.service;
 
 import java.util.Random;
 
+import javax.mail.Address;
 import javax.mail.Message.RecipientType;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
@@ -24,7 +25,8 @@ public class EmailServiceImpl{
         System.out.println("인증 번호 : "+ePw);
         MimeMessage  message = emailSender.createMimeMessage();
 
-        message.addRecipients(RecipientType.TO, to);//보내는 대상
+        System.out.println("to = " + to);
+        message.addRecipients(RecipientType.TO,to);//보내는 대상
         message.setSubject("BZshop 인증번호가 도착했습니다.");//제목
 
         String msgg="";
