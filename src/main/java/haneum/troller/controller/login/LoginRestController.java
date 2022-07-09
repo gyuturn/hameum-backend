@@ -7,6 +7,7 @@ import haneum.troller.security.SecurityService;
 import haneum.troller.service.EmailServiceImpl;
 import haneum.troller.service.MemberService;
 import haneum.troller.service.MyPageService;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.json.simple.parser.ParseException;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -96,10 +97,11 @@ public class LoginRestController {
     }
 
     //롤 닉네임 있는지 validateCheck
-    @PostMapping("/check_lol_name")
-    public CheckLoLNameDto checkLoLName(@RequestBody CheckLoLNameDto checkLoLNameDto) throws ParseException {
-        checkLoLNameDto.setDupLolName(memberService.checkDuplicateLolName(checkLoLNameDto.getLolName())); //이미 등록되어 있는 롤 닉네임
-        checkLoLNameDto.setValidLolName(myPageService.checkLolName(checkLoLNameDto.getLolName())); //롤 게임상 유효하지 않은 롤 닉네임
+    @GetMapping("/check_lol_name")
+    public CheckLoLNameDto checkLoLName(@RequestParam("lolName") String lolName) throws ParseException {
+        CheckLoLNameDto checkLoLNameDto = new CheckLoLNameDto();
+        checkLoLNameDto.setDupLolName(memberService.checkDuplicateLolName(lolName)); //이미 등록되어 있는 롤 닉네임
+        checkLoLNameDto.setValidLolName(myPageService.checkLolName(lolName)); //롤 게임상 유효하지 않은 롤 닉네임
         return checkLoLNameDto;
     }
 
