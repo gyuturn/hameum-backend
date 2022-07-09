@@ -24,8 +24,8 @@ public class LoginRestController {
     private final MemberService memberService;
     private final PasswordEncoder passwordEncoder;
     private final SecurityService securityService;
-    private final EmailServiceImpl emailService;
     private final MyPageService myPageService;
+    private final EmailServiceImpl emailService;
 
 
     @PostMapping("sign_up")
@@ -80,9 +80,9 @@ public class LoginRestController {
     @PostMapping("/verify_code")
     public boolean verifyCode(@RequestBody VerifyCodeDto verifyCodeDto) {
         boolean result = false;
-        int time = Integer.parseInt(verifyCodeDto.getExpiredTime());
-        if(time>180) return false;
-        if(EmailServiceImpl.ePw.equals(verifyCodeDto.getCode())) {
+        int time = Integer.parseInt(verifyCodeDto.getValidTime());
+        if(time<=0) return false;
+        if(emailService.getEPw().equals(verifyCodeDto.getCode())) {
             result =true;
         }
 
