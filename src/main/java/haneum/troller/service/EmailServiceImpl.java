@@ -7,20 +7,23 @@ import javax.mail.Message.RecipientType;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 
+import lombok.Getter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.MailException;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 
 @Service
+@Getter
 public class EmailServiceImpl{
 
     @Autowired
     JavaMailSender emailSender;
 
-    public static final String ePw = createKey();
+    private String ePw;
 
     private MimeMessage createMessage(String to)throws Exception{
+        ePw = createKey();
         System.out.println("보내는 대상 : "+ to);
         System.out.println("인증 번호 : "+ePw);
         MimeMessage  message = emailSender.createMimeMessage();
@@ -48,7 +51,7 @@ public class EmailServiceImpl{
         return message;
     }
     //		인증코드 만들기
-    public static String createKey() {
+    public String createKey() {
         StringBuffer key = new StringBuffer();
         Random rnd = new Random();
 
