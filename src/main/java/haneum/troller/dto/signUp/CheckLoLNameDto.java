@@ -9,7 +9,6 @@ import lombok.Setter;
 @NoArgsConstructor
 @Setter
 public class CheckLoLNameDto {
-    private String lolName;
     private boolean dupLolName;
     private boolean validLolName;
 
