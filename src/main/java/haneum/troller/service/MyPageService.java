@@ -26,7 +26,7 @@ public class MyPageService {
     private static final String AcceptLanguage="ko-KR,ko;q=0.9,en-US;q=0.8,en;q=0.7";
     private static final String AcceptCharset="application/x-www-form-urlencoded; charset=UTF-8";
     private static final String Origin="https://developer.riotgames.com";
-    private static final String ApiKey="RGAPI-7df149b2-9941-4e54-ac86-ff5ce929d859";
+    private static final String ApiKey="RGAPI-cbff7791-5841-4ea8-bba0-ee262afdd2f3";
 
 
     public boolean checkLolName(String userName) throws ParseException {
