@@ -20,8 +20,6 @@ public class MyPageDto {
 
     private String point;
 
-//    private String tierImg;
-
     private String winRate;
 
     private String TrollPossibility="0";// 아직 미구현
@@ -34,7 +32,6 @@ public class MyPageDto {
 
     private String level;
 
-    private Image tierImg;
 
 
 }
