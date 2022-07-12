@@ -27,8 +27,8 @@ public class MemberService {
 
 
     //로그인(비밀번호)
-    public boolean validPassword(SignInDto loginDto) {
-        Member member = memberRepository.findByEmail(loginDto.getEmail());
+    public boolean validLogin(SignInDto loginDto) {
+        Member member = memberRepository.findByEmail(loginDto.getEmail()).get(0);
         if (passwordEncoder.matches(loginDto.getPassword(), member.getPassword())) {
             return true;
         }

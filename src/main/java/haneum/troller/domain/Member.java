@@ -15,7 +15,7 @@ public class Member {
     @Column(name = "member_id")
     private Long memberId;
 
-    private String eMail;
+    private String email;
 
     private String password;
 

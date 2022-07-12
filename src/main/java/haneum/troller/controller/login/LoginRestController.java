@@ -1,8 +1,10 @@
 package haneum.troller.controller.login;
 
 import haneum.troller.domain.Member;
+import haneum.troller.dto.jwtDto.JwtDto;
 import haneum.troller.dto.signUp.*;
 import haneum.troller.dto.login.SignInDto;
+import haneum.troller.repository.MemberRepository;
 import haneum.troller.security.SecurityService;
 import haneum.troller.service.EmailServiceImpl;
 import haneum.troller.service.MemberService;
@@ -10,17 +12,15 @@ import haneum.troller.service.MyPageService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.Parameters;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.json.simple.parser.ParseException;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
-
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.util.LinkedHashMap;
-import java.util.Map;
 
 @Tag(name="sign",description = "회원가입/로그인 API")
 @RequestMapping("/sign")
@@ -28,6 +28,7 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class LoginRestController {
     private final MemberService memberService;
+    private final MemberRepository memberRepository;
     private final PasswordEncoder passwordEncoder;
     private final SecurityService securityService;
     private final MyPageService myPageService;
@@ -45,7 +46,7 @@ public class LoginRestController {
     )
     public Member signUp( @RequestBody SignUpDto signUpDto) {
         Member member = new Member();
-        member.setEMail(signUpDto.getEmail());
+        member.setEmail(signUpDto.getEmail());
         String encode = passwordEncoder.encode(signUpDto.getPassword());
         member.setPassword(encode);
         member.setLolName(signUpDto.getLolName());
@@ -56,7 +57,17 @@ public class LoginRestController {
     }
 
 
-    @Operation(summary = "로그인 api",description = "로그인시에 사용되는 api")
+    @Operation(summary = "로그인 api",description = "로그인시에 사용되는 api" +
+            "로그인 성공시에는 200 status와 토큰 두개 얻음 바디로 얻음" +
+            "실패시에는 401 status"
+
+    )
+    @ApiResponses(
+        value = {
+                @ApiResponse(responseCode = "200",description = "로그인 성공+jwt 토큰 방급"),
+                @ApiResponse(responseCode = "401",description = "로그인 실패")
+        }
+    )
     @Parameters(
             {
                     @Parameter(name = "email",description = "이메일"),
@@ -64,29 +75,33 @@ public class LoginRestController {
             }
     )
     @PostMapping("/in")
-    public boolean login(@RequestBody SignInDto signInDto,
-                         HttpServletResponse response) {
+    public ResponseEntity login(@RequestBody SignInDto signInDto) {
         SignInDto loginDto = new SignInDto(signInDto.getEmail(), signInDto.getPassword());
         try {
-            boolean checkLogin = memberService.validPassword(loginDto);
-            if (!checkLogin || !memberService.checkDuplicateEmail(signInDto.getEmail())) return false; //비밀번호 or 아이디가 틀린 경우
+            boolean checkLogin = memberService.validLogin(loginDto);
+            if (checkLogin){
+                Member member = memberRepository.findByEmail(loginDto.getEmail()).get(0);
+
+                String accessToken = securityService.createToken(member.getLolName(), 60 * 1000 * 60); //토큰 주기 1시간으로 설정 (test)
+                String refreshToken = securityService.createToken(member.getEmail(), 60 * 1000 * 60 * 24 * 7); //토큰 주기 1주일으로 설정 (test)
+
+                System.out.println("accessToken = " + accessToken);
+                System.out.println("refreshToken = " + refreshToken);
+                JwtDto jwtDto = JwtDto.builder()
+                        .accessToken(accessToken)
+                        .refreshToken(refreshToken)
+                        .build();
+                return new ResponseEntity(jwtDto, HttpStatus.OK);
+            }
         } catch (Exception e) {
             System.out.println(e.toString());
-            return false;
         }
         finally {
-
+            return new ResponseEntity(HttpStatus.UNAUTHORIZED);
         }
 
 
-        String token=securityService.createToken(signInDto.getEmail(),20*1000*60); //토큰 주기 2분으로 설정 (test)
-        Map<String, Object> map = new LinkedHashMap<>();
-        map.put("result", token);
-        Cookie idCookie = new Cookie("loginToken", token);
-        idCookie.setMaxAge(60*20); //쿠키 세션 만료 2분 test
-        response.addCookie(idCookie);
 
-        return true;//최종적으로 로그인 성공
     }
 
 
