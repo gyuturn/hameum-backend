@@ -19,7 +19,6 @@ public class MemberService {
     private final PasswordEncoder passwordEncoder;
 
     //회원가입
-    @Transactional(readOnly = false)
     public Long join(Member member) {
         memberRepository.save(member);
         return member.getMemberId();
@@ -28,7 +27,7 @@ public class MemberService {
 
     //로그인(비밀번호)
     public boolean validLogin(SignInDto loginDto) {
-        Member member = memberRepository.findByEmail(loginDto.getEmail()).get(0);
+        Member member = memberRepository.findByEmail(loginDto.getEmail());
         if (passwordEncoder.matches(loginDto.getPassword(), member.getPassword())) {
             return true;
         }
@@ -39,15 +38,13 @@ public class MemberService {
 
     //이메일 중복인증
     public boolean checkDuplicateEmail(String email){
-        boolean result=false;
-        try {
-            memberRepository.findByEmail(email);
-        } catch (Exception e) {
-            result=true;
+
+        Member member = memberRepository.findByEmail(email);
+        if (member == null) {
+            return true;
         }
-        finally {
-            return result;
-        }
+        else return false;
+
     }
 
     //롤 닉네임이 이미 사용중인지 체크

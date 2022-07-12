@@ -51,7 +51,7 @@ public class LoginRestController {
         member.setPassword(encode);
         member.setLolName(signUpDto.getLolName());
 
-        memberService.join(member);
+        memberRepository.save(member);
 
         return member;
     }
@@ -77,12 +77,11 @@ public class LoginRestController {
     @PostMapping("/in")
     public ResponseEntity login(@RequestBody SignInDto signInDto) {
         SignInDto loginDto = new SignInDto(signInDto.getEmail(), signInDto.getPassword());
-        try {
             boolean checkLogin = memberService.validLogin(loginDto);
-            if (checkLogin){
-                Member member = memberRepository.findByEmail(loginDto.getEmail()).get(0);
+            if (checkLogin) {
+                Member member = memberRepository.findByEmail(loginDto.getEmail());
 
-                String accessToken = securityService.createToken(member.getLolName(), 60 * 1000 * 60); //토큰 주기 1시간으로 설정 (test)
+                String accessToken = securityService.createToken(member.getEmail(), 60 * 1000 * 60); //토큰 주기 1시간으로 설정 (test)
                 String refreshToken = securityService.createToken(member.getEmail(), 60 * 1000 * 60 * 24 * 7); //토큰 주기 1주일으로 설정 (test)
 
                 System.out.println("accessToken = " + accessToken);
@@ -93,16 +92,12 @@ public class LoginRestController {
                         .build();
                 return new ResponseEntity(jwtDto, HttpStatus.OK);
             }
-        } catch (Exception e) {
-            System.out.println(e.toString());
-        }
-        finally {
-            return new ResponseEntity(HttpStatus.UNAUTHORIZED);
-        }
-
-
+            else{
+                    return new ResponseEntity(HttpStatus.UNAUTHORIZED);
+                }
 
     }
+
 
 
 

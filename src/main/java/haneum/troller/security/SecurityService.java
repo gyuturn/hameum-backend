@@ -16,7 +16,7 @@ import java.util.Date;
 
 @Service
 public class SecurityService {
-    private static String secretKey;
+    private  String secretKey;
     @Autowired
     MemberRepository memberRepository;
 
