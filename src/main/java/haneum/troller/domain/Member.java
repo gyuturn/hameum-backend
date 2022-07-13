@@ -22,6 +22,13 @@ public class Member {
     private String lolName;
 
 
-
-
+    @Override
+    public String toString() {
+        return "Member{" +
+                "memberId=" + memberId +
+                ", email='" + email + '\'' +
+                ", password='" + password + '\'' +
+                ", lolName='" + lolName + '\'' +
+                '}';
+    }
 }
