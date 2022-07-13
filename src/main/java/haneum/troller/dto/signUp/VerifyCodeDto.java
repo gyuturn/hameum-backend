@@ -9,6 +9,6 @@ import lombok.Setter;
 @Setter
 public class VerifyCodeDto {
     private String code;
-    private String expiredTime;
+    private String validTime;
 
 }

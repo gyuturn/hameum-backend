@@ -7,13 +7,13 @@ import lombok.Setter;
 @Getter
 @NoArgsConstructor
 @Setter
-public class LoginDto {
-    private String eMail;
+public class SignInDto {
+    private String email;
 
     private String password;
 
-    public LoginDto(String eMail, String password) {
-        this.eMail = eMail;
+    public SignInDto(String eMail, String password) {
+        this.email = eMail;
         this.password = password;
     }
 }
