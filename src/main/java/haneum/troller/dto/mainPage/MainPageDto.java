@@ -1,15 +1,14 @@
 package haneum.troller.dto.mainPage;
 
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.json.simple.JSONArray;
 
 
 import java.util.HashMap;
 
 @Getter
-@NoArgsConstructor
 @Setter
 public class MainPageDto{
-    private HashMap<String, Integer>rankMap;
+    private JSONArray entries;
 }
