@@ -1,7 +1,8 @@
 package haneum.troller.service;
 
-import haneum.troller.dto.myPage.MyPageDto;
+import haneum.troller.dto.ranking.RankingPageDto;
 import haneum.troller.service.dataDragon.MyPageImgService;
+import org.hibernate.annotations.common.annotationfactory.AnnotationProxy;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -14,11 +15,13 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
-import java.io.IOException;
-
+import java.util.*;
+import java.util.List;
+import java.util.Map.Entry;
 
 @Service
-public class MyPageService {
+public class RankingPageService {
+
     @Autowired
     private MyPageImgService myPageImgService;
 
@@ -28,69 +31,98 @@ public class MyPageService {
     private static final String Origin="https://developer.riotgames.com";
     private static final String ApiKey="RGAPI-47e4c48b-c37a-4215-a76e-b308dc52ef90";
 
+    public RankingPageDto getRankingOrderPage()throws ParseException{
+        ResponseEntity<String>responseOrder = getResponseEntityByTierOrder();
 
-    public boolean checkLolName(String userName) throws ParseException {
-        ResponseEntity<String> response = getResponseEntityByUserName(userName);
+        JSONParser parser = new JSONParser();
+        JSONObject jsonObject =(JSONObject)parser.parse(responseOrder.getBody());
+        JSONArray entries =(JSONArray)jsonObject.get("entries");
 
-        boolean result=false;
-        try{
-            if(response.getStatusCode().toString().equals("200 OK")){
-                result=true;
-            }
-        }catch (Exception e){
-            result=false;
+        RankingPageDto rankingPageDto = new RankingPageDto();
+
+        HashMap<String, Long>tempMap = new HashMap<>();
+        for (Object entry : entries) {
+            JSONObject summoner = (JSONObject) entry;
+            tempMap.put(summoner.get("summonerName").toString(), (Long) summoner.get("leaguePoints"));
         }
-        finally {
-            return result;
+        List<String> keySet = new ArrayList<>(tempMap.keySet());
+        keySet.sort((o1, o2) -> (int) (tempMap.get(o2) - tempMap.get(o1)));
+        JSONArray jArray = new JSONArray();
+        int i = 0;
+        for(String key : keySet){
+            if (i == 18)
+                break;
+            JSONObject summoner = new JSONObject();
+            long point = tempMap.get(key);
+            summoner.put(key, Long.toString(point));
+            addPlayerInfo(summoner, key);
+            jArray.add(summoner);
+            i++;
         }
-
+        rankingPageDto.setPlayer(jArray);
+        return rankingPageDto;
     }
 
-
-    public MyPageDto getEncryptedLolName(String userName) throws ParseException {
-        ResponseEntity<String> response = getResponseEntityByUserName(userName);
+    public void addPlayerInfo(JSONObject summoner, String name) throws ParseException {
+        ResponseEntity<String>response = getResponseEntityByUserName(name);
 
         JSONParser parser = new JSONParser();
         Object obj = parser.parse(response.getBody());
         JSONObject jsonObj = (JSONObject)obj;
 
-        MyPageDto myPageDto = new MyPageDto();
-        myPageDto.setEncryptedLolName((String)jsonObj.get("id"));
-        myPageDto.setName((String)jsonObj.get("name"));
-        myPageDto.setIcon(myPageImgService.getIconImg(jsonObj.get("profileIconId").toString()));
-        myPageDto.setLevel(jsonObj.get("summonerLevel").toString());
-
-        return myPageDto;
+        String encryptedId = (String)jsonObj.get("id");
+        summoner.put("summonerLevel", jsonObj.get("summonerLevel").toString());
+        summoner.put("icon", myPageImgService.getIconImg(jsonObj.get("profileIconId").toString()));
+        summoner.put("tierImg", null);
+        setPlayerInfo(summoner, encryptedId);
     }
 
-    public MyPageDto getMyPageAttr(MyPageDto myPageDto) throws ParseException, IOException {
-        ResponseEntity<String> response = getResponseEntityByEncryptedUserId(myPageDto.getEncryptedLolName());
-        
+    public void setPlayerInfo(JSONObject summoner, String userId)throws ParseException{
+        ResponseEntity<String>response = getResponseEntityByEncryptedUserId(userId);
+
         JSONParser parser = new JSONParser();
         Object obj = parser.parse(response.getBody());
         JSONArray jsonArray = (JSONArray)obj;
         JSONObject jsonObj = (JSONObject)jsonArray.get(0);
 
 
-
-        myPageDto.setWin(jsonObj.get("wins").toString());
-        myPageDto.setLose(jsonObj.get("losses").toString());
         int wins = Integer.parseInt(jsonObj.get("wins").toString());
         int losses = Integer.parseInt(jsonObj.get("losses").toString());
         int winRate = (int)((double)wins / (double)(losses + wins) * 100);
-        myPageDto.setWinRate(String.valueOf(winRate)+"%");
-
-        myPageDto.setTier(jsonObj.get("tier").toString());
-        myPageDto.setRank(jsonObj.get("rank").toString());
-        myPageDto.setPoint(jsonObj.get("leaguePoints").toString());
-
-        return myPageDto;
-
+        summoner.put("wins", Integer.toString(wins));
+        summoner.put("losses", Integer.toString(losses));
+        summoner.put("winRate", String.valueOf(winRate)+"%");
+        summoner.put("tier", jsonObj.get("tier"));
     }
 
-    private ResponseEntity<String> getResponseEntityByEncryptedUserId(String userID){
+    private ResponseEntity<String>getResponseEntityByTierOrder() {
+        String url = "https://kr.api.riotgames.com/lol/league/v4/challengerleagues/by-queue/RANKED_SOLO_5x5";
+        url += "?api_key=";
+        url += ApiKey;
+
+        RestTemplate restTemplate = new RestTemplate();
+
+        // create headers
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("User-Agent", UserAgent);
+        headers.set("Accept-Language", AcceptLanguage);
+        headers.set("Accept-Charset", AcceptCharset);
+        headers.set("Origin", Origin);
+
+        HttpEntity request = new HttpEntity(headers);
+
+        ResponseEntity<String> response = restTemplate.exchange(
+                url,
+                HttpMethod.GET,
+                request,
+                String.class
+        );
+        return response;
+    }
+
+    private ResponseEntity<String> getResponseEntityByEncryptedUserId(String userId){
         String url="https://kr.api.riotgames.com/lol/league/v4/entries/by-summoner/";
-        url+=userID;
+        url+=userId;
         url+="?api_key=";
         url += ApiKey;
 
@@ -145,3 +177,4 @@ public class MyPageService {
     }
 
 }
+
