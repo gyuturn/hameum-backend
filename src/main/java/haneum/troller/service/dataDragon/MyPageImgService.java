@@ -1,5 +1,6 @@
 package haneum.troller.service.dataDragon;
 
+import lombok.Getter;
 import org.json.simple.parser.ParseException;
 import org.springframework.stereotype.Service;
 
@@ -14,7 +15,6 @@ public class MyPageImgService {
                 + "/img/profileicon/"
                 + iconNum
                 + ".png";
-
         return url;
     }
 

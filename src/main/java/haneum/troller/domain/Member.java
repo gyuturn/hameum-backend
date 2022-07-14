@@ -15,13 +15,20 @@ public class Member {
     @Column(name = "member_id")
     private Long memberId;
 
-    private String eMail;
+    private String email;
 
     private String password;
 
     private String lolName;
 
 
-
-
+    @Override
+    public String toString() {
+        return "Member{" +
+                "memberId=" + memberId +
+                ", email='" + email + '\'' +
+                ", password='" + password + '\'' +
+                ", lolName='" + lolName + '\'' +
+                '}';
+    }
 }

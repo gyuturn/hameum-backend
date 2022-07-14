@@ -8,6 +8,7 @@ import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 
 import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.MailException;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -15,6 +16,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 @Getter
+@Slf4j
 public class EmailServiceImpl{
 
     @Autowired
@@ -24,8 +26,8 @@ public class EmailServiceImpl{
 
     private MimeMessage createMessage(String to)throws Exception{
         ePw = createKey();
-        System.out.println("보내는 대상 : "+ to);
-        System.out.println("인증 번호 : "+ePw);
+        log.debug("보내는 대상:{}",to);
+        log.debug("인증번호:{}",ePw);
         MimeMessage  message = emailSender.createMimeMessage();
 
         message.addRecipients(RecipientType.TO,to);//보내는 대상

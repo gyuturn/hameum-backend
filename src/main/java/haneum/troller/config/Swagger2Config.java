@@ -10,12 +10,20 @@ import org.springframework.context.annotation.Configuration;
 public class Swagger2Config {
 
     @Bean
-    public GroupedOpenApi SignApi() {
+    public GroupedOpenApi SignUpApi() {
         return GroupedOpenApi.builder()
-                .group("sign-definition")
-                .pathsToMatch("/sign/**")
+                .group("signUp-definition")
+                .pathsToMatch("/member/sign-up/**")
                 .build();
     }
+    @Bean
+    public GroupedOpenApi SignInApi() {
+        return GroupedOpenApi.builder()
+                .group("signIn-definition")
+                .pathsToMatch("/member/sign-in/**")
+                .build();
+    }
+
 
     @Bean
     public GroupedOpenApi SearchApi() {

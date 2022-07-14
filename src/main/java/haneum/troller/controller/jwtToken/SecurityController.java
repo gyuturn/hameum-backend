@@ -1,4 +1,4 @@
-package haneum.troller.controller.login;
+package haneum.troller.controller.jwtToken;
 
 import haneum.troller.security.SecurityService;
 import org.springframework.beans.factory.annotation.Autowired;

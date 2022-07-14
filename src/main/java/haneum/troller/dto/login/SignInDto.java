@@ -12,8 +12,8 @@ public class SignInDto {
 
     private String password;
 
-    public SignInDto(String eMail, String password) {
-        this.email = eMail;
+    public SignInDto(String email, String password) {
+        this.email = email;
         this.password = password;
     }
 }
