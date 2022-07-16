@@ -1,13 +1,12 @@
 package haneum.troller.domain;
 
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 import javax.persistence.*;
 
 @Entity
 @Getter
-@Setter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Member {
 
     @GeneratedValue
@@ -20,6 +19,14 @@ public class Member {
     private String password;
 
     private String lolName;
+
+    @Builder
+    public Member(Long memberId, String email, String password, String lolName) {
+        this.memberId = memberId;
+        this.email = email;
+        this.password = password;
+        this.lolName = lolName;
+    }
 
 
     @Override
