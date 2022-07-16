@@ -1,4 +1,4 @@
-package haneum.troller.config;
+package haneum.troller.common.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
