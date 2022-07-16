@@ -21,7 +21,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 @Tag(name="SignUp",description = "회원가입API")
-@RequestMapping("/member/sign-up/")
+@RequestMapping("/api/member/sign-up/")
 @RestController
 @RequiredArgsConstructor
 @Slf4j
@@ -49,11 +49,12 @@ public class SignUpRestController {
             }
     )
     public ResponseEntity<Member> signUp( @RequestBody SignUpDto signUpDto) {
-        Member member = new Member();
-        member.setEmail(signUpDto.getEmail());
         String encode = passwordEncoder.encode(signUpDto.getPassword());
-        member.setPassword(encode);
-        member.setLolName(signUpDto.getLolName());
+        Member member = Member.builder()
+                .email(signUpDto.getEmail())
+                .password(encode)
+                .lolName(signUpDto.getLolName())
+                .build();
 
         memberRepository.save(member);
         log.info("회원등록");
@@ -149,7 +150,8 @@ public class SignUpRestController {
 
 
     //롤 닉네임 있는지 validateCheck
-    @Operation(summary = "롤 닉네임 유효성 검사api",description = "롤 닉네임이 실제 존재하는지, db에는 아직 등록되어 있지 않은지 검사")
+    @Operation(summary = "롤 닉네임 유효성 검사api",description = "롤 닉네임이 실제 존재하는지, db에는 아직 등록되어 있지 않은지 검사" +
+            "true값이어야 정상적으로 사용가능")
     @Parameters(
             {
                     @Parameter(name = "lolName",description = "롤 이름(띄어쓰기도 고려됨)")
@@ -159,10 +161,11 @@ public class SignUpRestController {
             @ApiResponse(responseCode = "200",description = "OK-정상적으로 조회됨->판단은 body보고 판단"),
             @ApiResponse(responseCode = "400",description = "서버에서 해당 parameter를 binding하지 못함" +
                     "오타 체크"),
-            @ApiResponse(responseCode = "403",description = "해당 이메일은 이미 사용중(중복)")
+            @ApiResponse(responseCode = "403",description = "해당 롤닉네임 이미 사용중(중복)")
     })
     @GetMapping("/check/lol-name")
     public ResponseEntity checkLoLName(@RequestParam("lolName") String lolName) throws ParseException {
+        log.info("롤 닉네임 유효성 검사");
         CheckLoLNameDto checkLoLNameDto = new CheckLoLNameDto();
         checkLoLNameDto.setDupLolName(memberService.checkDuplicateLolName(lolName)); //이미 등록되어 있는 롤 닉네임
         checkLoLNameDto.setValidLolName(myPageService.checkLolName(lolName)); //롤 게임상 유효하지 않은 롤 닉네임

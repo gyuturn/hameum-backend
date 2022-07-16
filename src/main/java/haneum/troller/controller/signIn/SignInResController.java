@@ -24,7 +24,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @Tag(name="signIn",description = "로그인 API")
-@RequestMapping("/member/sign-in/")
+@RequestMapping("/api/member/sign-in/")
 @RestController
 @RequiredArgsConstructor
 public class SignInResController {
@@ -53,14 +53,13 @@ public class SignInResController {
                     @Parameter(name="password",description = "비번")
             }
     )
-    @PostMapping("/in")
+    @PostMapping("")
     public ResponseEntity<JwtDto> login(@RequestBody SignInDto signInDto) {
         SignInDto loginDto = new SignInDto(signInDto.getEmail(), signInDto.getPassword());
-        boolean checkLogin = memberService.validLogin(loginDto);
-        if (checkLogin) {
+        if (memberService.validLogin(loginDto)) {
             Member member = memberRepository.findByEmail(loginDto.getEmail());
 
-            String accessToken = securityService.createToken(member.getEmail(), 60 * 1000 * 60); //토큰 주기 1시간으로 설정 (test)
+            String accessToken = securityService.createToken(member.getMemberId().toString(), 60 * 1000 * 60); //토큰 주기 1시간으로 설정 (test)
             String refreshToken = securityService.createToken(member.getEmail(), 60 * 1000 * 60 * 24 * 7); //토큰 주기 1주일으로 설정 (test)
 
             System.out.println("accessToken = " + accessToken);
