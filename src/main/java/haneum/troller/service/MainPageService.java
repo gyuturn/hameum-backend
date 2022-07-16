@@ -1,5 +1,6 @@
 package haneum.troller.service;
 
+import haneum.troller.common.config.apiKey.LolApiKey;
 import haneum.troller.dto.mainPage.MainPageDto;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -25,7 +26,7 @@ public class MainPageService{
     private static final String AcceptLanguage="ko-KR,ko;q=0.9,en-US;q=0.8,en;q=0.7";
     private static final String AcceptCharset="application/x-www-form-urlencoded; charset=UTF-8";
     private static final String Origin="https://developer.riotgames.com";
-    private static final String ApiKey="RGAPI-47e4c48b-c37a-4215-a76e-b308dc52ef90";
+    private static final String ApiKey= LolApiKey.API_KEY;
 
     public MainPageDto getRankOrder()throws ParseException{
         ResponseEntity<String>response = getResponseEntityByTierOrder();

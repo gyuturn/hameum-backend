@@ -1,5 +1,6 @@
 package haneum.troller.service;
 
+import haneum.troller.common.config.apiKey.LolApiKey;
 import haneum.troller.dto.myPage.MyPageDto;
 import haneum.troller.service.dataDragon.MyPageImgService;
 import org.json.simple.JSONArray;
@@ -26,7 +27,7 @@ public class MyPageService {
     private static final String AcceptLanguage="ko-KR,ko;q=0.9,en-US;q=0.8,en;q=0.7";
     private static final String AcceptCharset="application/x-www-form-urlencoded; charset=UTF-8";
     private static final String Origin="https://developer.riotgames.com";
-    private static final String ApiKey="RGAPI-cbff7791-5841-4ea8-bba0-ee262afdd2f3";
+    private static final String ApiKey= LolApiKey.API_KEY;
 
 
     public boolean checkLolName(String userName) throws ParseException {
