@@ -23,6 +23,13 @@ public class Swagger2Config {
                 .pathsToMatch("/api/member/sign-in/**")
                 .build();
     }
+    @Bean
+    public GroupedOpenApi JwtApi() {
+        return GroupedOpenApi.builder()
+                .group("JWT-definition")
+                .pathsToMatch("/api/jwt/**")
+                .build();
+    }
 
 
     @Bean

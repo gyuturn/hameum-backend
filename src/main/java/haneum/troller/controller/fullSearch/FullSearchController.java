@@ -1,7 +1,7 @@
 package haneum.troller.controller.fullSearch;
 
 import haneum.troller.dto.myPage.MyPageDto;
-import haneum.troller.security.SecurityService;
+import haneum.troller.common.config.security.JwtEncoder;
 import haneum.troller.service.MyPageService;
 import haneum.troller.service.dataDragon.MyPageImgService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -19,7 +19,7 @@ import java.io.IOException;
 @RequiredArgsConstructor
 @RequestMapping("/search")
 public class FullSearchController {
-    private final SecurityService securityService;
+    private final JwtEncoder jwtEncoder;
     private final MyPageService myPageService;
     private final MyPageImgService myPageImgService;
 
