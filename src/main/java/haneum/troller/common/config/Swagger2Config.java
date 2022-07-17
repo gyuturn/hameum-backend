@@ -1,4 +1,4 @@
-package haneum.troller.config;
+package haneum.troller.common.config;
 
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.info.Info;
@@ -13,14 +13,21 @@ public class Swagger2Config {
     public GroupedOpenApi SignUpApi() {
         return GroupedOpenApi.builder()
                 .group("signUp-definition")
-                .pathsToMatch("/member/sign-up/**")
+                .pathsToMatch("/api/member/sign-up/**")
                 .build();
     }
     @Bean
     public GroupedOpenApi SignInApi() {
         return GroupedOpenApi.builder()
                 .group("signIn-definition")
-                .pathsToMatch("/member/sign-in/**")
+                .pathsToMatch("/api/member/sign-in/**")
+                .build();
+    }
+    @Bean
+    public GroupedOpenApi JwtApi() {
+        return GroupedOpenApi.builder()
+                .group("JWT-definition")
+                .pathsToMatch("/api/jwt/**")
                 .build();
     }
 

@@ -1,13 +1,13 @@
 package haneum.troller.domain;
 
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotBlank;
 
 @Entity
 @Getter
-@Setter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Member {
 
     @GeneratedValue
@@ -15,11 +15,29 @@ public class Member {
     @Column(name = "member_id")
     private Long memberId;
 
+    @NotBlank
     private String email;
-
+    @NotBlank
     private String password;
-
+    @NotBlank
     private String lolName;
+
+    private String refreshToken;
+
+    @Builder
+    public Member(Long memberId, String email, String password, String lolName,String refreshToken) {
+        this.memberId = memberId;
+        this.email = email;
+        this.password = password;
+        this.lolName = lolName;
+        this.refreshToken = refreshToken;
+    }
+
+
+    public Member updateRefreshToken(String refreshToken) {
+        this.refreshToken = refreshToken;
+        return this;
+    }
 
 
     @Override

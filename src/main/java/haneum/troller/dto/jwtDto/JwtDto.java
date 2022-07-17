@@ -8,8 +8,8 @@ import javax.validation.constraints.NotBlank;
 @Data
 @Builder
 public class JwtDto {
-    @NotBlank
+
     private String accessToken;
-    @NotBlank
+
     private String refreshToken;
 }

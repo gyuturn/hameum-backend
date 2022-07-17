@@ -25,6 +25,15 @@ public class MemberService {
     }
 
 
+    //refresh-token 저장
+    @Transactional(readOnly = false)
+    public Member updateRefreshToken(Member member, String token) {
+        member.updateRefreshToken(token);
+        return member;
+    }
+
+
+
     //로그인(비밀번호)
     public boolean validLogin(SignInDto loginDto) {
         Member member = memberRepository.findByEmail(loginDto.getEmail());
