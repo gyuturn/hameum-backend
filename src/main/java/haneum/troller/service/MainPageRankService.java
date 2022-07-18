@@ -19,7 +19,7 @@ import java.util.List;
 import java.util.Map.Entry;
 
 @Service
-public class MainPageService{
+public class MainPageRankService {
 
     @Autowired
     private static final String UserAgent="Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/102.0.0.0 Safari/537.36";
@@ -43,9 +43,9 @@ public class MainPageService{
             tempMap.put(summoner.get("summonerName").toString(), (Long) summoner.get("leaguePoints"));
         }
         List<String> keySet = new ArrayList<>(tempMap.keySet());
-        for (Entry<String, Long> entrySet : tempMap.entrySet()) {
-            System.out.println(entrySet.getKey() + " : " + entrySet.getValue());
-        }
+//        for (Entry<String, Long> entrySet : tempMap.entrySet()) {
+////            System.out.println(entrySet.getKey() + " : " + entrySet.getValue());
+//        }
         keySet.sort((o1, o2) -> (int) (tempMap.get(o2) - tempMap.get(o1)));
         JSONArray jArray = new JSONArray();
         int i = 0;

@@ -31,12 +31,19 @@ public class Swagger2Config {
                 .build();
     }
 
+    @Bean
+    public GroupedOpenApi userFullSearchApi() {
+        return GroupedOpenApi.builder()
+                .group("userFullSearch")
+                .pathsToMatch("/api/search/**")
+                .build();
+    }
 
     @Bean
-    public GroupedOpenApi SearchApi() {
+    public GroupedOpenApi rankApi() {
         return GroupedOpenApi.builder()
-                .group("search")
-                .pathsToMatch("/search/**")
+                .group("Rank")
+                .pathsToMatch("/api/rank/**")
                 .build();
     }
 

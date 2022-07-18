@@ -1,5 +1,5 @@
 package haneum.troller.common.config.apiKey;
 
 public class LolApiKey {
-    public static final String API_KEY="RGAPI-4f3addb4-6b35-413b-b9fc-9d310e5e1777";
+    public static final String API_KEY="RGAPI-5d10ae2d-5cea-4b9d-9c1c-9a1b2bffffbc";
 }
