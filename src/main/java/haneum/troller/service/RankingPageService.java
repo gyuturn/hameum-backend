@@ -55,7 +55,7 @@ public class RankingPageService {
                 break;
             JSONObject summoner = new JSONObject();
             long point = tempMap.get(key);
-            summoner.put("name", key)
+            summoner.put("name", key);
             summoner.put("leaguePoints", Long.toString(point));
             addPlayerInfo(summoner, key);
             jArray.add(summoner);
