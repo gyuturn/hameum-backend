@@ -54,7 +54,8 @@ public class MainPageRankService {
                 break;
             JSONObject summoner = new JSONObject();
             long point = tempMap.get(key);
-            summoner.put(key, Long.toString(point));
+            summoner.put("name", key);
+            summoner.put("leaguePoints", Long.toString(point));
             jArray.add(summoner);
             i++;
         }
