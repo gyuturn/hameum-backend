@@ -138,7 +138,7 @@ public class SignUpRestController {
     @GetMapping("/email/duplicate")
     public ResponseEntity checkDupEmail(@RequestParam String email){
         log.info("이메일 중복확인");
-        if(memberService.checkDuplicateEmail(email)){
+        if(!memberService.checkDuplicateEmail(email)){
             log.debug("사용중인 이메일:{}",email);
             return new ResponseEntity(HttpStatus.FORBIDDEN);
         }else{
