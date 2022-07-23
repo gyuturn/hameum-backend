@@ -54,29 +54,6 @@ public class AccessTokenResController {
         return new ResponseEntity(HttpStatus.OK);
     }
 
-    @Operation(summary = "test인증 api",description = "iput: 토큰'\n" +"" +
-            "유효한 토큰인지 확인하는 api(access)'\n" )
-    @ApiResponses(
-            value = {
-                    @ApiResponse(responseCode = "200",description = "토큰 인증 성공"),
-                    @ApiResponse(responseCode = "403",description = "토큰 시간만료"),
-                    @ApiResponse(responseCode = "404",description = "토큰이 일치하지 않음")
-            }
-    )
-    @GetMapping("test")
-    public ResponseEntity test(@RequestHeader(value = "accessToken") String token) {
-        log.info("access-token 인증");
-        try {
-            jwtEncoder.getSubjectByToken(token);
-        } catch (ExpiredJwtException e) {
-            log.debug("access-token 만료");
-            return new ResponseEntity(HttpStatus.FORBIDDEN);
-        } catch (Exception e) {
-            log.debug("access-token 일치하지 않음");
-            return new ResponseEntity(HttpStatus.NOT_FOUND);
-        }
-        return new ResponseEntity(HttpStatus.OK);
-    }
 
 
 
