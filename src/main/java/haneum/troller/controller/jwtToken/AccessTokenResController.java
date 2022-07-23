@@ -19,27 +19,13 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
-@Tag(name="Access",description = "AccessToken관련 API")
-@RestController
-@RequestMapping("/api/jwt/access/")
+
 @Slf4j
 @RequiredArgsConstructor
 public class AccessTokenResController {
     private final JwtEncoder jwtEncoder;
     private final MemberRepository memberRepository;
 
-
-
-    @Operation(summary = "access-token인증 api",description = "iput: 토큰'\n" +"" +
-            "유효한 토큰인지 확인하는 api(access)'\n" )
-    @ApiResponses(
-            value = {
-                    @ApiResponse(responseCode = "200",description = "토큰 인증 성공"),
-                    @ApiResponse(responseCode = "403",description = "토큰 시간만료"),
-                    @ApiResponse(responseCode = "404",description = "토큰이 일치하지 않음")
-            }
-    )
-    @GetMapping("auth")
     public ResponseEntity getSubject(@RequestHeader(value = "accessToken") String token) {
         log.info("access-token 인증");
         try {
