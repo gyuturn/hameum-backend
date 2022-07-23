@@ -63,7 +63,7 @@ public class AccessTokenResController {
                     @ApiResponse(responseCode = "404",description = "토큰이 일치하지 않음")
             }
     )
-    @GetMapping("auth")
+    @GetMapping("test")
     public ResponseEntity test(@RequestHeader(value = "accessToken") String token) {
         log.info("access-token 인증");
         try {
