@@ -3,10 +3,14 @@ package haneum.troller.common.config.security;
 import haneum.troller.domain.Member;
 import haneum.troller.repository.MemberRepository;
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.RequestHeader;
 
 import javax.crypto.spec.SecretKeySpec;
 import javax.xml.bind.DatatypeConverter;
@@ -74,4 +78,16 @@ public class JwtEncoder {
         Member member = memberRepository.findByEmail(email);
         return member.getLolName();
     }
+
+//    public void getSubject(@RequestHeader(value = "accessToken") String token) {
+//        try {
+//            getSubjectByToken(token);
+//        } catch (ExpiredJwtException e) {
+//            return new ResponseEntity(HttpStatus.FORBIDDEN);
+//        } catch (Exception e) {
+//            return new ResponseEntity(HttpStatus.NOT_FOUND);
+//        }
+//
+//    }
+
 }
