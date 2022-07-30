@@ -39,6 +39,13 @@ public class MemberService {
         return member.getMemberId();
     }
 
+    //로그인시 소셜로그인으로 가입된 이메일 구분
+    public boolean findLoginType(Member member) {
+        if (member.getType() == LoginType.KAKAO.label()) {
+            return false;
+        } else return true;
+    }
+
 
 
 
@@ -53,11 +60,9 @@ public class MemberService {
 
     //로그인(비밀번호)
     public boolean validLogin(SignInDto loginDto) {
-        Member member = memberRepository.findByEmail(loginDto.getEmail());
-        if (passwordEncoder.matches(loginDto.getPassword(), member.getPassword())) {
+        if (passwordEncoder.matches(loginDto.getPassword(), loginDto.getPassword())) {
             return true;
-        }
-        else {
+        } else {
             return false;
         }
     }
