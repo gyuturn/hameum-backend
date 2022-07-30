@@ -1,6 +1,6 @@
 package haneum.troller.service;
 
-import haneum.troller.common.config.apiKey.LolApiKey;
+import haneum.troller.common.apiKey.LolApiKey;
 import haneum.troller.dto.mainPage.MainPageDto;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -16,7 +16,6 @@ import org.springframework.web.client.RestTemplate;
 
 import java.util.*;
 import java.util.List;
-import java.util.Map.Entry;
 
 @Service
 public class MainPageRankService {
