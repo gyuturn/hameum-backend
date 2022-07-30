@@ -1,16 +1,15 @@
-package haneum.troller.common.config.security;
+package haneum.troller.common.security;
 
 import haneum.troller.domain.Member;
+import haneum.troller.dto.jwtDto.JwtDto;
 import haneum.troller.repository.MemberRepository;
+import haneum.troller.service.login.MemberService;
 import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.RequestHeader;
 
 import javax.crypto.spec.SecretKeySpec;
 import javax.xml.bind.DatatypeConverter;
@@ -18,11 +17,30 @@ import java.security.Key;
 import java.util.Date;
 
 @Service
+@Slf4j
 public class JwtEncoder {
     private static final String secretKey="GGeokDrupakdlsdkqwdkdfdaddjflkdwodfdasdasdafsdfeflwfqvfdmfdsfdkjaslfjisdfjosidf";
     @Autowired
     MemberRepository memberRepository;
 
+    @Autowired
+    MemberService memberService;
+
+    public JwtDto makeTokensForLogin(Member member) {
+        String accessToken = createAccessToken(member.getMemberId(), 60 * 1000); //토큰 주기 1분으로 설정 (test)            String refreshToken = jwtEncoder.createRefreshToken(member.getEmail(), 60 * 1000*2); //토큰 주기 1주일으로 설정 (test)
+        String refreshToken = createRefreshToken(member.getEmail(), 60 * 1000*2); //토큰 주기 2분으로 설정 (test)
+        memberService.updateRefreshToken(member, refreshToken);
+
+        log.info("accessToken: {}", accessToken);
+        log.info("refreshToken: {}", refreshToken);
+
+
+        JwtDto jwtDto = JwtDto.builder()
+                .accessToken(accessToken)
+                .refreshToken(refreshToken)
+                .build();
+        return jwtDto;
+    }
 
     public String createAccessToken(Long id,long expTime){
         if (expTime <= 0) {
