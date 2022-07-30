@@ -1,6 +1,8 @@
-package haneum.troller.service;
+package haneum.troller.service.login;
 
+import haneum.troller.Enum.LoginType;
 import haneum.troller.domain.Member;
+import haneum.troller.dto.login.KakaoLoginDto;
 import haneum.troller.dto.login.SignInDto;
 import haneum.troller.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
@@ -17,12 +19,27 @@ public class MemberService {
 
     private final MemberRepository memberRepository;
     private final PasswordEncoder passwordEncoder;
+    private final KaKaoLoginService kaKaoLoginService;
 
     //회원가입
     public Long join(Member member) {
         memberRepository.save(member);
         return member.getMemberId();
     }
+
+    //카카오 회원가입
+    public Long kakaoJoin(KakaoLoginDto kakaoLoginDto) {
+        String email = kaKaoLoginService.createKakaoUser(kakaoLoginDto.getAccessToken());
+        Member member = Member.builder()
+                .email(email)
+                .lolName(kakaoLoginDto.getLolName())
+                .build();
+        member.updateLoginType(LoginType.KAKAO.label());
+        join(member);
+        return member.getMemberId();
+    }
+
+
 
 
     //refresh-token 저장
