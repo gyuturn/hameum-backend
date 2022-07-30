@@ -1,23 +1,16 @@
 package haneum.troller.controller.fullSearch;
 
 import haneum.troller.dto.myPage.MyPageDto;
-import haneum.troller.common.config.security.JwtEncoder;
 import haneum.troller.service.MyPageService;
-import haneum.troller.service.dataDragon.MyPageImgService;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.Parameters;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.json.simple.parser.ParseException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.io.IOException;
 
 @Tag(name="userGameRecord",description = "유저의 게임전적 조회시 사옹되는 API")
 @RestController
@@ -28,11 +21,6 @@ public class FullSearchController {
     private final MyPageService myPageService;
 
     @Operation(summary = "유저의 간략한정보 api", description = "전적검색/마이페이지에서 간략한 유저 정보를 알려주는 기능")
-    @Parameters(
-            {
-                    @Parameter(name = "lolName", description = "롤 닉네임")
-            }
-    )
     @ApiResponses(
             value = {
                     @ApiResponse(responseCode = "200",description = "정상적 조회"),
