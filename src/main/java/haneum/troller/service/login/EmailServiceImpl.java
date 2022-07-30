@@ -1,4 +1,4 @@
-package haneum.troller.service;
+package haneum.troller.service.login;
 
 import java.util.Random;
 
