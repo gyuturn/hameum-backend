@@ -1,9 +1,8 @@
 package haneum.troller.controller.mypage;
 
-import haneum.troller.common.config.security.JwtEncoder;
+import haneum.troller.common.security.JwtEncoder;
 import haneum.troller.dto.myPage.MyPageDto;
 import haneum.troller.repository.MemberRepository;
-import haneum.troller.service.MemberService;
 import haneum.troller.service.MyPageService;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.swagger.v3.oas.annotations.Operation;
@@ -17,8 +16,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.net.http.HttpRequest;
 
 @Tag(name="MyPage",description = "MyPage 조회시 사옹되는 API")
 @RestController

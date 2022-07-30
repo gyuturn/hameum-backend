@@ -1,14 +1,12 @@
 package haneum.troller.controller.jwtToken;
 
-import haneum.troller.common.config.security.JwtEncoder;
+import haneum.troller.common.security.JwtEncoder;
 import haneum.troller.domain.Member;
 import haneum.troller.dto.jwtDto.JwtDto;
 import haneum.troller.repository.MemberRepository;
-import haneum.troller.service.MemberService;
+import haneum.troller.service.login.MemberService;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.Parameters;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
