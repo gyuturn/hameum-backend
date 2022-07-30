@@ -56,9 +56,8 @@ public class SignInResController {
     )
     @PostMapping("")
     public ResponseEntity<JwtDto> login(@RequestBody SignInDto signInDto) {
-        SignInDto loginDto = new SignInDto(signInDto.getEmail(), signInDto.getPassword());
-        if (memberService.validLogin(loginDto)) {
-            Member member = memberRepository.findByEmail(loginDto.getEmail());
+        Member member = memberRepository.findByEmail(signInDto.getEmail());
+        if (memberService.validLogin(signInDto)&&memberService.findLoginType(member)) {
             return new ResponseEntity(jwtEncoder.makeTokensForLogin(member), HttpStatus.OK);
         }
         else{
