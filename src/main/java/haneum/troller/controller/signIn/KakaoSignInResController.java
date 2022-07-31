@@ -59,7 +59,7 @@ public class KakaoSignInResController {
                     @ApiResponse(responseCode = "401",description = "카카오 회원가입 필요")
             }
     )
-    @PatchMapping("/login")
+    @PostMapping("/login")
     public ResponseEntity LoginKakao(@RequestBody AuthorizationDto authorizationDto) throws Exception {
         JwtDto jwtdto = kaKaoLoginService.getKakaoAccessToken(authorizationDto.getCode());
         String email = kaKaoLoginService.getEmailByAccessToken(jwtdto.getAccessToken());
