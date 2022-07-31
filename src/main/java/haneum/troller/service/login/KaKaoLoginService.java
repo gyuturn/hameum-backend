@@ -30,7 +30,7 @@ public class KaKaoLoginService {
         BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(conn.getOutputStream()));
         StringBuilder sb = new StringBuilder();
         sb.append("grant_type=authorization_code");
-        sb.append("&client_id= 5d497d3a5b84df801c7913fd22e153b9"); // TODO REST_API_KEY 입력
+        sb.append("&client_id= f0ce58d3396972023535ddbccd0e5f30"); // TODO REST_API_KEY 입력
         sb.append("&redirect_uri=http://localhost:3000/kakao/auth"); // TODO 인가코드 받은 redirect_uri 입력
         sb.append("&code=" + code);
         bw.write(sb.toString());
@@ -39,7 +39,7 @@ public class KaKaoLoginService {
         //결과 코드가 200이라면 성공
         int responseCode = conn.getResponseCode();
         if (!(responseCode == 200)) {
-            throw new KakaoLoginException();
+            throw new KakaoLoginException("카카오 인증서버와의 로직에서 에러");
         }
         //요청을 통해 얻은 JSON타입의 Response 메세지 읽어오기
         BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream()));
@@ -90,7 +90,7 @@ public class KaKaoLoginService {
         //결과 코드가 200이라면 성공
         int responseCode = conn.getResponseCode();
         if (!(responseCode == 200)) {
-            throw new KakaoLoginException();
+            throw new KakaoLoginException("카카오 인증서버와의 로직에서 에러");
         }
 
         //요청을 통해 얻은 JSON타입의 Response 메세지 읽어오기
