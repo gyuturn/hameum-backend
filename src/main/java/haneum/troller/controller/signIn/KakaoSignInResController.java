@@ -4,8 +4,10 @@ package haneum.troller.controller.signIn;
 import haneum.troller.common.security.JwtEncoder;
 import haneum.troller.domain.Member;
 import haneum.troller.dto.jwtDto.JwtDto;
-import haneum.troller.dto.login.KakaoLoginDto;
+import haneum.troller.dto.kakaoDto.AuthorizationDto;
+import haneum.troller.dto.kakaoDto.KakaoSignUpDto;
 import haneum.troller.repository.MemberRepository;
+import haneum.troller.service.login.KaKaoLoginService;
 import haneum.troller.service.login.MemberService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -26,22 +28,48 @@ public class KakaoSignInResController {
 
     private final MemberService memberService;
     private final MemberRepository memberRepository;
+    private final KaKaoLoginService kaKaoLoginService;
     private final JwtEncoder jwtEncoder;
 
-    @Operation(summary = "카카오 accessToken api", description = "카카오에서 받은 accesstoken을 서버쪽으로 전달하기 위한 api'\n" +
-            "이후 status code 추가 예정"
+    @Operation(summary = "카카오 회원가입 api", description = "카카오 로그인 이후 회원가입 등록"
     )
     @ApiResponses(
             value = {
-                    @ApiResponse(responseCode = "200", description = "로그인 성공+jwt 토큰 발급")
+                    @ApiResponse(responseCode = "201", description = "회원가입 성공+jwt 토큰 발급"),
+                    @ApiResponse(responseCode = "400", description = "카카오 로그인시 인증 오류")
             }
     )
-    @PostMapping("/access-token")
-    public ResponseEntity LoginKakao(@RequestBody KakaoLoginDto kakaoLoginDto) {
-        Long id = memberService.kakaoJoin(kakaoLoginDto);
-        Member member = memberRepository.findById(id).get();
-        JwtDto jwtDto = jwtEncoder.makeTokensForLogin(member);
+    @PostMapping("/sign-up")
+    public ResponseEntity signUpKakao(@RequestBody KakaoSignUpDto kakaoSignUpDto) throws Exception {
+        memberService.kakaoJoin(kakaoSignUpDto);
+        JwtDto jwtDto = JwtDto.builder()
+                .accessToken(kakaoSignUpDto.getAccessToken())
+                .refreshToken(kakaoSignUpDto.getRefreshToken())
+                .build();
         return new ResponseEntity(jwtDto, HttpStatus.OK);
+    }
+
+
+    @Operation(summary = "카카오 로그인 api", description = "카카오에서 받은 code(인가코드) 서버쪽으로 전달하기 위한 api"
+    )
+    @ApiResponses(
+            value = {
+                    @ApiResponse(responseCode = "200", description = "로그인 성공+jwt 토큰 발급"),
+                    @ApiResponse(responseCode = "400", description = "카카오 로그인시 인증 오류"),
+                    @ApiResponse(responseCode = "401",description = "카카오 회원가입 필요")
+            }
+    )
+    @PatchMapping("/login")
+    public ResponseEntity LoginKakao(@RequestBody AuthorizationDto authorizationDto) throws Exception {
+        JwtDto jwtdto = kaKaoLoginService.getKakaoAccessToken(authorizationDto.getCode());
+        String email = kaKaoLoginService.getEmailByAccessToken(jwtdto.getAccessToken());
+        //이미 회원가입이 되어 있는 경우
+        if(!memberService.checkDuplicateEmail(email)){
+            return new ResponseEntity(jwtdto, HttpStatus.OK);
+        }
+        else{
+            return new ResponseEntity(jwtdto, HttpStatus.UNAUTHORIZED);
+        }
     }
 
 }

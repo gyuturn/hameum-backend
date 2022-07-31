@@ -2,10 +2,14 @@ package haneum.troller.service.login;
 
 import haneum.troller.Enum.LoginType;
 import haneum.troller.domain.Member;
-import haneum.troller.dto.login.KakaoLoginDto;
+import haneum.troller.dto.jwtDto.JwtDto;
+import haneum.troller.dto.kakaoDto.AuthorizationDto;
+import haneum.troller.dto.kakaoDto.KakaoSignUpDto;
 import haneum.troller.dto.login.SignInDto;
 import haneum.troller.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -28,16 +32,31 @@ public class MemberService {
     }
 
     //카카오 회원가입
-    public Long kakaoJoin(KakaoLoginDto kakaoLoginDto) {
-        String email = kaKaoLoginService.createKakaoUser(kakaoLoginDto.getAccessToken());
+    public Long kakaoJoin(KakaoSignUpDto kakaoSignUpDto) throws Exception {
+        String email = kaKaoLoginService.getEmailByAccessToken(kakaoSignUpDto.getAccessToken());
         Member member = Member.builder()
                 .email(email)
-                .lolName(kakaoLoginDto.getLolName())
+                .lolName(kakaoSignUpDto.getLolName())
+                .refreshToken(kakaoSignUpDto.getRefreshToken())
                 .build();
         member.updateLoginType(LoginType.KAKAO.label());
         join(member);
         return member.getMemberId();
     }
+
+//    //카카오 로그인
+//    public boolean validKakaoLogin(AuthorizationDto authorizationDto) throws Exception {
+//        JwtDto jwtdto = kaKaoLoginService.getKakaoAccessToken(authorizationDto.getCode());
+//        String email = kaKaoLoginService.getEmailByAccessToken(jwtdto.getAccessToken());
+//        //이미 회원가입이 되어 있는 경우
+//        if(!checkDuplicateEmail(email)){
+//            return true;
+//        }
+//        else{
+//           return false;
+//        }
+//
+//    }
 
     //로그인시 소셜로그인으로 가입된 이메일 구분
     public boolean findLoginType(Member member) {
