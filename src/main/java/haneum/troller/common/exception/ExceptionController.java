@@ -22,7 +22,7 @@ public class ExceptionController {
                 .message(e.getMessage())
                 .build();
 
-        log.error("error: {}", errorResponse);
+        log.error("error: {}", errorResponse.toString());
         return new ResponseEntity(errorResponse, HttpStatus.BAD_REQUEST);
     }
 
@@ -35,7 +35,7 @@ public class ExceptionController {
                 .message(e.getMessage())
                 .build();
 
-        log.error("error: {}", errorResponse);
+        log.error("error: {}", errorResponse.toString());
         return new ResponseEntity(errorResponse, HttpStatus.BAD_REQUEST);
     }
 
@@ -47,7 +47,7 @@ public class ExceptionController {
                 .message(e.getMessage())
                 .build();
 
-        log.error("error: {}", errorResponse);
+        log.error("error: {}", errorResponse.toString());
         return new ResponseEntity(errorResponse, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 }
