@@ -12,4 +12,13 @@ public class ErrorResponse {
     HttpStatus statusCode;
     String exception;
     String message;
+
+    @Override
+    public String toString() {
+        return "ErrorResponse{" +
+                "statusCode=" + statusCode +
+                ", exception='" + exception + '\'' +
+                ", message='" + message + '\'' +
+                '}';
+    }
 }
