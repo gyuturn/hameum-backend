@@ -1,7 +1,9 @@
 package haneum.troller.common.exception;
 
 
+import haneum.troller.common.exception.exceptions.JWTException;
 import haneum.troller.common.exception.exceptions.KakaoLoginException;
+import io.jsonwebtoken.ExpiredJwtException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -37,6 +39,30 @@ public class ExceptionController {
 
         log.error("error: {}", errorResponse.toString());
         return new ResponseEntity(errorResponse, HttpStatus.BAD_REQUEST);
+    }
+
+//    @ExceptionHandler(ExpiredJwtException.class)
+//    public ResponseEntity ExpiredJwt(ExpiredJwtException e) {
+//        ErrorResponse errorResponse = ErrorResponse.builder()
+//                .statusCode(HttpStatus.FORBIDDEN)
+//                .exception(e.getClass().getSimpleName())
+//                .message(e.getMessage())
+//                .build();
+//
+//        log.error("error: {}", errorResponse.toString());
+//        return new ResponseEntity(errorResponse, HttpStatus.FORBIDDEN);
+//    }
+
+    @ExceptionHandler(JWTException.class)
+    public ResponseEntity JwtException(JWTException e) {
+        ErrorResponse errorResponse = ErrorResponse.builder()
+                .statusCode(HttpStatus.FORBIDDEN)
+                .exception(e.getClass().getSimpleName())
+                .message(e.getMessage())
+                .build();
+
+        log.error("error: {}", errorResponse.toString());
+        return new ResponseEntity(errorResponse, errorResponse.getStatusCode());
     }
 
     @ExceptionHandler(Exception.class)
