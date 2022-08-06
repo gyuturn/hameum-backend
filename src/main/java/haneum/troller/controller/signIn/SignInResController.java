@@ -4,7 +4,7 @@ import haneum.troller.domain.Member;
 import haneum.troller.dto.jwtDto.JwtDto;
 import haneum.troller.dto.login.SignInDto;
 import haneum.troller.repository.MemberRepository;
-import haneum.troller.common.security.JwtEncoder;
+import haneum.troller.service.security.JwtService;
 import haneum.troller.service.login.MemberService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -30,7 +30,7 @@ public class SignInResController {
 
     private final MemberService memberService;
     private final MemberRepository memberRepository;
-    private final JwtEncoder jwtEncoder;
+    private final JwtService jwtService;
 
 
     @Operation(summary = "로그인 api",description = "로그인시에 사용되는 api" +
@@ -58,7 +58,7 @@ public class SignInResController {
     public ResponseEntity<JwtDto> login(@RequestBody SignInDto signInDto) {
         Member member = memberRepository.findByEmail(signInDto.getEmail());
         if (memberService.validLogin(signInDto)&&memberService.findLoginType(member)) {
-            return new ResponseEntity(jwtEncoder.makeTokensForLogin(member), HttpStatus.OK);
+            return new ResponseEntity(jwtService.makeTokensForLogin(member), HttpStatus.OK);
         }
         else{
             return new ResponseEntity(HttpStatus.UNAUTHORIZED);

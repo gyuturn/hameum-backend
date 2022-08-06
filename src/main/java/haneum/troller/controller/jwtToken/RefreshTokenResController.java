@@ -1,6 +1,6 @@
 package haneum.troller.controller.jwtToken;
 
-import haneum.troller.common.security.JwtEncoder;
+import haneum.troller.service.security.JwtService;
 import haneum.troller.domain.Member;
 import haneum.troller.dto.jwtDto.JwtDto;
 import haneum.troller.repository.MemberRepository;
@@ -22,7 +22,7 @@ import org.springframework.web.bind.annotation.*;
 @Slf4j
 @RequiredArgsConstructor
 public class RefreshTokenResController {
-    private final JwtEncoder jwtEncoder;
+    private final JwtService jwtService;
     private final MemberRepository memberRepository;
     private final MemberService memberService;
 
@@ -42,7 +42,7 @@ public class RefreshTokenResController {
         String refreshToken = jwtDto.getRefreshToken();
         String email;
         try {
-            email = jwtEncoder.getSubjectByToken(refreshToken);
+            email = jwtService.getSubjectByToken(refreshToken);
         }catch (ExpiredJwtException e) {
             log.debug("refresh-token 만료");
             return new ResponseEntity(HttpStatus.FORBIDDEN);
@@ -52,8 +52,8 @@ public class RefreshTokenResController {
         }
 
         Member member = memberRepository.findByEmail(email);
-        String newAccessToken = jwtEncoder.createAccessToken(member.getMemberId(), 60 * 1000); //토큰 주기 1분으로 설정 (test)            String refreshToken = jwtEncoder.createRefreshToken(member.getEmail(), 60 * 1000*2); //토큰 주기 1주일으로 설정 (test)
-        String newRefreshToken = jwtEncoder.createRefreshToken(member.getEmail(), 60 * 1000*2); //토큰 주기 2분으로 설정 (test)
+        String newAccessToken = jwtService.createAccessToken(member.getMemberId(), 60 * 1000); //토큰 주기 1분으로 설정 (test)            String refreshToken = jwtEncoder.createRefreshToken(member.getEmail(), 60 * 1000*2); //토큰 주기 1주일으로 설정 (test)
+        String newRefreshToken = jwtService.createRefreshToken(member.getEmail(), 60 * 1000*2); //토큰 주기 2분으로 설정 (test)
         memberService.updateRefreshToken(member, refreshToken);
 
         jwtDto.setAccessToken(newAccessToken);

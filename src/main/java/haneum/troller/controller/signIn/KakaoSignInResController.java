@@ -1,7 +1,7 @@
 package haneum.troller.controller.signIn;
 
 
-import haneum.troller.common.security.JwtEncoder;
+import haneum.troller.service.security.JwtService;
 import haneum.troller.domain.Member;
 import haneum.troller.dto.jwtDto.JwtDto;
 import haneum.troller.dto.kakaoDto.AuthorizationDto;
@@ -29,7 +29,7 @@ public class KakaoSignInResController {
     private final MemberService memberService;
     private final MemberRepository memberRepository;
     private final KaKaoLoginService kaKaoLoginService;
-    private final JwtEncoder jwtEncoder;
+    private final JwtService jwtService;
 
     @Operation(summary = "카카오 회원가입 api", description = "카카오 로그인 이후 회원가입 등록"
     )
@@ -42,7 +42,7 @@ public class KakaoSignInResController {
     @PostMapping("/sign-up")
     public ResponseEntity signUpKakao(@RequestBody KakaoSignUpDto kakaoSignUpDto) throws Exception {
         Member member = memberService.kakaoJoin(kakaoSignUpDto);
-        JwtDto jwtDto = jwtEncoder.makeTokensForLogin(member);
+        JwtDto jwtDto = jwtService.makeTokensForLogin(member);
         return new ResponseEntity(jwtDto, HttpStatus.OK);
     }
 
@@ -63,7 +63,7 @@ public class KakaoSignInResController {
         //이미 회원가입이 되어 있는 경우
         if(!memberService.checkDuplicateEmail(email)){
             Member member = memberRepository.findByEmail(email);
-            JwtDto jwtDto = jwtEncoder.makeTokensForLogin(member);
+            JwtDto jwtDto = jwtService.makeTokensForLogin(member);
             return new ResponseEntity(jwtDto, HttpStatus.OK);
         }
         else{
