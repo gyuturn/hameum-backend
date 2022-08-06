@@ -39,15 +39,15 @@ public class ExceptionController {
         return new ResponseEntity(errorResponse, HttpStatus.BAD_REQUEST);
     }
 
-//    @ExceptionHandler(Exception.class)
-//    public ResponseEntity entireException(Exception e) {
-//        ErrorResponse errorResponse = ErrorResponse.builder()
-//                .statusCode(HttpStatus.INTERNAL_SERVER_ERROR)
-//                .exception(e.getClass().getSimpleName())
-//                .message(e.getMessage())
-//                .build();
-//
-//        log.error("error: {}", errorResponse.toString());
-//        return new ResponseEntity(errorResponse, HttpStatus.INTERNAL_SERVER_ERROR);
-//    }
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity entireException(Exception e) {
+        ErrorResponse errorResponse = ErrorResponse.builder()
+                .statusCode(HttpStatus.INTERNAL_SERVER_ERROR)
+                .exception(e.getClass().getSimpleName())
+                .message(e.getMessage())
+                .build();
+
+        log.error("error: {}", errorResponse.toString());
+        return new ResponseEntity(errorResponse, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
 }
