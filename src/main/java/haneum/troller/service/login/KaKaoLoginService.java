@@ -35,6 +35,7 @@ public class KaKaoLoginService {
         sb.append("&code=" + code);
         bw.write(sb.toString());
         bw.flush();
+        bw.close();
 
         //결과 코드가 200이라면 성공
         int responseCode = conn.getResponseCode();
@@ -62,7 +63,7 @@ public class KaKaoLoginService {
         System.out.println("refresh_token -kakao : " + refresh_Token);
 
         br.close();
-        bw.close();
+
 
         JwtDto jwtDto = JwtDto.builder()
                 .accessToken(access_Token)
