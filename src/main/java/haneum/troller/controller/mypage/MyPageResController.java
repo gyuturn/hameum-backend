@@ -1,10 +1,10 @@
 package haneum.troller.controller.mypage;
 
-import haneum.troller.common.security.JwtEncoder;
+import haneum.troller.common.aop.annotation.Auth;
+import haneum.troller.service.security.JwtService;
 import haneum.troller.dto.myPage.MyPageDto;
 import haneum.troller.repository.MemberRepository;
 import haneum.troller.service.MyPageService;
-import io.jsonwebtoken.ExpiredJwtException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.Parameters;
@@ -24,34 +24,25 @@ import org.springframework.web.bind.annotation.*;
 @Slf4j
 public class MyPageResController {
     private final MyPageService myPageService;
-    private final JwtEncoder jwtEncoder;
+    private final JwtService jwtService;
     private final MemberRepository memberRepository;
 
 
     @Operation(summary = "유저의 간략한정보 api", description = "마이페이지에서 간략한 유저 정보를 알려주는 기능'\n" +
-            "Header:Access-Token'\n")
-    @Parameters(
-            {
-                    @Parameter(name = "lolName", description = "롤 닉네임")
-            }
-    )
+            "Header:JWT-accessToken'\n")
     @ApiResponses(
             value = {
                     @ApiResponse(responseCode = "200", description = "정상적 조회"),
                     @ApiResponse(responseCode = "403", description = "access-token 만료"),
-                    @ApiResponse(responseCode = "403", description = "유저(롤 닉네임)정보가 롤에 없음->이름이 변경됐거나, 회원가입시 인증 로직 에러")
             }
     )
     @GetMapping("user/info")
-    public ResponseEntity getTokenForMyPage(@RequestHeader("Access-Token") String accessToken) {
+    @Auth
+    public ResponseEntity getTokenForMyPage(@RequestHeader("JWT-accessToken") String accessToken ) {
         String Id=null;
-        try {
-            Id = jwtEncoder.getSubjectByToken(accessToken);
-        } catch (ExpiredJwtException e) {
-            return new ResponseEntity(HttpStatus.FORBIDDEN);
-        } catch (Exception e) {
-            return new ResponseEntity(HttpStatus.NOT_FOUND);
-        }
+
+        Id = jwtService.getSubjectByToken(accessToken);
+
         String lolName = memberRepository.findById(Long.valueOf(Id)).get().getLolName();
 
         MyPageDto myPageDtoFinal = null;

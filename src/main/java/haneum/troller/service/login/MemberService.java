@@ -78,7 +78,8 @@ public class MemberService {
 
     //로그인(비밀번호)
     public boolean validLogin(SignInDto loginDto) {
-        if (passwordEncoder.matches(loginDto.getPassword(), loginDto.getPassword())) {
+        Member member = memberRepository.findByEmail(loginDto.getEmail());
+        if (passwordEncoder.matches(loginDto.getPassword(), member.getPassword())) {
             return true;
         } else {
             return false;

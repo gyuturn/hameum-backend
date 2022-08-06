@@ -1,4 +1,4 @@
-package haneum.troller.common.security;
+package haneum.troller.service.security;
 
 import haneum.troller.domain.Member;
 import haneum.troller.dto.jwtDto.JwtDto;
@@ -18,7 +18,7 @@ import java.util.Date;
 
 @Service
 @Slf4j
-public class JwtEncoder {
+public class JwtService {
     private static final String secretKey="GGeokDrupakdlsdkqwdkdfdaddjflkdwodfdasdasdafsdfeflwfqvfdmfdsfdkjaslfjisdfjosidf";
     @Autowired
     MemberRepository memberRepository;
@@ -85,10 +85,12 @@ public class JwtEncoder {
     }
 
     //토큰 검증 메서드를 boolean
-    public boolean validToken(String token) {
-        String email = getSubjectByToken(token);
-        if (email!=null) return true;
-        else return false;
+    public Long validTokenForAccessToken(String token) {
+//        if (token == null) {
+//            return false;
+//        }
+        String id = getSubjectByToken(token);
+        return Long.valueOf(id);
     }
 
     public String findLolNameByToken(String token) throws IllegalAccessException {
