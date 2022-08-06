@@ -38,7 +38,7 @@ public class KaKaoLoginService {
 
             //    결과 코드가 200이라면 성공
             int responseCode = conn.getResponseCode();
-            if (responseCode == 200) {
+            if (!(responseCode == 200)) {
                 throw new KakaoLoginException("카카오 로그인시 서버 에러");
             }
 
