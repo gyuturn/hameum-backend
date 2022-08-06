@@ -32,16 +32,15 @@ public class MemberService {
     }
 
     //카카오 회원가입
-    public Long kakaoJoin(KakaoSignUpDto kakaoSignUpDto) throws Exception {
+    public Member kakaoJoin(KakaoSignUpDto kakaoSignUpDto) throws Exception {
         String email = kaKaoLoginService.getEmailByAccessToken(kakaoSignUpDto.getAccessToken());
         Member member = Member.builder()
                 .email(email)
                 .lolName(kakaoSignUpDto.getLolName())
-                .refreshToken(kakaoSignUpDto.getRefreshToken())
                 .build();
         member.updateLoginType(LoginType.KAKAO.label());
         join(member);
-        return member.getMemberId();
+        return member;
     }
 
 //    //카카오 로그인

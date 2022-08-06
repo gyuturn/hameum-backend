@@ -41,11 +41,8 @@ public class KakaoSignInResController {
     )
     @PostMapping("/sign-up")
     public ResponseEntity signUpKakao(@RequestBody KakaoSignUpDto kakaoSignUpDto) throws Exception {
-        memberService.kakaoJoin(kakaoSignUpDto);
-        JwtDto jwtDto = JwtDto.builder()
-                .accessToken(kakaoSignUpDto.getAccessToken())
-                .refreshToken(kakaoSignUpDto.getRefreshToken())
-                .build();
+        Member member = memberService.kakaoJoin(kakaoSignUpDto);
+        JwtDto jwtDto = jwtEncoder.makeTokensForLogin(member);
         return new ResponseEntity(jwtDto, HttpStatus.OK);
     }
 
@@ -61,14 +58,16 @@ public class KakaoSignInResController {
     )
     @PostMapping("/login")
     public ResponseEntity LoginKakao(@RequestBody AuthorizationDto authorizationDto) throws Exception {
-        JwtDto jwtdto = kaKaoLoginService.getKakaoAccessToken(authorizationDto.getCode());
-        String email = kaKaoLoginService.getEmailByAccessToken(jwtdto.getAccessToken());
+        JwtDto kakaoJwt = kaKaoLoginService.getKakaoAccessToken(authorizationDto.getCode());
+        String email = kaKaoLoginService.getEmailByAccessToken(kakaoJwt.getAccessToken());
         //이미 회원가입이 되어 있는 경우
         if(!memberService.checkDuplicateEmail(email)){
-            return new ResponseEntity(jwtdto, HttpStatus.OK);
+            Member member = memberRepository.findByEmail(email);
+            JwtDto jwtDto = jwtEncoder.makeTokensForLogin(member);
+            return new ResponseEntity(jwtDto, HttpStatus.OK);
         }
         else{
-            return new ResponseEntity(jwtdto, HttpStatus.UNAUTHORIZED);
+            return new ResponseEntity( HttpStatus.UNAUTHORIZED);
         }
     }
 
