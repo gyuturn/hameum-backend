@@ -38,9 +38,9 @@ public class KaKaoLoginService {
 
         //결과 코드가 200이라면 성공
         int responseCode = conn.getResponseCode();
-        if (!(responseCode == 200)) {
-            throw new KakaoLoginException("카카오 인증서버와의 로직에서 에러");
-        }
+//        if (!(responseCode == 200)) {
+//            throw new KakaoLoginException("카카오 인증서버와의 로직에서 에러");
+//        }
         //요청을 통해 얻은 JSON타입의 Response 메세지 읽어오기
         BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream()));
         String line = "";
