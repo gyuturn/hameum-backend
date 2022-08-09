@@ -51,8 +51,8 @@ public class GameRecordService {
         String userPid = getUserPid(lolName);
         ArrayList matchList = getMatchId(userPid);
         for (int i = 1; i < 9; i++){
-        //    gameRecordArray.add(setGameRecord((String) matchList.get(i), gameMostChampionRecord, gameTwentyRecord, champion));
-            gameRecordArray.add(setGameRecord(i, gameMostChampionRecord, gameTwentyRecord, champion, lolName));
+            gameRecordArray.add(setGameRecord((String) matchList.get(i), gameMostChampionRecord, gameTwentyRecord, champion, lolName));
+        //    gameRecordArray.add(setGameRecord(i, gameMostChampionRecord, gameTwentyRecord, champion, lolName));
         }
         gameRecordDto.setLatestTwentyRecords(setKdaWinRateDto(gameTwentyRecord, gameTwentyRecordObject));
         gameRecordDto.setGameRecord(gameRecordArray);
@@ -60,13 +60,13 @@ public class GameRecordService {
     }
 
     // 원래는 i 대신 String matchId 가 와야 함
-    public JSONObject setGameRecord(int i ,GameMostChampionRecord mostChampion, GameTwentyRecord twentyRecord, ArrayList champion, String lolName) throws org.json.simple.parser.ParseException, IOException {
-    //    ResponseEntity<String>response = getResponseEntityByMatchId(matchId);
+    public JSONObject setGameRecord(String matchId ,GameMostChampionRecord mostChampion, GameTwentyRecord twentyRecord, ArrayList champion, String lolName) throws org.json.simple.parser.ParseException, IOException {
+        ResponseEntity<String>response = getResponseEntityByMatchId(matchId);
 
-        FileReader reader = new FileReader("/Users/ojeongmin/Documents/lol_json/test" + Integer.toString(i) + ".json");
+    //    FileReader reader = new FileReader("/Users/ojeongmin/Documents/lol_json/test" + Integer.toString(i) + ".json");
         JSONParser parser = new JSONParser();
-    //    Object obj = parser.parse(response.getBody());
-        Object obj = parser.parse(reader);
+        Object obj = parser.parse(response.getBody());
+    //    Object obj = parser.parse(reader);
         JSONObject jsonObj = (JSONObject)obj;
         JSONObject info = (JSONObject)jsonObj.get("info");
         JSONArray participants = (JSONArray) info.get("participants");
@@ -437,10 +437,10 @@ public class GameRecordService {
 
         return response;
     }
-/*
-    private ResponseEntity<String> getResponseEntityByMatchId(String matchId){
-        String url="https://asia.api.riotgames.com/lol/match/v5/matches/";
-        url+=matchId;
+
+    private ResponseEntity<String> getResponseEntityByEncryptedUserId(String userID){
+        String url="https://kr.api.riotgames.com/lol/league/v4/entries/by-summoner/";
+        url+=userID;
         url+="?api_key=";
         url += ApiKey;
 
@@ -465,10 +465,10 @@ public class GameRecordService {
 
         return response;
     }
-*/
-    private ResponseEntity<String> getResponseEntityByEncryptedUserId(String userID){
-        String url="https://kr.api.riotgames.com/lol/league/v4/entries/by-summoner/";
-        url+=userID;
+
+    private ResponseEntity<String> getResponseEntityByMatchId(String matchId){
+        String url="https://asia.api.riotgames.com/lol/match/v5/matches/";
+        url+=matchId;
         url+="?api_key=";
         url += ApiKey;
 

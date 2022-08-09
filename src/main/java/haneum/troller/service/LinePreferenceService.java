@@ -26,7 +26,8 @@ import java.util.List;
 public class LinePreferenceService {
     @Autowired
     private static final String UserAgent="Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/102.0.0.0 Safari/537.36";
-    private static final String AcceptLanguage="ko-KR,ko;q=0.9,en-US;q=0.8,en;q=0.7";
+//    private static final String AcceptLanguage="ko-KR,ko;q=0.9,en-US;q=0.8,en;q=0.7";
+    private static final String AcceptLanguage="ko-kr";
     private static final String AcceptCharset="application/x-www-form-urlencoded; charset=UTF-8";
     private static final String Origin="https://developer.riotgames.com";
     private static final String ApiKey= LolApiKey.API_KEY;
@@ -39,16 +40,15 @@ public class LinePreferenceService {
         LinePreferenceDto linePreferenceDto = new LinePreferenceDto();
         ArrayList<String> position = new ArrayList<>(20);
         String userPid = null;
-    /*    try {
+        try {
                  userPid = getUserPid(lolName);
         } catch (ParseException e) {
             e.printStackTrace();
         }
-        ArrayList matchList = getMatchId(userPid); */
-        String test = "test";
+        ArrayList matchList = getMatchId(userPid);
         for (int i = 1; i < 21; i++){ // 원래는 i = 0 i < 20
-        //    settingLinePreference((String)matchList.get(i), position);
-            settingLinePreference(i, position);
+            settingLinePreference((String)matchList.get(i), position);
+         //   settingLinePreference(i, position);
         }
         linePreferenceDto.setFirstLinePreference((String)matchLinePreference(position).get("firstLinePreference"));
         linePreferenceDto.setFirstLinePlayed((String)matchLinePreference(position).get("firstLinePlayed"));
@@ -56,14 +56,14 @@ public class LinePreferenceService {
         linePreferenceDto.setSecondLinePlayed((String)matchLinePreference(position).get("secondLinePlayed"));
         return linePreferenceDto;
     }
-    // 원래 i 대신에 String matchId 가 와야 함
-    public void settingLinePreference(int i, ArrayList position) throws ParseException, IOException {
-    //    ResponseEntity<String>response = getResponseEntityByMatchId(matchId);
+    public void settingLinePreference(String matchId, ArrayList position) throws ParseException, IOException {
+        ResponseEntity<String>response = getResponseEntityByMatchId(matchId);
 
-        FileReader reader = new FileReader("/Users/ojeongmin/Documents/lol_json/test" + Integer.toString(i) + ".json");
+        //FileReader reader = new FileReader("/Users/ojeongmin/Documents/lol_json/test" + Integer.toString(i) + ".json");
         JSONParser parser = new JSONParser();
-   //     Object obj = parser.parse(response.getBody());
-        Object obj = parser.parse(reader);
+        System.out.println("response = " + response.getBody());
+        Object obj = parser.parse(response.getBody());
+   //     Object obj = parser.parse(reader);
         JSONObject jsonObj = (JSONObject)obj;
         JSONObject info = (JSONObject)jsonObj.get("info");
         JSONArray participants = (JSONArray) info.get("participants");
@@ -219,35 +219,7 @@ public class LinePreferenceService {
         return response;
     }
 
-    private ResponseEntity<String> getResponseEntityByMatchId(String matchId){
-        String url="https://asia.api.riotgames.com/lol/match/v5/matches/";
-        url+=matchId;
-        url+="&api_key=";
-        url += "RGAPI-7ae02462-bd19-4490-8f9d-c730004e0bd3";
-
-        // create an instance of RestTemplate
-        RestTemplate restTemplate = new RestTemplate();
-
-        // create headers
-        HttpHeaders headers = new HttpHeaders();
-        headers.set("User-Agent", UserAgent);
-        headers.set("Accept-Language", AcceptLanguage);
-        headers.set("Accept-Charset",AcceptCharset);
-        headers.set("Origin", Origin);
-
-        HttpEntity request = new HttpEntity(headers);
-
-        ResponseEntity<String> response = restTemplate.exchange(
-                url,
-                HttpMethod.GET,
-                request,
-                String.class
-        );
-
-        return response;
-    }
-
-/*    private ResponseEntity<String> getResponseEntityByMatchId(String matchId) {
+    private ResponseEntity<String> getResponseEntityByMatchId(String matchId) {
         String url="https://asia.api.riotgames.com/lol/match/v5/matches/";
         url+=matchId;
         url+="?api_key=";
@@ -260,8 +232,14 @@ public class LinePreferenceService {
         HttpHeaders headers = new HttpHeaders();
         headers.set("User-Agent", UserAgent);
         headers.set("Accept-Language", AcceptLanguage);
-        headers.set("Accept-Charset",AcceptCharset);
-        headers.set("Origin", Origin);
+            headers.set("Accept-Charset",AcceptCharset);
+//        headers.set("Origin", Origin);
+//        headers.set( "X-Riot-Token", ApiKey);
+
+        headers.set("User-Agent", "PostmanRuntime/7.29.0");
+        headers.set("Accept", "*/*");
+        headers.set("Accept-Encoding", "gzip, deflate, br");
+        headers.set("Connection", "keep-alive");
         
         HttpEntity request = new HttpEntity(headers);
 
@@ -272,6 +250,6 @@ public class LinePreferenceService {
                 String.class
         );
         return response;
-    } */
+    }
 }
 

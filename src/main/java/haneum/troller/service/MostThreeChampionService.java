@@ -41,14 +41,14 @@ public class MostThreeChampionService {
         MostThreeChampionDto mostThreeChampionDto = new MostThreeChampionDto();
         ArrayList<HashMap>champions = new ArrayList<>();
         String userPid = null;
-     /*   try {
+        try {
             userPid = getUserPid(lolName);
         } catch (ParseException e) {
             e.printStackTrace();
         }
-        ArrayList matchList = getMatchId(userPid); */
-        for (int i = 1; i < 5; i++){
-            settingMostChampion(i, champions, lolName);
+        ArrayList matchList = getMatchId(userPid);
+        for (int i = 1; i < 20; i++){
+            settingMostChampion((String)matchList.get(i), champions, lolName);
         }
         setMostThreeChampion(champions, mostThreeChampionDto);
         return mostThreeChampionDto;
@@ -97,13 +97,13 @@ public class MostThreeChampionService {
     }
 
     // 원래는 i 대신에 String matchId
-    public void settingMostChampion(int i, ArrayList champions, String lolName) throws ParseException, IOException {
-    //    ResponseEntity<String>response = getResponseEntityByMatchId(matchId);
+    public void settingMostChampion(String matchId, ArrayList champions, String lolName) throws ParseException, IOException {
+        ResponseEntity<String>response = getResponseEntityByMatchId(matchId);
 
         JSONParser parser = new JSONParser();
-    //    Object obj = parser.parse(response.getBody());
-        FileReader reader = new FileReader("/Users/ojeongmin/Documents/lol_json/test" + Integer.toString(i) + ".json");
-        Object obj = parser.parse(reader);
+        Object obj = parser.parse(response.getBody());
+    //    FileReader reader = new FileReader("/Users/ojeongmin/Documents/lol_json/test" + Integer.toString(i) + ".json");
+    //    Object obj = parser.parse(reader);
         JSONObject jsonObj = (JSONObject)obj;
         JSONObject info = (JSONObject)jsonObj.get("info");
         JSONArray participants = (JSONArray) info.get("participants");
