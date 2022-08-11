@@ -3,6 +3,7 @@ package haneum.troller.common.exception;
 
 import haneum.troller.common.exception.exceptions.JWTException;
 import haneum.troller.common.exception.exceptions.KakaoLoginException;
+import haneum.troller.common.exception.exceptions.LolApiToJsonException;
 import io.jsonwebtoken.ExpiredJwtException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -46,6 +47,20 @@ public class ExceptionController {
     public ResponseEntity JwtException(JWTException e) {
         ErrorResponse errorResponse = ErrorResponse.builder()
                 .statusCode(HttpStatus.FORBIDDEN)
+                .exception(e.getClass().getSimpleName())
+                .message(e.getMessage())
+                .build();
+
+        log.error("error: {}", errorResponse.toString());
+        return new ResponseEntity(errorResponse, errorResponse.getStatusCode());
+    }
+
+
+
+    @ExceptionHandler(LolApiToJsonException.class)
+    public ResponseEntity ParseException(LolApiToJsonException e) {
+        ErrorResponse errorResponse = ErrorResponse.builder()
+                .statusCode(HttpStatus.SERVICE_UNAVAILABLE)
                 .exception(e.getClass().getSimpleName())
                 .message(e.getMessage())
                 .build();
