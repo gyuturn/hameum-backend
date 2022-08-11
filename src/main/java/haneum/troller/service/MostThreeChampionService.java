@@ -1,6 +1,6 @@
 package haneum.troller.service;
 
-import haneum.troller.common.config.apiKey.LolApiKey;
+import haneum.troller.common.apiKey.LolApiKey;
 import haneum.troller.dto.mostChampion.MostThreeChampionDto;
 import haneum.troller.service.dataDragon.ChampionImgService;
 import org.apache.http.HttpResponse;

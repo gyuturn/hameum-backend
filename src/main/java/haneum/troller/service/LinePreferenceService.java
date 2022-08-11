@@ -1,6 +1,6 @@
 package haneum.troller.service;
 
-import haneum.troller.common.config.apiKey.LolApiKey;
+import haneum.troller.common.apiKey.LolApiKey;
 import haneum.troller.dto.linePrefer.LinePreferenceDto;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;

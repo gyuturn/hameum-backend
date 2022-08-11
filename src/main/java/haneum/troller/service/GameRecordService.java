@@ -1,6 +1,7 @@
 package haneum.troller.service;
 
-import haneum.troller.common.config.apiKey.LolApiKey;
+
+import haneum.troller.common.apiKey.LolApiKey;
 import haneum.troller.dto.gameRecord.GameRecordDto;
 import haneum.troller.service.dataDragon.ChampionImgService;
 import io.swagger.v3.core.util.Json;
