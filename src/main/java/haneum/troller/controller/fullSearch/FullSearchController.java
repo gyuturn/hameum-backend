@@ -1,5 +1,8 @@
 package haneum.troller.controller.fullSearch;
 
+import haneum.troller.dto.gameRecord.GameRecordDto;
+import haneum.troller.dto.linePrefer.LinePreferenceDto;
+import haneum.troller.dto.mostChampion.MostThreeChampionDto;
 import haneum.troller.dto.myPage.MyPageDto;
 import haneum.troller.service.MyPageService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -19,6 +22,9 @@ import org.springframework.web.bind.annotation.*;
 @Slf4j
 public class FullSearchController {
     private final MyPageService myPageService;
+    private final LinePreferenceService linePreferenceService;
+    private final GameRecordService gameRecordService;
+    private final MostThreeChampionService mostThreeChampionService;
 
     @Operation(summary = "유저의 간략한정보 api", description = "전적검색/마이페이지에서 간략한 유저 정보를 알려주는 기능")
     @ApiResponses(
@@ -41,6 +47,46 @@ public class FullSearchController {
         }
         return new ResponseEntity(myPageDtoFinal,HttpStatus.OK);
     }
-
+    @GetMapping("line")
+    public ResponseEntity getTokenForLine(@RequestParam(value = "lolName") String lolName){
+        LinePreferenceDto linePreferenceDto= null;
+        try{
+            linePreferenceDto = linePreferenceService.getLinePreferenceDto(lolName);
+        } catch (ParseException e) {
+            e.printStackTrace();
+            return new ResponseEntity(HttpStatus.NOT_FOUND);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return new ResponseEntity(linePreferenceDto, HttpStatus.OK);
+    }
+    @GetMapping("most")
+    public ResponseEntity getTokenForMost(@RequestParam(value = "lolName") String lolName){
+        MostThreeChampionDto mostThreeChampionDto = null;
+        try{
+            mostThreeChampionDto = mostThreeChampionService.getMostThreeChampionDto(lolName);
+        } catch (ParseException e) {
+            e.printStackTrace();
+            return new ResponseEntity(HttpStatus.NOT_FOUND);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return new ResponseEntity(mostThreeChampionDto, HttpStatus.OK);
+    }
+    @GetMapping("gameRecord")
+    public ResponseEntity getTokenForGameRecord(@RequestParam(value = "lolName") String lolName){
+        GameRecordDto gameRecordDto = null;
+        try{
+            gameRecordDto = gameRecordService.getGameRecord(lolName);
+        } catch (ParseException e) {
+            e.printStackTrace();
+            return new ResponseEntity(HttpStatus.NOT_FOUND);
+        } catch (java.text.ParseException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return new ResponseEntity(gameRecordDto, HttpStatus.OK);
+    }
 
 }
