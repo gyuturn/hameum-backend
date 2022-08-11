@@ -1,5 +1,6 @@
 package haneum.troller.domain;
 
+import haneum.troller.Enum.LoginType;
 import lombok.*;
 
 import javax.persistence.*;
@@ -17,12 +18,15 @@ public class Member {
 
     @NotBlank
     private String email;
-    @NotBlank
+
     private String password;
-    @NotBlank
+
     private String lolName;
 
     private String refreshToken;
+
+    private String type = LoginType.NORMAL.label();
+
 
     @Builder
     public Member(Long memberId, String email, String password, String lolName,String refreshToken) {
@@ -31,6 +35,10 @@ public class Member {
         this.password = password;
         this.lolName = lolName;
         this.refreshToken = refreshToken;
+    }
+
+    public void updateLoginType(String type) {
+        this.type=type;
     }
 
 

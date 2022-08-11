@@ -1,9 +1,8 @@
 package haneum.troller.service;
 
-import haneum.troller.common.config.apiKey.LolApiKey;
+import haneum.troller.common.apiKey.LolApiKey;
 import haneum.troller.dto.ranking.RankingPageDto;
 import haneum.troller.service.dataDragon.MyPageImgService;
-import org.hibernate.annotations.common.annotationfactory.AnnotationProxy;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -18,7 +17,6 @@ import org.springframework.web.client.RestTemplate;
 
 import java.util.*;
 import java.util.List;
-import java.util.Map.Entry;
 
 @Service
 public class RankingPageService {
@@ -55,7 +53,8 @@ public class RankingPageService {
                 break;
             JSONObject summoner = new JSONObject();
             long point = tempMap.get(key);
-            summoner.put(key, Long.toString(point));
+            summoner.put("name", key);
+            summoner.put("leaguePoints", Long.toString(point));
             addPlayerInfo(summoner, key);
             jArray.add(summoner);
             i++;

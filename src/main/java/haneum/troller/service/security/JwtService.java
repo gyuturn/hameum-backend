@@ -1,10 +1,13 @@
-package haneum.troller.common.config.security;
+package haneum.troller.service.security;
 
 import haneum.troller.domain.Member;
+import haneum.troller.dto.jwtDto.JwtDto;
 import haneum.troller.repository.MemberRepository;
+import haneum.troller.service.login.MemberService;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -14,11 +17,30 @@ import java.security.Key;
 import java.util.Date;
 
 @Service
-public class JwtEncoder {
+@Slf4j
+public class JwtService {
     private static final String secretKey="GGeokDrupakdlsdkqwdkdfdaddjflkdwodfdasdasdafsdfeflwfqvfdmfdsfdkjaslfjisdfjosidf";
     @Autowired
     MemberRepository memberRepository;
 
+    @Autowired
+    MemberService memberService;
+
+    public JwtDto makeTokensForLogin(Member member) {
+        String accessToken = createAccessToken(member.getMemberId(), 60 * 1000); //토큰 주기 1분으로 설정 (test)            String refreshToken = jwtEncoder.createRefreshToken(member.getEmail(), 60 * 1000*2); //토큰 주기 1주일으로 설정 (test)
+        String refreshToken = createRefreshToken(member.getEmail(), 60 * 1000*2); //토큰 주기 2분으로 설정 (test)
+        memberService.updateRefreshToken(member, refreshToken);
+
+        log.info("accessToken: {}", accessToken);
+        log.info("refreshToken: {}", refreshToken);
+
+
+        JwtDto jwtDto = JwtDto.builder()
+                .accessToken(accessToken)
+                .refreshToken(refreshToken)
+                .build();
+        return jwtDto;
+    }
 
     public String createAccessToken(Long id,long expTime){
         if (expTime <= 0) {
@@ -63,10 +85,12 @@ public class JwtEncoder {
     }
 
     //토큰 검증 메서드를 boolean
-    public boolean validToken(String token) {
-        String email = getSubjectByToken(token);
-        if (email!=null) return true;
-        else return false;
+    public Long validTokenForAccessToken(String token) {
+//        if (token == null) {
+//            return false;
+//        }
+        String id = getSubjectByToken(token);
+        return Long.valueOf(id);
     }
 
     public String findLolNameByToken(String token) throws IllegalAccessException {
@@ -74,4 +98,16 @@ public class JwtEncoder {
         Member member = memberRepository.findByEmail(email);
         return member.getLolName();
     }
+
+//    public void getSubject(@RequestHeader(value = "accessToken") String token) {
+//        try {
+//            getSubjectByToken(token);
+//        } catch (ExpiredJwtException e) {
+//            return new ResponseEntity(HttpStatus.FORBIDDEN);
+//        } catch (Exception e) {
+//            return new ResponseEntity(HttpStatus.NOT_FOUND);
+//        }
+//
+//    }
+
 }

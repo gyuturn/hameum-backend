@@ -4,8 +4,8 @@ import haneum.troller.domain.Member;
 import haneum.troller.dto.jwtDto.JwtDto;
 import haneum.troller.dto.login.SignInDto;
 import haneum.troller.repository.MemberRepository;
-import haneum.troller.common.config.security.JwtEncoder;
-import haneum.troller.service.MemberService;
+import haneum.troller.service.security.JwtService;
+import haneum.troller.service.login.MemberService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.Parameters;
@@ -30,7 +30,7 @@ public class SignInResController {
 
     private final MemberService memberService;
     private final MemberRepository memberRepository;
-    private final JwtEncoder jwtEncoder;
+    private final JwtService jwtService;
 
 
     @Operation(summary = "로그인 api",description = "로그인시에 사용되는 api" +
@@ -56,26 +56,9 @@ public class SignInResController {
     )
     @PostMapping("")
     public ResponseEntity<JwtDto> login(@RequestBody SignInDto signInDto) {
-        SignInDto loginDto = new SignInDto(signInDto.getEmail(), signInDto.getPassword());
-        if (memberService.validLogin(loginDto)) {
-            Member member = memberRepository.findByEmail(loginDto.getEmail());
-
-//            String accessToken = jwtEncoder.createAccessToken(member.getMemberId(), 60 * 1000 * 60); //토큰 주기 1시간으로 설정 (test)
-//            String refreshToken = jwtEncoder.createRefreshToken(member.getEmail(), 60 * 1000 * 60 * 24 * 7); //토큰 주기 1주일으로 설정 (test)
-            String accessToken = jwtEncoder.createAccessToken(member.getMemberId(), 60 * 1000); //토큰 주기 1분으로 설정 (test)            String refreshToken = jwtEncoder.createRefreshToken(member.getEmail(), 60 * 1000*2); //토큰 주기 1주일으로 설정 (test)
-            String refreshToken = jwtEncoder.createRefreshToken(member.getEmail(), 60 * 1000*2); //토큰 주기 2분으로 설정 (test)
-            memberService.updateRefreshToken(member, refreshToken);
-
-            log.debug("accessToken: {}", accessToken);
-            log.debug("refreshToken: {}", refreshToken);
-
-
-
-            JwtDto jwtDto = JwtDto.builder()
-                    .accessToken(accessToken)
-                    .refreshToken(refreshToken)
-                    .build();
-            return new ResponseEntity(jwtDto, HttpStatus.OK);
+        Member member = memberRepository.findByEmail(signInDto.getEmail());
+        if (memberService.validLogin(signInDto)&&memberService.findLoginType(member)) {
+            return new ResponseEntity(jwtService.makeTokensForLogin(member), HttpStatus.OK);
         }
         else{
             return new ResponseEntity(HttpStatus.UNAUTHORIZED);
