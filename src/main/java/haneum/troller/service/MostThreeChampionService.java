@@ -3,6 +3,11 @@ package haneum.troller.service;
 import haneum.troller.common.config.apiKey.LolApiKey;
 import haneum.troller.dto.mostChampion.MostThreeChampionDto;
 import haneum.troller.service.dataDragon.ChampionImgService;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.http.util.EntityUtils;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -47,8 +52,10 @@ public class MostThreeChampionService {
             e.printStackTrace();
         }
         ArrayList matchList = getMatchId(userPid);
-        for (int i = 1; i < 20; i++){
+        int cnt = 0;
+        for (int i = 0; i < 20; i++){
             settingMostChampion((String)matchList.get(i), champions, lolName);
+            cnt++;
         }
         setMostThreeChampion(champions, mostThreeChampionDto);
         return mostThreeChampionDto;
@@ -86,9 +93,9 @@ public class MostThreeChampionService {
         champ.put("lose", Integer.toString(champRecord.getLose()));
         champ.put("draw", Integer.toString(champRecord.getDraw()));
         champ.put("winRate", Double.toString(champRecord.getCalculatedWinRate()));
-        champ.put("kill", Integer.toString(champRecord.getKill()));
-        champ.put("death", Integer.toString(champRecord.getDeath()));
-        champ.put("assist", Integer.toString(champRecord.getAssist()));
+        champ.put("kill", Double.toString(champRecord.getAvgKda(champRecord.getKill())));
+        champ.put("death", Double.toString(champRecord.getAvgKda(champRecord.getDeath())));
+        champ.put("assist", Double.toString(champRecord.getAvgKda(champRecord.getAssist())));
         champ.put("kda", Double.toString(champRecord.getCalculatedKda()));
         champ.put("cs", Integer.toString(champRecord.getCs()));
         champ.put("csPerMinutes", Double.toString(champRecord.getCsPerMinutes()));
@@ -98,10 +105,10 @@ public class MostThreeChampionService {
 
     // 원래는 i 대신에 String matchId
     public void settingMostChampion(String matchId, ArrayList champions, String lolName) throws ParseException, IOException {
-        ResponseEntity<String>response = getResponseEntityByMatchId(matchId);
+        String response = getResponseEntityByMatchId(matchId);
 
         JSONParser parser = new JSONParser();
-        Object obj = parser.parse(response.getBody());
+        Object obj = parser.parse(response);
     //    FileReader reader = new FileReader("/Users/ojeongmin/Documents/lol_json/test" + Integer.toString(i) + ".json");
     //    Object obj = parser.parse(reader);
         JSONObject jsonObj = (JSONObject)obj;
@@ -113,8 +120,7 @@ public class MostThreeChampionService {
         int index;
         GameMostChampionRecord gameMostChampionRecord = null;
         if (isContain(champions, className)) {
-            index = champions.indexOf(className);
-            gameMostChampionRecord.setUi(championImgService.getChampionImg(className));
+            index = getIndexOf(champions, className);
             setChampionClass(user, (GameMostChampionRecord) champions.get(index), playTime, className);
         }
         else{
@@ -139,15 +145,19 @@ public class MostThreeChampionService {
         int assist = ParseToInt(user, "assists");
         int win = 0;
         int draw = 0;
+        int lose = 0;
 
         gameMostChampionRecord.setKill(gameMostChampionRecord.getKill() + kill);
         gameMostChampionRecord.setDeath(gameMostChampionRecord.getDeath() + death);
         gameMostChampionRecord.setAssist(gameMostChampionRecord.getAssist() + assist);
         if (user.get("win") == TRUE)
             win = 1;
+        else
+            lose = 1;
         if (user.get("teamEarlySurrendered") == TRUE)
             draw = 1;
         gameMostChampionRecord.setWin((gameMostChampionRecord.getWin()) + win);
+        gameMostChampionRecord.setLose(gameMostChampionRecord.getLose() + lose);
         gameMostChampionRecord.setDraw((gameMostChampionRecord.getDraw()) + draw);
         return ;
     }
@@ -161,14 +171,28 @@ public class MostThreeChampionService {
 
     public boolean isContain(ArrayList champions, String className){
       GameMostChampionRecord game = null;
+      String compare = null;
       for(int i = 0; i < champions.size(); i++){
           game = (GameMostChampionRecord) champions.get(i);
-          System.out.println("game.getChampionName() = " + game.getChampionName());
-          System.out.println("className = " + className);
-          if (game.getChampionName().equals(className))
+          compare = game.getChampionName();
+          if (compare.compareTo(className) == 0) {
               return true;
+          }
       }
       return false;
+    }
+
+    public int  getIndexOf(ArrayList champions, String className){
+        GameMostChampionRecord game = null;
+        String compare = null;
+        for(int i = 0; i < champions.size(); i++){
+            game = (GameMostChampionRecord) champions.get(i);
+            compare = game.getChampionName();
+            if (compare.compareTo(className) == 0) {
+                return i;
+            }
+        }
+        return -1;
     }
 
     public JSONObject getUserFromJson(JSONArray participants, String lolName){
@@ -193,7 +217,7 @@ public class MostThreeChampionService {
 
     public ArrayList getMatchId(String pid) throws org.json.simple.parser.ParseException {
 
-        ResponseEntity<String>response = getResponseEntityByMatchId(pid);
+        ResponseEntity<String>response = getResponseEntityByUserPid(pid);
         JSONParser parser = new JSONParser();
         Object obj = parser.parse(response.getBody());
         JSONArray jsonArray = (JSONArray) obj;
@@ -213,8 +237,36 @@ public class MostThreeChampionService {
         JSONObject jsonObj = (JSONObject)obj;
 
         String userPid = (String)jsonObj.get("puuid");
-        System.out.println("userPid = " + userPid);
         return userPid;
+    }
+
+    private ResponseEntity<String> getResponseEntityByUserPid(String userPid){
+        String url="https://asia.api.riotgames.com/lol/match/v5/matches/by-puuid/";
+        url+=userPid;
+        url+="/ids?start=0&count=20";
+        url+="&api_key=";
+        url += ApiKey;
+
+        // create an instance of RestTemplate
+        RestTemplate restTemplate = new RestTemplate();
+
+        // create headers
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("User-Agent", UserAgent);
+        headers.set("Accept-Language", AcceptLanguage);
+        headers.set("Accept-Charset",AcceptCharset);
+        headers.set("Origin", Origin);
+
+        HttpEntity request = new HttpEntity(headers);
+
+        ResponseEntity<String> response = restTemplate.exchange(
+                url,
+                HttpMethod.GET,
+                request,
+                String.class
+        );
+
+        return response;
     }
 
     private ResponseEntity<String> getResponseEntityByEncryptedUserId(String userID) {
@@ -272,31 +324,28 @@ public class MostThreeChampionService {
         return response;
     }
 
-    private ResponseEntity<String> getResponseEntityByMatchId(String matchId){
-        String url="https://asia.api.riotgames.com/lol/match/v5/matches/";
-        url+=matchId;
-        url+="?api_key=";
+    private String getResponseEntityByMatchId(String matchId) {
+        String url = "https://asia.api.riotgames.com/lol/match/v5/matches/";
+        url += matchId;
+        url += "?api_key=";
         url += ApiKey;
 
-        // create an instance of RestTemplate
-        RestTemplate restTemplate = new RestTemplate();
+        HttpResponse response;
+        String entity;
+        try {
+            HttpClient client = HttpClientBuilder.create().build();
+            HttpGet request = new HttpGet(url);
 
-        // create headers
-        HttpHeaders headers = new HttpHeaders();
-        headers.set("User-Agent", UserAgent);
-        headers.set("Accept-Language", AcceptLanguage);
-        headers.set("Accept-Charset",AcceptCharset);
-        headers.set("Origin", Origin);
+            response = client.execute(request);
 
-        HttpEntity request = new HttpEntity(headers);
-
-        ResponseEntity<String> response = restTemplate.exchange(
-                url,
-                HttpMethod.GET,
-                request,
-                String.class
-        );
-
-        return response;
+            if (response.getStatusLine().getStatusCode() != 200) {
+                return null;
+            }
+            entity = EntityUtils.toString(response.getEntity());
+        } catch (IOException e) {
+            e.printStackTrace();
+            return null;
+        }
+        return entity;
     }
 }

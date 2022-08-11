@@ -2,6 +2,11 @@ package haneum.troller.service;
 
 import haneum.troller.common.config.apiKey.LolApiKey;
 import haneum.troller.dto.linePrefer.LinePreferenceDto;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.http.util.EntityUtils;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -46,7 +51,7 @@ public class LinePreferenceService {
             e.printStackTrace();
         }
         ArrayList matchList = getMatchId(userPid);
-        for (int i = 1; i < 21; i++){ // 원래는 i = 0 i < 20
+        for (int i = 0; i < 20; i++){ // 원래는 i = 0 i < 20
             settingLinePreference((String)matchList.get(i), position);
          //   settingLinePreference(i, position);
         }
@@ -57,12 +62,11 @@ public class LinePreferenceService {
         return linePreferenceDto;
     }
     public void settingLinePreference(String matchId, ArrayList position) throws ParseException, IOException {
-        ResponseEntity<String>response = getResponseEntityByMatchId(matchId);
+        String response = getResponseEntityByMatchId(matchId);
 
         //FileReader reader = new FileReader("/Users/ojeongmin/Documents/lol_json/test" + Integer.toString(i) + ".json");
         JSONParser parser = new JSONParser();
-        System.out.println("response = " + response.getBody());
-        Object obj = parser.parse(response.getBody());
+        Object obj = parser.parse(response);
    //     Object obj = parser.parse(reader);
         JSONObject jsonObj = (JSONObject)obj;
         JSONObject info = (JSONObject)jsonObj.get("info");
@@ -219,37 +223,64 @@ public class LinePreferenceService {
         return response;
     }
 
-    private ResponseEntity<String> getResponseEntityByMatchId(String matchId) {
-        String url="https://asia.api.riotgames.com/lol/match/v5/matches/";
-        url+=matchId;
-        url+="?api_key=";
+//    private ResponseEntity<String> getResponseEntityByMatchId(String matchId) {
+//        String url="https://asia.api.riotgames.com/lol/match/v5/matches/";
+//        url+=matchId;
+//        url+="?api_key=";
+//        url += ApiKey;
+//
+//        // create an instance of RestTemplate
+//        RestTemplate restTemplate = new RestTemplate();
+//
+//        // create headers
+//        HttpHeaders headers = new HttpHeaders();
+//        headers.set("User-Agent", UserAgent);
+//        headers.set("Accept-Language", AcceptLanguage);
+//            headers.set("Accept-Charset",AcceptCharset);
+////        headers.set("Origin", Origin);
+////        headers.set( "X-Riot-Token", ApiKey);
+//
+//        headers.set("User-Agent", "PostmanRuntime/7.29.0");
+//        headers.set("Accept", "*/*");
+//        headers.set("Accept-Encoding", "gzip, deflate, br");
+//        headers.set("Connection", "keep-alive");
+//
+//        HttpEntity request = new HttpEntity(headers);
+//
+//        ResponseEntity response = restTemplate.exchange(
+//                url,
+//                HttpMethod.GET,
+//                request,
+//                String.class
+//        );
+//        return response;
+//    }
+    private String getResponseEntityByMatchId(String matchId) {
+        String url = "https://asia.api.riotgames.com/lol/match/v5/matches/";
+        url += matchId;
+        url += "?api_key=";
         url += ApiKey;
 
-        // create an instance of RestTemplate
-        RestTemplate restTemplate = new RestTemplate();
+        HttpResponse response;
+        String entity;
+        try {
+            HttpClient client = HttpClientBuilder.create().build();
+            HttpGet request = new HttpGet(url);
 
-        // create headers
-        HttpHeaders headers = new HttpHeaders();
-        headers.set("User-Agent", UserAgent);
-        headers.set("Accept-Language", AcceptLanguage);
-            headers.set("Accept-Charset",AcceptCharset);
-//        headers.set("Origin", Origin);
-//        headers.set( "X-Riot-Token", ApiKey);
+            response = client.execute(request);
 
-        headers.set("User-Agent", "PostmanRuntime/7.29.0");
-        headers.set("Accept", "*/*");
-        headers.set("Accept-Encoding", "gzip, deflate, br");
-        headers.set("Connection", "keep-alive");
-        
-        HttpEntity request = new HttpEntity(headers);
-
-        ResponseEntity response = restTemplate.exchange(
-                url,
-                HttpMethod.GET,
-                request,
-                String.class
-        );
-        return response;
+            if (response.getStatusLine().getStatusCode() != 200) {
+                return null;
+            }
+            entity = EntityUtils.toString(response.getEntity());
+        } catch (IOException e) {
+            e.printStackTrace();
+            return null;
+        }
+        return entity;
     }
+
+
 }
+
 

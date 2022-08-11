@@ -27,11 +27,15 @@ public class GameTwentyRecord {
 
     public double getCalculatedWinRate() {
         winRate = ((double)(win) / (double)(20 - draw)) * 100;
+        winRate = Math.round(winRate);
+        winRate = winRate / 100;
         return winRate;
     }
 
     public Double getCalculatedKda(){
-        kda = (((double)kill + (double)assist) / (double)death);
+        kda = ((double)(kill + assist) / (double)death) * 100;
+        kda = Math.round(kda);
+        kda = kda / 100;
         return kda;
     }
 }

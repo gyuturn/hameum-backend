@@ -4,6 +4,11 @@ import haneum.troller.common.config.apiKey.LolApiKey;
 import haneum.troller.dto.gameRecord.GameRecordDto;
 import haneum.troller.service.dataDragon.ChampionImgService;
 import io.swagger.v3.core.util.Json;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.http.util.EntityUtils;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -50,23 +55,19 @@ public class GameRecordService {
         ArrayList<String>position = new ArrayList<>(20);
         String userPid = getUserPid(lolName);
         ArrayList matchList = getMatchId(userPid);
-        for (int i = 1; i < 9; i++){
+        for (int i = 0; i < 20; i++){
             gameRecordArray.add(setGameRecord((String) matchList.get(i), gameMostChampionRecord, gameTwentyRecord, champion, lolName));
-        //    gameRecordArray.add(setGameRecord(i, gameMostChampionRecord, gameTwentyRecord, champion, lolName));
         }
         gameRecordDto.setLatestTwentyRecords(setKdaWinRateDto(gameTwentyRecord, gameTwentyRecordObject));
         gameRecordDto.setGameRecord(gameRecordArray);
         return gameRecordDto;
     }
 
-    // 원래는 i 대신 String matchId 가 와야 함
     public JSONObject setGameRecord(String matchId ,GameMostChampionRecord mostChampion, GameTwentyRecord twentyRecord, ArrayList champion, String lolName) throws org.json.simple.parser.ParseException, IOException {
-        ResponseEntity<String>response = getResponseEntityByMatchId(matchId);
+        String response = getResponseEntityByMatchId(matchId);
 
-    //    FileReader reader = new FileReader("/Users/ojeongmin/Documents/lol_json/test" + Integer.toString(i) + ".json");
         JSONParser parser = new JSONParser();
-        Object obj = parser.parse(response.getBody());
-    //    Object obj = parser.parse(reader);
+        Object obj = parser.parse(response);
         JSONObject jsonObj = (JSONObject)obj;
         JSONObject info = (JSONObject)jsonObj.get("info");
         JSONArray participants = (JSONArray) info.get("participants");
@@ -79,6 +80,7 @@ public class GameRecordService {
         getKillRate(info, user, userRecord);
         int playTime = matchPlayTime(info, userRecord);
         matchCsAndWard(user, userRecord, playTime);
+        getAvgTier(lolName, userRecord);
         JSONArray players = setPlayers(user, participants); //10명의 사용자 정보 링크와 평균 티어만 구하는 함수.
         userRecord.put("players", players);
         return userRecord;
@@ -88,16 +90,13 @@ public class GameRecordService {
         double avgTier = 0; // save average tier of players
         JSONArray players = new JSONArray();
         for (int i = 0; i < 10; i++){
-            avgTier += (double)getPlayers((JSONObject)participants.get(i), players, i); // get player's info
+            getPlayers((JSONObject)participants.get(i), players, i); // get player's info
         }
-        avgTier /= 10;
         user.put("averageTier", IntToTier((int)avgTier));
         return players;
     }
 
-    public int getPlayers(JSONObject participant, JSONArray players, int teamIndex) throws org.json.simple.parser.ParseException {
-        int tierToInteger = 0;
-        String summonerId;
+    public void getPlayers(JSONObject participant, JSONArray players, int teamIndex) throws org.json.simple.parser.ParseException {
         JSONObject player = new JSONObject();
         player.put("lolName", (String)participant.get("summonerName"));
         String championName = (String)participant.get("championName");
@@ -108,10 +107,7 @@ public class GameRecordService {
             player.put("team", "Blue");
         else
             player.put("team", "Red");
-        summonerId = (String)participant.get("summonerId");
-        tierToInteger = getAvgTier(summonerId, player);
         players.add(player);
-        return tierToInteger;
     }
 
     public int TierToInt(String tier, String rank){
@@ -168,21 +164,24 @@ public class GameRecordService {
             return "CHALLNEGER";
     }
 
-    public int  getAvgTier(String summonerId, JSONObject player) throws org.json.simple.parser.ParseException {
+    public void  getAvgTier(String lolName, JSONObject userRecord) throws org.json.simple.parser.ParseException {
+        String summonerId = getEncryptedId(lolName);
         ResponseEntity<String> response = getResponseEntityByEncryptedUserId(summonerId);
 
         JSONParser parser = new JSONParser();
         Object obj = parser.parse(response.getBody());
         JSONArray jsonArray = (JSONArray)obj;
-        JSONObject jsonObj = (JSONObject)jsonArray.get(0);
+        JSONObject jsonObj;
+        jsonObj = (JSONObject)jsonArray.get(0);
+        String cmpGame = (String)jsonObj.get("queueType");
+        if (cmpGame.equals("RANKED_SOLO_5x5") == FALSE)
+            jsonObj = (JSONObject)jsonArray.get(1);
         String tier = (String)jsonObj.get("tier");
         String rank = (String)jsonObj.get("rank");
-    //    if (tier == "MASTER" || tier == "GRANDMASTER" || tier == "CHALLENGER")
-        if (tier.equals("MASTER"))
-            player.put("tier", tier);
+        if (tier.equals("MASTER") || tier.equals("GRANDMASTER") || tier.equals("CAHLLENGER"))
+            userRecord.put("averageTier", tier);
         else
-            player.put("tier", tier + rank);
-        return TierToInt(tier, rank);
+            userRecord.put("averageTier", tier + rank);
     }
 
     public String playTimeFormatting(int second){
@@ -206,8 +205,6 @@ public class GameRecordService {
         int h = (second % 86400) / 3600;
         int m = ((second % (86400)) % 3600) % 60;
         String ret;
-        System.out.println(" month = " + month);
-        System.out.println("second = " + second);
         if (month != 0)
             ret = String.valueOf(month) + "달 전";
         else if (week != 0)
@@ -245,7 +242,6 @@ public class GameRecordService {
         int killRate;
 
         JSONArray team = (JSONArray)info.get("teams");
-        System.out.println(team.getClass().getName());
         JSONObject teamToObj = (JSONObject)team.get(0);
         JSONObject objectives = (JSONObject) teamToObj.get("objectives");
         JSONObject objectChamp;
@@ -271,7 +267,6 @@ public class GameRecordService {
         userRecord.put("kill", Integer.toString(kill));
         userRecord.put("death", Integer.toString(death));
         userRecord.put("assist", Integer.toString(assist));
-        System.out.println("assist = " + assist);
         double kda = 0;
         if (death == 0)
             userRecord.put("kda", "perfect");
@@ -326,9 +321,12 @@ public class GameRecordService {
     }
 
     public JSONObject setKdaWinRateDto(GameTwentyRecord gameTwentyRecord, JSONObject json){
-        json.put("kill", Integer.toString(gameTwentyRecord.getKill()));
-        json.put("death", Integer.toString(gameTwentyRecord.getDeath()));
-        json.put("assist", Integer.toString(gameTwentyRecord.getAssist()));
+        double avgKill = getAvgKda(gameTwentyRecord.getKill());
+        double avgAssist = getAvgKda(gameTwentyRecord.getAssist());
+        double avgDeath = getAvgKda(gameTwentyRecord.getDeath());
+        json.put("kill", Double.toString(avgKill));
+        json.put("death", Double.toString(avgDeath));
+        json.put("assist", Double.toString(avgAssist));
         json.put("win", Integer.toString(gameTwentyRecord.getWin()));
         json.put("lose", Integer.toString(gameTwentyRecord.getLose()));
         json.put("draw", Integer.toString(gameTwentyRecord.getDraw()));
@@ -350,6 +348,16 @@ public class GameRecordService {
         return user;
     }
 
+    public String getEncryptedId(String lolName) throws org.json.simple.parser.ParseException {
+        ResponseEntity<String>response = getResponseEntityByUserName(lolName);
+
+        JSONParser parser = new JSONParser();
+        Object obj = parser.parse(response.getBody());
+        JSONObject jsonObj = (JSONObject)obj;
+        String summonerId = (String)jsonObj.get("id");
+        return summonerId;
+    }
+
     public String getUserPid(String lolName) throws org.json.simple.parser.ParseException {
         ResponseEntity<String>response = getResponseEntityByUserName(lolName);
 
@@ -358,7 +366,6 @@ public class GameRecordService {
         JSONObject jsonObj = (JSONObject)obj;
         
         String userPid = (String)jsonObj.get("puuid");
-        System.out.println("userPid = " + userPid);
         return userPid;
     }
 
@@ -373,6 +380,16 @@ public class GameRecordService {
             matchList.add(jsonArray.get(i));
         }
         return matchList;
+    }
+
+    public Double getAvgKda(int killOrDeathOrAssist){
+
+        if (killOrDeathOrAssist == 0)
+            return (double)0;
+        double n = ((double)killOrDeathOrAssist / 20) * 10;
+        n = Math.round(n);
+        double avg = n / 10 ;
+        return avg;
     }
 
     public int ParseToInt(JSONObject obj, String str){
@@ -466,31 +483,28 @@ public class GameRecordService {
         return response;
     }
 
-    private ResponseEntity<String> getResponseEntityByMatchId(String matchId){
-        String url="https://asia.api.riotgames.com/lol/match/v5/matches/";
-        url+=matchId;
-        url+="?api_key=";
+    private String getResponseEntityByMatchId(String matchId) {
+        String url = "https://asia.api.riotgames.com/lol/match/v5/matches/";
+        url += matchId;
+        url += "?api_key=";
         url += ApiKey;
 
-        // create an instance of RestTemplate
-        RestTemplate restTemplate = new RestTemplate();
+        HttpResponse response;
+        String entity;
+        try {
+            HttpClient client = HttpClientBuilder.create().build();
+            HttpGet request = new HttpGet(url);
 
-        // create headers
-        HttpHeaders headers = new HttpHeaders();
-        headers.set("User-Agent", UserAgent);
-        headers.set("Accept-Language", AcceptLanguage);
-        headers.set("Accept-Charset",AcceptCharset);
-        headers.set("Origin", Origin);
+            response = client.execute(request);
 
-        HttpEntity request = new HttpEntity(headers);
-
-        ResponseEntity<String> response = restTemplate.exchange(
-                url,
-                HttpMethod.GET,
-                request,
-                String.class
-        );
-
-        return response;
+            if (response.getStatusLine().getStatusCode() != 200) {
+                return null;
+            }
+            entity = EntityUtils.toString(response.getEntity());
+        } catch (IOException e) {
+            e.printStackTrace();
+            return null;
+        }
+        return entity;
     }
 }

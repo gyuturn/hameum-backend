@@ -30,18 +30,31 @@ public class GameMostChampionRecord implements Comparable<GameMostChampionRecord
         cs = 0;
         csPerMinutes = 0;
         gamePlayed = 0;
-        ui = "ui";
         championName = "name";
     }
 
 
     public Double getCalculatedWinRate(){
         winRate = ((double)(win) / (double)(gamePlayed - draw)) * 100;
+        winRate = Math.round(winRate);
+        winRate = winRate / 100;
         return winRate;
     }
 
+    public Double getAvgKda(int killOrDeathOrAssist){
+        
+        if (killOrDeathOrAssist == 0)
+            return (double)0;
+        double n = ((double)killOrDeathOrAssist / gamePlayed) * 10;
+        n = Math.round(n);
+        double avg = n / 10 ;
+        return avg;
+    }
+
     public Double getCalculatedKda(){
-        kda = ((double)(kill + assist) / (double)death);
+        kda = ((double)(kill + assist) / (double)death) * 100;
+        kda = Math.round(kda);
+        kda = kda / 100;
         return kda;
     }
 
