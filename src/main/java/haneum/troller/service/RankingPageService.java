@@ -60,6 +60,7 @@ public class RankingPageService {
             i++;
         }
         rankingPageDto.setPlayer(jArray);
+        System.out.println(rankingPageDto);
         return rankingPageDto;
     }
 

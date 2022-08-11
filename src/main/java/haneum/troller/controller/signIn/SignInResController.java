@@ -48,12 +48,6 @@ public class SignInResController {
                             "오타 체크")
             }
     )
-    @Parameters(
-            {
-                    @Parameter(name = "email",description = "이메일"),
-                    @Parameter(name="password",description = "비번")
-            }
-    )
     @PostMapping("")
     public ResponseEntity<JwtDto> login(@RequestBody SignInDto signInDto) {
         Member member = memberRepository.findByEmail(signInDto.getEmail());

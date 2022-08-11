@@ -18,5 +18,4 @@ public class MyPageImgService {
         return url;
     }
 
-
 }
