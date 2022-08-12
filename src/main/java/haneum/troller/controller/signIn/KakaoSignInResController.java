@@ -67,7 +67,7 @@ public class KakaoSignInResController {
             return new ResponseEntity(jwtDto, HttpStatus.OK);
         }
         else{
-            return new ResponseEntity( HttpStatus.UNAUTHORIZED);
+            return new ResponseEntity( kakaoJwt,HttpStatus.UNAUTHORIZED);
         }
     }
 
