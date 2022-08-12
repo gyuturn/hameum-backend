@@ -43,7 +43,7 @@ public class KakaoSignInResController {
     public ResponseEntity signUpKakao(@RequestBody KakaoSignUpDto kakaoSignUpDto) throws Exception {
         Member member = memberService.kakaoJoin(kakaoSignUpDto);
         JwtDto jwtDto = jwtService.makeTokensForLogin(member);
-        return new ResponseEntity(jwtDto, HttpStatus.OK);
+        return new ResponseEntity(jwtDto, HttpStatus.CREATED);
     }
 
 
@@ -67,7 +67,7 @@ public class KakaoSignInResController {
             return new ResponseEntity(jwtDto, HttpStatus.OK);
         }
         else{
-            return new ResponseEntity( kakaoJwt,HttpStatus.UNAUTHORIZED);
+            return new ResponseEntity(kakaoJwt,HttpStatus.UNAUTHORIZED);
         }
     }
 
