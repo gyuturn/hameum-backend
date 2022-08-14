@@ -226,7 +226,9 @@ public class GameRecordService {
 
     public void matchCsAndWard(JSONObject user, JSONObject userRecord, int playTime){
         int cs = ParseToInt(user, "neutralMinionsKilled") + ParseToInt(user, "totalMinionsKilled");
-        double csPerMinutes = (double)cs / ((double)playTime / 60);
+        double csPerMinutes = (double)cs / ((double)playTime / 60) * 10;
+        csPerMinutes = Math.round(csPerMinutes);
+        csPerMinutes = csPerMinutes / 10;
         int visionWard = ParseToInt(user, "visionWardsBoughtInGame");
         userRecord.put("cs", String.valueOf(cs));
         userRecord.put("csPerMiutes", String.valueOf(csPerMinutes));
@@ -269,7 +271,9 @@ public class GameRecordService {
         if (death == 0)
             userRecord.put("kda", "perfect");
         else {
-            kda = ((double)kill + (double)assist / (double)death);
+            kda = ((double)kill + (double)assist / (double)death) * 10;
+            kda = Math.round(kda);
+            kda = kda / 10;
             userRecord.put("kda", Double.toString(kda));
         }
         // -> k/d/a 및 kda 세팅
@@ -328,7 +332,7 @@ public class GameRecordService {
         json.put("win", Integer.toString(gameTwentyRecord.getWin()));
         json.put("lose", Integer.toString(gameTwentyRecord.getLose()));
         json.put("draw", Integer.toString(gameTwentyRecord.getDraw()));
-        json.put("winRate", Double.toString(gameTwentyRecord.getCalculatedWinRate()));
+        json.put("winRate", Integer.toString((int) (gameTwentyRecord.getCalculatedWinRate() * 100)));
         json.put("kda", Double.toString(gameTwentyRecord.getCalculatedKda()));
         return json;
     }
