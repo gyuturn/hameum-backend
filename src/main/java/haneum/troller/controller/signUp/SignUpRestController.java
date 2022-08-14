@@ -5,7 +5,7 @@ import haneum.troller.dto.signUp.*;
 import haneum.troller.repository.MemberRepository;
 import haneum.troller.service.login.EmailServiceImpl;
 import haneum.troller.service.login.MemberService;
-import haneum.troller.service.MyPageService;
+import haneum.troller.service.mypage.MyPageService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.Parameters;

@@ -1,8 +1,9 @@
-package haneum.troller.service;
+package haneum.troller.service.findDuo;
 
 import haneum.troller.common.apiKey.LolApiKey;
 import haneum.troller.dto.findDuo.FindDuoDto;
 import haneum.troller.service.dataDragon.ChampionImgService;
+import haneum.troller.service.fullSearch.GameTwentyRecord;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -20,7 +21,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import static java.lang.Boolean.TRUE;
-import static org.apache.coyote.http11.Constants.a;
+
 @Service
 public class FindDuoService {
     @Autowired

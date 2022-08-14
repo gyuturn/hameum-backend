@@ -1,4 +1,4 @@
-package haneum.troller.service;
+package haneum.troller.service.ranking;
 
 import haneum.troller.common.apiKey.LolApiKey;
 import haneum.troller.dto.mainPage.MainPageDto;

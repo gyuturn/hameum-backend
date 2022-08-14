@@ -2,8 +2,8 @@ package haneum.troller.controller.rankingPage;
 
 import haneum.troller.dto.mainPage.MainPageDto;
 import haneum.troller.dto.ranking.RankingPageDto;
-import haneum.troller.service.MainPageRankService;
-import haneum.troller.service.RankingPageService;
+import haneum.troller.service.ranking.MainPageRankService;
+import haneum.troller.service.ranking.RankingPageService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;

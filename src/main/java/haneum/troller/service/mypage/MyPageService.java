@@ -1,4 +1,4 @@
-package haneum.troller.service;
+package haneum.troller.service.mypage;
 
 import haneum.troller.common.apiKey.LolApiKey;
 import haneum.troller.dto.myPage.MyPageDto;

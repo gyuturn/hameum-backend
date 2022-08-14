@@ -1,4 +1,4 @@
-package haneum.troller.service;
+package haneum.troller.service.fullSearch;
 
 import lombok.Getter;
 import lombok.Setter;

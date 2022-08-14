@@ -5,13 +5,12 @@ import haneum.troller.dto.gameRecord.GameRecordDto;
 import haneum.troller.dto.linePrefer.LinePreferenceDto;
 import haneum.troller.dto.mostChampion.MostThreeChampionDto;
 import haneum.troller.dto.myPage.MyPageDto;
-import haneum.troller.service.GameRecordService;
-import haneum.troller.service.LinePreferenceService;
-import haneum.troller.service.MostThreeChampionService;
-import haneum.troller.service.MyPageService;
+import haneum.troller.service.fullSearch.GameRecordService;
+import haneum.troller.service.fullSearch.LinePreferenceService;
+import haneum.troller.service.fullSearch.MostThreeChampionService;
+import haneum.troller.service.mypage.MyPageService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.Parameters;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -20,9 +19,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.io.IOException;
-import java.text.ParseException;
 
 @Tag(name="userGameRecord",description = "유저의 게임전적 조회시 사옹되는 API")
 @RestController

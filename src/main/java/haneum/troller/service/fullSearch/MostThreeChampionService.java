@@ -1,4 +1,4 @@
-package haneum.troller.service;
+package haneum.troller.service.fullSearch;
 
 import haneum.troller.common.apiKey.LolApiKey;
 import haneum.troller.dto.mostChampion.MostThreeChampionDto;
@@ -20,13 +20,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
-import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Collections;
-import java.io.FileReader;
 
 import static java.lang.Boolean.TRUE;
 

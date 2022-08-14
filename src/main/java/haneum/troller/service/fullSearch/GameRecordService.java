@@ -1,10 +1,9 @@
-package haneum.troller.service;
+package haneum.troller.service.fullSearch;
 
 
 import haneum.troller.common.apiKey.LolApiKey;
 import haneum.troller.dto.gameRecord.GameRecordDto;
 import haneum.troller.service.dataDragon.ChampionImgService;
-import io.swagger.v3.core.util.Json;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
@@ -21,12 +20,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.time.Instant;
-import java.io.FileReader;
 
 import static java.lang.Boolean.FALSE;
 import static java.lang.Boolean.TRUE;
