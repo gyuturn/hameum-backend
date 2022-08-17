@@ -4,6 +4,11 @@ import haneum.troller.common.apiKey.LolApiKey;
 import haneum.troller.dto.findDuo.FindDuoDto;
 import haneum.troller.service.dataDragon.ChampionImgService;
 import haneum.troller.service.fullSearch.GameTwentyRecord;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.http.util.EntityUtils;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -16,6 +21,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -54,10 +60,10 @@ public class FindDuoService {
     }
 
     public void setGameRecord(String matchId,GameTwentyRecord twentyRecord, ArrayList lines ,ArrayList champions) throws org.json.simple.parser.ParseException {
-        ResponseEntity<String> response = getResponseEntityByMatchId(matchId);
+        String response = getResponseEntityByMatchId(matchId);
 
         JSONParser parser = new JSONParser();
-        Object obj = parser.parse(response.getBody());
+        Object obj = parser.parse(response);
         JSONObject jsonObj = (JSONObject) obj;
         JSONObject info = (JSONObject) jsonObj.get("info");
         JSONArray participants = (JSONArray) info.get("participants");
@@ -83,7 +89,7 @@ public class FindDuoService {
         keySet.sort((o1, o2) -> (int) (map.get(o2) - map.get(o1)));
         int i = 0;
         for (String key : keySet){
-            championArray.add(championImgService.getChampionImg(String.valueOf(map.get(key))));
+            championArray.add(championImgService.getChampionImg(String.valueOf(key)));
             i++;
             if (i == 3)
                 break;
@@ -144,9 +150,9 @@ public class FindDuoService {
 
     public void setKdaWinRate(JSONObject user, GameTwentyRecord twentyRecord){
 
-        int kill = (int)user.get("kills");
-        int death = (int)user.get("deaths");
-        int assist = (int)user.get("assists");
+        int kill = ParseToInt(user, "kills");
+        int death = ParseToInt(user ,"deaths");
+        int assist = ParseToInt(user ,"assists");
 
         int win = 0;
         int lose = 1;
@@ -168,12 +174,13 @@ public class FindDuoService {
     }
 
     public void setKdaWinRateDto(GameTwentyRecord gameTwentyRecord, FindDuoDto dto){
-        dto.setKill(Integer.toString(gameTwentyRecord.getKill()));
-        dto.setDeath(Integer.toString(gameTwentyRecord.getDeath()));
-        dto.setAssist(Integer.toString(gameTwentyRecord.getAssist()));
+        dto.setKill(Double.toString(getAvgKda(gameTwentyRecord.getKill())));
+        dto.setDeath(Double.toString(getAvgKda(gameTwentyRecord.getDeath())));
+        dto.setAssist(Double.toString(getAvgKda(gameTwentyRecord.getAssist())));
         dto.setWin(Integer.toString(gameTwentyRecord.getWin()));
         dto.setLose(Integer.toString(gameTwentyRecord.getLose()));
-        dto.setWinRate(Double.toString(gameTwentyRecord.getWinRate()));
+        dto.setWinRate(Integer.toString((int) (gameTwentyRecord.getCalculatedWinRate() * 100)));
+        dto.setKdaRate(Double.toString(gameTwentyRecord.getCalculatedKda()));
     }
 
     public void setTierPoint(String lolName, FindDuoDto findDuoDto) throws ParseException {
@@ -191,6 +198,22 @@ public class FindDuoService {
 
         findDuoDto.setTier(jsonObj.get("tier").toString());
         findDuoDto.setLeaguePoint(jsonObj.get("leaguePoints").toString());
+    }
+
+    public int ParseToInt(JSONObject obj, String str){
+        int  retNum = 0;
+        retNum = Integer.parseInt(String.valueOf(obj.get(str)));
+        return retNum;
+    }
+
+    public Double getAvgKda(int killOrDeathOrAssist){
+
+        if (killOrDeathOrAssist == 0)
+            return (double)0;
+        double n = ((double)killOrDeathOrAssist / 20) * 10;
+        n = Math.round(n);
+        double avg = n / 10 ;
+        return avg;
     }
 
     public JSONObject getUserFromJson(JSONArray participants){
@@ -289,31 +312,29 @@ public class FindDuoService {
         return response;
     }
 
-    private ResponseEntity<String> getResponseEntityByMatchId(String matchId){
-        String url="https://asia.api.riotgames.com/lol/match/v5/matches/";
-        url+=matchId;
-        url+="?api_key=";
+    private String getResponseEntityByMatchId(String matchId) {
+        String url = "https://asia.api.riotgames.com/lol/match/v5/matches/";
+        url += matchId;
+        url += "?api_key=";
         url += ApiKey;
 
-        // create an instance of RestTemplate
-        RestTemplate restTemplate = new RestTemplate();
+        HttpResponse response;
+        String entity;
+        try {
+            HttpClient client = HttpClientBuilder.create().build();
+            HttpGet request = new HttpGet(url);
 
-        // create headers
-        HttpHeaders headers = new HttpHeaders();
-        headers.set("User-Agent", UserAgent);
-        headers.set("Accept-Language", AcceptLanguage);
-        headers.set("Accept-Charset",AcceptCharset);
-        headers.set("Origin", Origin);
+            response = client.execute(request);
 
-        HttpEntity request = new HttpEntity(headers);
-
-        ResponseEntity response = restTemplate.exchange(
-                url,
-                HttpMethod.GET,
-                request,
-                String.class
-        );
-        return response;
+            if (response.getStatusLine().getStatusCode() != 200) {
+                return null;
+            }
+            entity = EntityUtils.toString(response.getEntity());
+        } catch (IOException e) {
+            e.printStackTrace();
+            return null;
+        }
+        return entity;
     }
 
     private ResponseEntity<String> getResponseEntityByEncryptedUserId(String userID){

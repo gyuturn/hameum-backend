@@ -38,4 +38,6 @@ public class GameTwentyRecord {
         kda = kda / 100;
         return kda;
     }
+
+
 }

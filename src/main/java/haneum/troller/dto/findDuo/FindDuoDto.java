@@ -24,6 +24,8 @@ public class FindDuoDto {
 
     private String winRate; // 자동적으로 gameRecordService에서 구함.
 
+    private String kdaRate;
+
     private String leaguePoint; //setTierPoint
 
     private String favorPositionDesc; //matchLinePreference

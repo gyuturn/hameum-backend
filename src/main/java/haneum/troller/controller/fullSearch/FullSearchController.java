@@ -1,6 +1,8 @@
 package haneum.troller.controller.fullSearch;
 
+import com.mysql.cj.x.protobuf.MysqlxCrud;
 import haneum.troller.common.exception.exceptions.LolApiToJsonException;
+import haneum.troller.dto.findDuo.FindDuoDto;
 import haneum.troller.dto.gameRecord.GameRecordDto;
 import haneum.troller.dto.linePrefer.LinePreferenceDto;
 import haneum.troller.dto.mostChampion.MostThreeChampionDto;
@@ -20,6 +22,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
+import java.text.ParseException;
+
 @Tag(name="userGameRecord",description = "유저의 게임전적 조회시 사옹되는 API")
 @RestController
 @RequiredArgsConstructor
@@ -30,6 +35,7 @@ public class FullSearchController {
     private final LinePreferenceService linePreferenceService;
     private final GameRecordService gameRecordService;
     private final MostThreeChampionService mostThreeChampionService;
+
 
     @Operation(summary = "유저의 간략한정보 api", description = "전적검색/마이페이지에서 간략한 유저 정보를 알려주는 기능")
     @ApiResponses(
@@ -84,7 +90,7 @@ public class FullSearchController {
             }
     )
     @Parameter(name="lolName",description = "롤네임")
-    @GetMapping("usre/most")
+    @GetMapping("user/most")
     public ResponseEntity getTokenForMost(@RequestParam(value = "lolName") String lolName) throws LolApiToJsonException {
         MostThreeChampionDto mostThreeChampionDto = null;
         try{
@@ -106,14 +112,25 @@ public class FullSearchController {
     )
     @Parameter(name="lolName",description = "롤네임")
     @GetMapping("user/gameRecord")
-    public ResponseEntity getTokenForGameRecord(@RequestParam(value = "lolName") String lolName) throws LolApiToJsonException {
+    public ResponseEntity getTokenForGameRecord(@RequestParam(value = "lolName") String lolName) throws LolApiToJsonException, ParseException, org.json.simple.parser.ParseException, IOException {
         GameRecordDto gameRecordDto = null;
-        try {
-            gameRecordDto = gameRecordService.getGameRecord(lolName);
-        } catch (Exception e) {
-            throw new LolApiToJsonException("롤 api에 호출시 에러");
-        }
+//        try {
+//            gameRecordDto = gameRecordService.getGameRecord(lolName);
+//        } catch (Exception e) {
+//            throw new LolApiToJsonException("롤 api에 호출시 에러");
+//        }
+        gameRecordDto = gameRecordService.getGameRecord(lolName);
         return new ResponseEntity(gameRecordDto, HttpStatus.OK);
     }
-
+//    @GetMapping("user/findDuo")
+//    public ResponseEntity getTokenForFindDuo(@RequestParam(value = "lolName") String lolName) throws LolApiToJsonException, ParseException {
+//        FindDuoDto findDuoDto = null;
+////        try {
+////            findDuoDto = findDuoService.getFindDuoDto(lolName);
+////        } catch (Exception e) {
+////            throw new LolApiToJsonException("롤 api에 호출시 에러");
+////        }
+//        findDuoDto = findDuoService.getFindDuoDto(lolName);
+//        return new ResponseEntity(findDuoDto, HttpStatus.OK);
+//    }
 }

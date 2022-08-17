@@ -4,6 +4,9 @@ package haneum.troller.service.fullSearch;
 import haneum.troller.common.apiKey.LolApiKey;
 import haneum.troller.dto.gameRecord.GameRecordDto;
 import haneum.troller.service.dataDragon.ChampionImgService;
+import haneum.troller.service.fullSearch.metaDataParsing.ItemParse;
+import haneum.troller.service.fullSearch.metaDataParsing.RuneParse;
+import haneum.troller.service.fullSearch.metaDataParsing.SpellParse;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
@@ -20,10 +23,12 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
+import java.io.FileReader;
 import java.io.IOException;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.time.Instant;
+import java.util.Iterator;
 
 import static java.lang.Boolean.FALSE;
 import static java.lang.Boolean.TRUE;
@@ -32,36 +37,44 @@ import static java.lang.Boolean.TRUE;
 public class GameRecordService {
     @Autowired
     private ChampionImgService championImgService;
-
+    public SpellParse spellParse;
+    private RuneParse runeParse;
+    public ItemParse itemParse;
     private static final String UserAgent="Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/102.0.0.0 Safari/537.36";
     private static final String AcceptLanguage="ko-KR,ko;q=0.9,en-US;q=0.8,en;q=0.7";
     private static final String AcceptCharset="application/x-www-form-urlencoded; charset=UTF-8";
     private static final String Origin="https://developer.riotgames.com";
     private static final String ApiKey= LolApiKey.API_KEY;
-    public LinePreferenceService linePreferenceService;
+//    public LinePreferenceService linePreferenceService;
 
     public GameRecordDto getGameRecord(String lolName) throws ParseException, org.json.simple.parser.ParseException, IOException {
 
         GameRecordDto gameRecordDto = new GameRecordDto();
         JSONArray gameRecordArray = new JSONArray();
-        JSONArray threeMostChampionArray = new JSONArray();
         JSONObject gameTwentyRecordObject = new JSONObject();
         GameTwentyRecord gameTwentyRecord = new GameTwentyRecord();
         GameMostChampionRecord gameMostChampionRecord;
         gameMostChampionRecord = new GameMostChampionRecord();
         ArrayList<Class>champion = new ArrayList<>(20);
-        ArrayList<String>position = new ArrayList<>(20);
+
+//  Rune, Item, Spell json 파일 갖고오기
+        JSONObject spellFile = parsingJsonFIle(getPath("Spell"));
+        JSONArray runeFile = parsingJsonFIleArray(getPath("Rune"));
+        JSONObject itemFile = parsingJsonFIle(getPath("Item"));
+
         String userPid = getUserPid(lolName);
         ArrayList matchList = getMatchId(userPid);
         for (int i = 0; i < 20; i++){
-            gameRecordArray.add(setGameRecord((String) matchList.get(i), gameMostChampionRecord, gameTwentyRecord, champion, lolName));
+            gameRecordArray.add(setGameRecord((String) matchList.get(i), gameTwentyRecord, runeFile,
+                    spellFile, itemFile,lolName));
         }
         gameRecordDto.setLatestTwentyRecords(setKdaWinRateDto(gameTwentyRecord, gameTwentyRecordObject));
         gameRecordDto.setGameRecord(gameRecordArray);
         return gameRecordDto;
     }
 
-    public JSONObject setGameRecord(String matchId ,GameMostChampionRecord mostChampion, GameTwentyRecord twentyRecord, ArrayList champion, String lolName) throws org.json.simple.parser.ParseException, IOException {
+    public JSONObject setGameRecord(String matchId , GameTwentyRecord twentyRecord, JSONArray rune, JSONObject spell,
+                                    JSONObject item ,String lolName) throws org.json.simple.parser.ParseException, IOException {
         String response = getResponseEntityByMatchId(matchId);
 
         JSONParser parser = new JSONParser();
@@ -74,7 +87,7 @@ public class GameRecordService {
         userRecord.put("gameMode", (String)info.get("gameMode"));
         setKdaWinRate(user, twentyRecord);
         matchKdaAndWinRecord(participants, user, userRecord);
-        matchRuneAndSpellSet(user, userRecord);
+        matchMetaDataSet(user, userRecord, rune, item, spell);
         getKillRate(info, user, userRecord);
         int playTime = matchPlayTime(info, userRecord);
         matchCsAndWard(user, userRecord, playTime);
@@ -226,7 +239,9 @@ public class GameRecordService {
 
     public void matchCsAndWard(JSONObject user, JSONObject userRecord, int playTime){
         int cs = ParseToInt(user, "neutralMinionsKilled") + ParseToInt(user, "totalMinionsKilled");
-        double csPerMinutes = (double)cs / ((double)playTime / 60);
+        double csPerMinutes = (double)cs / ((double)playTime / 60) * 10;
+        csPerMinutes = Math.round(csPerMinutes);
+        csPerMinutes /= 10;
         int visionWard = ParseToInt(user, "visionWardsBoughtInGame");
         userRecord.put("cs", String.valueOf(cs));
         userRecord.put("csPerMiutes", String.valueOf(csPerMinutes));
@@ -279,18 +294,33 @@ public class GameRecordService {
             userRecord.put("win", FALSE); // 승리여부
     }
 
-    public void matchRuneAndSpellSet(JSONObject user, JSONObject userRecord){
+    public void matchMetaDataSet(JSONObject user, JSONObject userRecord, JSONArray rune, JSONObject spell, JSONObject item){
+
         JSONObject perks = (JSONObject) user.get("perks");
         JSONArray styles = (JSONArray)perks.get("styles");
         JSONObject stylesObj = (JSONObject) styles.get(0);
         JSONArray selections = (JSONArray) stylesObj.get("selections");
         JSONObject primary = (JSONObject)selections.get(0);
-        userRecord.put("primaryRune", primary.get("perk"));
         JSONObject semi = (JSONObject)styles.get(1);
-        userRecord.put("semiRune", semi.get("style"));
+        int primaryRuneNum = ParseToInt(primary ,"perk");
+        int semiRuneNum = ParseToInt(semi, "style");
+        String primaryRune = getRuneInfo(rune, primaryRuneNum, "name");
+        String semiRune = getSemiRuneInfo(rune, semiRuneNum, "name");
+        String primaryRuneImg = getRuneInfo(rune, primaryRuneNum, "icon");
+        String semiRuneImg = getSemiRuneInfo(rune, semiRuneNum, "icon");
+        userRecord.put("primaryRune",primaryRune);
+        userRecord.put("primaryRuneImg", primaryRuneImg);
+        userRecord.put("semiRune", semiRune);
+        userRecord.put("semiRuneImg", semiRuneImg);
         // -> 룬 셋팅 완료
-        userRecord.put("spell1", user.get("summoner1Casts"));
-        userRecord.put("spell2", user.get("summoner2Casts"));
+        setSpellInfo(userRecord, ParseToInt(user, "summoner1Id"), "spell1");
+        setSpellInfo(userRecord, ParseToInt(user, "summoner2Id"), "spell2");
+        // -> 스펠 셋팅 완료
+        JSONArray itemArray = new JSONArray();
+        for (int i = 0; i < 7; i++){
+            setItemInfo(item, itemArray, user, i);
+        }
+        userRecord.put("itemArray" ,itemArray);
     }
 
     public void setKdaWinRate(JSONObject user, GameTwentyRecord twentyRecord){
@@ -394,6 +424,24 @@ public class GameRecordService {
         int  retNum = 0;
         retNum = Integer.parseInt(String.valueOf(obj.get(str)));
         return retNum;
+    }
+
+    public JSONObject parsingJsonFIle(String realPath) throws IOException, org.json.simple.parser.ParseException {
+        FileReader reader = new FileReader(realPath);
+        JSONParser parser = new JSONParser();
+        JSONObject jsonObject = (JSONObject) parser.parse(reader);
+        return jsonObject;
+    }
+
+    public JSONArray parsingJsonFIleArray(String realPath) throws IOException, org.json.simple.parser.ParseException {
+        FileReader reader = new FileReader(realPath);
+        JSONParser parser = new JSONParser();
+        JSONArray jsonA = (JSONArray) parser.parse(reader);
+        return jsonA;
+    }
+
+    public String getPath(String path){
+        return "/Users/ojeongmin/Documents/backend/src/main/resources/RuneMetaData/" + path + ".json";
     }
 
     private ResponseEntity<String> getResponseEntityByUserName(String userName){
@@ -505,4 +553,146 @@ public class GameRecordService {
         }
         return entity;
     }
+
+    public String getRuneInfo(JSONArray runeFile, int runeNum, String flag){
+        JSONObject runePage = selectRune(runeNum, runeFile);
+        JSONArray slots = (JSONArray) runePage.get("slots");
+        JSONObject rune = (JSONObject) slots.get(0);
+        JSONArray runes = (JSONArray)rune.get("runes");
+        return searchRuneInfo(runes, runeNum, flag);
+    }
+
+    public String getSemiRuneInfo(JSONArray runeFile, int runeNum, String flag){
+        JSONObject semiRunePage = selectRune(runeNum, runeFile);
+        if (flag == "icon")
+            return "https://ddragon.canisback.com/img/" + (String) semiRunePage.get(flag);
+        return (String) semiRunePage.get(flag);
+    }
+
+    public String searchRuneInfo(JSONArray runes , int runeNum, String flag){
+        for (int i = 0; i < runes.size(); i++){
+            JSONObject rune = (JSONObject) runes.get(i);
+            if (runeNum == ParseToInt(rune, "id")){
+                if (flag == "icon")
+                    return "https://ddragon.canisback.com/img/" + (String) rune.get(flag);
+                return (String) rune.get(flag);
+            }
+        }
+        return null;
+
+    }
+
+    public JSONObject selectRune(int runeNum, JSONArray runeFile){
+        JSONObject runePage = null;
+        int div = runeNum - (runeNum % 100);
+        if (div == 8100)
+            runePage = (JSONObject) runeFile.get(0);
+        else if (div == 8300)
+            runePage = (JSONObject) runeFile.get(1);
+        else if (div == 8000)
+            runePage = (JSONObject) runeFile.get(2);
+        else if (div == 8400)
+            runePage = (JSONObject) runeFile.get(3);
+        else if (div == 8200)
+            runePage = (JSONObject) runeFile.get(4);
+        return runePage;
+    }
+
+    public void setSpellInfo(JSONObject userRecord ,int spellNum, String flag){
+//        JSONObject data = (JSONObject) spellFile.get("data");
+//        System.out.println();
+//        for (Object spellKey : data.keySet()){
+//            String keystr = (String) spellKey;
+//            System.out.println("keystr = " + keystr);
+//            JSONObject spellData = (JSONObject) data.get((String)spellKey);
+//            int key = ParseToInt(spellData, "key");
+//            if (key == spellNum) {
+//                String spellName = (String) spellData.get("name");
+//                if (flag == "icon")
+//                    return "https://ddragon.leagueoflegends.com/cdn/10.6.1/img/spell/" + spellName + ".png";
+//                return spellName;
+//            }
+//        }
+//        return null;
+
+        switch (spellNum){
+            case 21:
+                userRecord.put(flag, "방어막");
+                userRecord.put(flag + "img", setSpellImg("SummonerBarrier"));
+                break;
+            case 1:
+                userRecord.put(flag, "정화");
+                userRecord.put(flag + "img", setSpellImg("SummonerBoost"));
+                break;
+            case 14:
+                userRecord.put(flag, "점화");
+                userRecord.put(flag + "img", setSpellImg("SummonerDot"));
+                break;
+            case 3:
+                userRecord.put(flag, "탈진");
+                userRecord.put(flag + "img", setSpellImg("SummonerExhaust"));
+                break;
+            case 4:
+                userRecord.put(flag, "점멸");
+                userRecord.put(flag + "img", setSpellImg("SummonerFlash"));
+                break;
+            case 6:
+                userRecord.put(flag, "유체화");
+                userRecord.put(flag + "img", setSpellImg("SummonerHaste"));
+                break;
+            case 7:
+                userRecord.put(flag, "회복");
+                userRecord.put(flag + "img", setSpellImg("SummonerHeal"));
+                break;
+            case 13:
+                userRecord.put(flag, "총명");
+                userRecord.put(flag + "img", setSpellImg("SummonerMana"));
+                break;
+            case 31:
+                userRecord.put(flag, "포로 던지기");
+                userRecord.put(flag + "img", setSpellImg("SummonerPoroThrow"));
+                break;
+            case 11:
+                userRecord.put(flag, "강타");
+                userRecord.put(flag + "img", setSpellImg("SummonerSmate"));
+                break;
+            case 32:
+                userRecord.put(flag, "표식");
+                userRecord.put(flag + "img", setSpellImg("SummonerSnowball"));
+                break;
+            case 12:
+                userRecord.put(flag, "텔레포트");
+                userRecord.put(flag + "img", setSpellImg("SummonerTeleport"));
+                break;
+        }
+    }
+
+    public String setSpellImg(String img){
+        return "http://ddragon.leagueoflegends.com/cdn/10.3.1/img/spell/" + img + ".png";
+    }
+    public String setItemImg(String img){
+        return "http://ddragon.leagueoflegends.com/cdn/10.3.1/img/item/" + img + ".png";
+    }
+
+    public void setItemInfo(JSONObject item, JSONArray itemArray, JSONObject user, int i){
+        JSONObject data = (JSONObject) item.get("data");
+        JSONObject itemName = new JSONObject();
+        JSONObject itemImg = new JSONObject();
+        int itemInt = ParseToInt(user, "item" + i);
+        if (itemInt == 0){
+            itemName.put("item" + i, "None");
+            itemImg.put("itemImg" + i, "None");
+            itemArray.add(itemName);
+            itemArray.add(itemImg);
+            return ;
+        }
+        JSONObject itemData = (JSONObject) data.get("1001");
+        System.out.println(itemData.getClass().getName());
+        String itemNameStr = (String)itemData.get("name");
+        itemName.put("item" + i, itemNameStr);
+        itemImg.put("item" + i + "Img", setItemImg(itemNameStr));
+        itemArray.add(itemName);
+        itemArray.add(itemImg);
+    }
+
 }
