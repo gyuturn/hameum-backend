@@ -4,9 +4,6 @@ package haneum.troller.service.fullSearch;
 import haneum.troller.common.apiKey.LolApiKey;
 import haneum.troller.dto.gameRecord.GameRecordDto;
 import haneum.troller.service.dataDragon.ChampionImgService;
-import haneum.troller.service.fullSearch.metaDataParsing.ItemParse;
-import haneum.troller.service.fullSearch.metaDataParsing.RuneParse;
-import haneum.troller.service.fullSearch.metaDataParsing.SpellParse;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
@@ -23,8 +20,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
-import java.io.FileReader;
-import java.io.IOException;
+import java.io.*;
+import java.net.URL;
+import java.nio.charset.Charset;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.time.Instant;
@@ -37,15 +35,11 @@ import static java.lang.Boolean.TRUE;
 public class GameRecordService {
     @Autowired
     private ChampionImgService championImgService;
-    public SpellParse spellParse;
-    private RuneParse runeParse;
-    public ItemParse itemParse;
     private static final String UserAgent="Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/102.0.0.0 Safari/537.36";
     private static final String AcceptLanguage="ko-KR,ko;q=0.9,en-US;q=0.8,en;q=0.7";
     private static final String AcceptCharset="application/x-www-form-urlencoded; charset=UTF-8";
     private static final String Origin="https://developer.riotgames.com";
     private static final String ApiKey= LolApiKey.API_KEY;
-//    public LinePreferenceService linePreferenceService;
 
     public GameRecordDto getGameRecord(String lolName) throws ParseException, org.json.simple.parser.ParseException, IOException {
 
@@ -57,11 +51,9 @@ public class GameRecordService {
         gameMostChampionRecord = new GameMostChampionRecord();
         ArrayList<Class>champion = new ArrayList<>(20);
 
-//  Rune, Item, Spell json 파일 갖고오기
         JSONObject spellFile = parsingJsonFIle(getPath("Spell"));
         JSONArray runeFile = parsingJsonFIleArray(getPath("Rune"));
-        JSONObject itemFile = parsingJsonFIle(getPath("Item"));
-
+        JSONObject itemFile = readJsonFromUrl("https://ddragon.leagueoflegends.com/cdn/12.15.1/data/ko_KR/item.json");
         String userPid = getUserPid(lolName);
         ArrayList matchList = getMatchId(userPid);
         for (int i = 0; i < 20; i++){
@@ -85,9 +77,12 @@ public class GameRecordService {
         JSONObject userRecord = new JSONObject();
         JSONObject user = getUserFromJson(participants, lolName);
         userRecord.put("gameMode", (String)info.get("gameMode"));
+        String championName = (String)user.get("championName");
+        userRecord.put("championName", championName);
+        userRecord.put("championImg", championImgService.getChampionImg(championName));
         setKdaWinRate(user, twentyRecord);
         matchKdaAndWinRecord(participants, user, userRecord);
-        matchMetaDataSet(user, userRecord, rune, item, spell);
+        matchMetaDataSet(user, userRecord, rune, spell, item);
         getKillRate(info, user, userRecord);
         int playTime = matchPlayTime(info, userRecord);
         matchCsAndWard(user, userRecord, playTime);
@@ -284,7 +279,9 @@ public class GameRecordService {
         if (death == 0)
             userRecord.put("kda", "perfect");
         else {
-            kda = ((double)kill + (double)assist / (double)death);
+            kda = ((double)kill + (double)assist / (double)death) * 100;
+            kda = Math.round(kda);
+            kda = kda / 100;
             userRecord.put("kda", Double.toString(kda));
         }
         // -> k/d/a 및 kda 세팅
@@ -294,8 +291,10 @@ public class GameRecordService {
             userRecord.put("win", FALSE); // 승리여부
     }
 
-    public void matchMetaDataSet(JSONObject user, JSONObject userRecord, JSONArray rune, JSONObject spell, JSONObject item){
+    public void matchMetaDataSet(JSONObject user, JSONObject userRecord, JSONArray rune, JSONObject spell, JSONObject item) throws IOException, org.json.simple.parser.ParseException {
 
+        String primaryRune = null;
+        String primaryRuneImg = null;
         JSONObject perks = (JSONObject) user.get("perks");
         JSONArray styles = (JSONArray)perks.get("styles");
         JSONObject stylesObj = (JSONObject) styles.get(0);
@@ -304,9 +303,15 @@ public class GameRecordService {
         JSONObject semi = (JSONObject)styles.get(1);
         int primaryRuneNum = ParseToInt(primary ,"perk");
         int semiRuneNum = ParseToInt(semi, "style");
-        String primaryRune = getRuneInfo(rune, primaryRuneNum, "name");
+        if (primaryRuneNum == 9923) {
+            primaryRune = "칼날비";
+            primaryRuneImg = "https://ddragon.canisback.com/img/perk-images/Styles/Domination/HailOfBlades/HailOfBlades.png";
+        }
+        else{
+            primaryRune = getRuneInfo(rune, primaryRuneNum, "name");
+            primaryRuneImg = getRuneInfo(rune, primaryRuneNum, "icon");
+        }
         String semiRune = getSemiRuneInfo(rune, semiRuneNum, "name");
-        String primaryRuneImg = getRuneInfo(rune, primaryRuneNum, "icon");
         String semiRuneImg = getSemiRuneInfo(rune, semiRuneNum, "icon");
         userRecord.put("primaryRune",primaryRune);
         userRecord.put("primaryRuneImg", primaryRuneImg);
@@ -352,14 +357,18 @@ public class GameRecordService {
         double avgKill = getAvgKda(gameTwentyRecord.getKill());
         double avgAssist = getAvgKda(gameTwentyRecord.getAssist());
         double avgDeath = getAvgKda(gameTwentyRecord.getDeath());
+        String kdaRound = Double.toString(gameTwentyRecord.getCalculatedKda());
+        if (kdaRound.length() >= 5)
+            kdaRound = kdaRound.substring(0, 4);
+        String winRound = Integer.toString((int)(gameTwentyRecord.getCalculatedWinRate() * 100));
         json.put("kill", Double.toString(avgKill));
         json.put("death", Double.toString(avgDeath));
         json.put("assist", Double.toString(avgAssist));
         json.put("win", Integer.toString(gameTwentyRecord.getWin()));
         json.put("lose", Integer.toString(gameTwentyRecord.getLose()));
         json.put("draw", Integer.toString(gameTwentyRecord.getDraw()));
-        json.put("winRate", Double.toString(gameTwentyRecord.getCalculatedWinRate()));
-        json.put("kda", Double.toString(gameTwentyRecord.getCalculatedKda()));
+        json.put("winRate", winRound + "%");
+        json.put("kda",  kdaRound);
         return json;
     }
 
@@ -367,10 +376,10 @@ public class GameRecordService {
     public JSONObject getUserFromJson(JSONArray participants, String lolName){
         JSONObject user = null;
         String name = null;
-        for (int i = 0; i < 9; i++){
+        for (int i = 0; i < 10; i++){
             user = (JSONObject) participants.get(i);
             name = (String)user.get("summonerName");
-            if (name.equals(lolName));
+            if (lolName.compareTo(name) == 0)
                 break ;
         }
         return user;
@@ -441,7 +450,7 @@ public class GameRecordService {
     }
 
     public String getPath(String path){
-        return "/Users/ojeongmin/Documents/backend/src/main/resources/RuneMetaData/" + path + ".json";
+        return "src/main/resources/RuneMetaData/" + path + ".json";
     }
 
     private ResponseEntity<String> getResponseEntityByUserName(String userName){
@@ -674,25 +683,54 @@ public class GameRecordService {
         return "http://ddragon.leagueoflegends.com/cdn/10.3.1/img/item/" + img + ".png";
     }
 
-    public void setItemInfo(JSONObject item, JSONArray itemArray, JSONObject user, int i){
-        JSONObject data = (JSONObject) item.get("data");
-        JSONObject itemName = new JSONObject();
-        JSONObject itemImg = new JSONObject();
-        int itemInt = ParseToInt(user, "item" + i);
-        if (itemInt == 0){
-            itemName.put("item" + i, "None");
-            itemImg.put("itemImg" + i, "None");
-            itemArray.add(itemName);
-            itemArray.add(itemImg);
-            return ;
-        }
-        JSONObject itemData = (JSONObject) data.get("1001");
-        System.out.println(itemData.getClass().getName());
-        String itemNameStr = (String)itemData.get("name");
-        itemName.put("item" + i, itemNameStr);
-        itemImg.put("item" + i + "Img", setItemImg(itemNameStr));
-        itemArray.add(itemName);
-        itemArray.add(itemImg);
+    public String Read(Reader re) throws io.jsonwebtoken.io.IOException, java.io.IOException {     // class Declaration
+        StringBuilder str = new StringBuilder();     // To Store Url Data In String.
+        int temp;
+        do {
+
+            temp = re.read();
+            str.append((char) temp);
+
+        } while (temp != -1);
+        //  re.read() return -1 when there is end of buffer , data or end of file.
+
+        return str.toString();
     }
 
+    public JSONObject readJsonFromUrlMethod(String link) throws io.jsonwebtoken.io.IOException, java.io.IOException, org.json.simple.parser.ParseException {
+        InputStream input = new URL(link).openStream();
+            BufferedReader re = new BufferedReader(new InputStreamReader(input, Charset.forName("UTF-8")));
+            // Buffer Reading In UTF-8
+            String text = Read(re);
+            text = text.substring(0, text.length() - 1);
+            JSONParser parser = new JSONParser();
+            Object obj = parser.parse(new StringReader(text));
+            JSONObject jsonObj = (JSONObject) obj;
+            input.close();
+            return jsonObj;    // Returning JSON
+    }
+
+    public JSONObject readJsonFromUrl(String url) throws IOException, org.json.simple.parser.ParseException {
+        JSONObject json = readJsonFromUrlMethod(url);  // calling method in order to read.
+        return json;
+    }
+
+    public void setItemInfo(JSONObject item, JSONArray itemArray, JSONObject user, int i){
+
+        JSONObject data = (JSONObject) item.get("data");
+        JSONObject itemInfo = new JSONObject();
+        int itemInt = ParseToInt(user, "item" + i);
+        if (itemInt == 0){
+            itemInfo.put("item" + i, "None");
+            itemInfo.put("itemImg" + i, "None");
+            itemArray.add(itemInfo);
+            return ;
+        }
+        String dataStr = Integer.toString(ParseToInt(user, "item" + i));
+        JSONObject itemData = (JSONObject) data.get(dataStr);
+        String itemNameStr = (String)itemData.get("name");
+        itemInfo.put("item" + i, itemNameStr);
+        itemInfo.put("item" + i + "Img", setItemImg(dataStr));
+        itemArray.add(itemInfo);
+    }
 }
