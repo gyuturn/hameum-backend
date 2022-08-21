@@ -1,6 +1,7 @@
 package haneum.troller.domain;
 
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -15,13 +16,19 @@ public class MemberChat {
     @Column(name = "member_chatRoom_id")
     private Long Id;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
     private Member member;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "chatRoom_id")
     private ChatRoom chatRoom;
+
+    @Builder
+    public MemberChat(Member member, ChatRoom chatRoom) {
+        this.member = member;
+        this.chatRoom = chatRoom;
+    }
 
 
 }
