@@ -20,6 +20,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
+import java.text.ParseException;
+
 @Tag(name="userGameRecord",description = "유저의 게임전적 조회시 사옹되는 API")
 @RestController
 @RequiredArgsConstructor
@@ -84,7 +87,7 @@ public class FullSearchController {
             }
     )
     @Parameter(name="lolName",description = "롤네임")
-    @GetMapping("usre/most")
+    @GetMapping("user/most")
     public ResponseEntity getTokenForMost(@RequestParam(value = "lolName") String lolName) throws LolApiToJsonException {
         MostThreeChampionDto mostThreeChampionDto = null;
         try{
@@ -106,7 +109,7 @@ public class FullSearchController {
     )
     @Parameter(name="lolName",description = "롤네임")
     @GetMapping("user/gameRecord")
-    public ResponseEntity getTokenForGameRecord(@RequestParam(value = "lolName") String lolName) throws LolApiToJsonException {
+    public ResponseEntity getTokenForGameRecord(@RequestParam(value = "lolName") String lolName) throws LolApiToJsonException, ParseException, org.json.simple.parser.ParseException, IOException {
         GameRecordDto gameRecordDto = null;
         try {
             gameRecordDto = gameRecordService.getGameRecord(lolName);
