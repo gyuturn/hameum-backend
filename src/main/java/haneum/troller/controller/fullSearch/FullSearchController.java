@@ -111,11 +111,12 @@ public class FullSearchController {
     @GetMapping("user/gameRecord")
     public ResponseEntity getTokenForGameRecord(@RequestParam(value = "lolName") String lolName) throws LolApiToJsonException, ParseException, org.json.simple.parser.ParseException, IOException {
         GameRecordDto gameRecordDto = null;
-        try {
-            gameRecordDto = gameRecordService.getGameRecord(lolName);
-        } catch (Exception e) {
-            throw new LolApiToJsonException("롤 api에 호출시 에러");
-        }
+        gameRecordDto = gameRecordService.getGameRecord(lolName);
+//        try {
+//            gameRecordDto = gameRecordService.getGameRecord(lolName);
+//        } catch (Exception e) {
+//            throw new LolApiToJsonException("롤 api에 호출시 에러");
+//        }
         return new ResponseEntity(gameRecordDto, HttpStatus.OK);
     }
 
