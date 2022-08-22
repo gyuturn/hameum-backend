@@ -39,6 +39,14 @@ public class Swagger2Config {
                 .build();
     }
 
+    @Bean
+    public GroupedOpenApi ChatServiceApi() {
+        return GroupedOpenApi.builder()
+                .group("chatService")
+                .pathsToMatch("/api/chat/**")
+                .build();
+    }
+
 
     @Bean
     public GroupedOpenApi userFullSearchApi() {
@@ -55,6 +63,8 @@ public class Swagger2Config {
                 .pathsToMatch("/api/rank/**")
                 .build();
     }
+
+
 
     @Bean
     public OpenAPI springShopOpenAPI() {

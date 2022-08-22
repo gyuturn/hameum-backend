@@ -24,13 +24,29 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         http.cors().disable()
                 .csrf().disable()
                 .formLogin().disable()
-                .headers().frameOptions().disable();
+                .authorizeRequests().antMatchers("/ws-chat").permitAll();
+//                .headers().frameOptions().disable();
+
+//        http.cors().and()
+//                .csrf().disable()
+//                .formLogin().disable()
+//                .authorizeRequests().antMatchers("/ws/chat", "/ws/**").permitAll();
+//                .headers().frameOptions().disable();
+
+
+
+
+
+
+
+
     }
 
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
 
+        configuration.addAllowedOriginPattern("*");
         configuration.addAllowedOrigin("*");
         configuration.addAllowedHeader("*");
         configuration.addAllowedMethod("*");
