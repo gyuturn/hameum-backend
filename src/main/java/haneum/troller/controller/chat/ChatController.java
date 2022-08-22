@@ -4,6 +4,7 @@ package haneum.troller.controller.chat;
 import haneum.troller.domain.ChatRoom;
 import haneum.troller.domain.Message;
 import haneum.troller.dto.chat.MessageDto;
+import haneum.troller.dto.chat.MessageReturnDto;
 import haneum.troller.repository.ChatRoomRepository;
 import haneum.troller.repository.MessageRepository;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -25,12 +26,20 @@ public class ChatController {
     public void message(MessageDto messageDto) {
         ChatRoom chatRoom = chatRoomRepository.findById(messageDto.getChatRoomId()).get();
 
-        messageRepository.save(Message.builder()
+        Message message = Message.builder()
                 .chatRoom(chatRoom)
                 .content(messageDto.getContent())
                 .sender(messageDto.getSender())
-                .build());
+                .build();
+        messageRepository.save(message);
 
-        messagingTemplate.convertAndSend("/topic/chat_room/" + messageDto.getChatRoomId(), messageDto);
+        MessageReturnDto messageReturnDto = MessageReturnDto.builder()
+                .chatRoomId(message.getChatRoom().getChatRoomId())
+                .createDate(message.getCreateDate())
+                .content(message.getContent())
+                .sender(message.getSender())
+                .build();
+
+        messagingTemplate.convertAndSend("/topic/chat_room/" + messageDto.getChatRoomId(), messageReturnDto);
     }
 }
