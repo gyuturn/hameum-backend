@@ -24,7 +24,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         http.cors().disable()
                 .csrf().disable()
                 .formLogin().disable()
-                .authorizeRequests().antMatchers("/ws/chat", "/ws/**").permitAll();
+                .authorizeRequests().antMatchers("/ws-chat").permitAll();
 //                .headers().frameOptions().disable();
 
 //        http.cors().and()
