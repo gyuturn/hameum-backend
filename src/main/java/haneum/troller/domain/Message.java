@@ -9,11 +9,12 @@ import org.springframework.data.annotation.CreatedDate;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Message {
+public class Message extends BaseTimeEntity {
     @GeneratedValue
     @Id
     @Column(name = "message_id")
@@ -25,7 +26,7 @@ public class Message {
     private String content;
 
     @CreatedDate
-    private LocalDateTime createDate;
+    private String createDate;
 
     @ManyToOne
     @JoinColumn(name = "chatRoom_id")
