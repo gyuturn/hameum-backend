@@ -51,9 +51,11 @@ public class GameRecordService {
         gameMostChampionRecord = new GameMostChampionRecord();
         ArrayList<Class>champion = new ArrayList<>(20);
 
-        JSONObject spellFile = parsingJsonFIle(getPath("Spell"));
-        JSONArray runeFile = parsingJsonFIleArray(getPath("Rune"));
-        JSONObject itemFile = readJsonFromUrl("https://ddragon.leagueoflegends.com/cdn/12.15.1/data/ko_KR/item.json");
+//        JSONObject spellFile = parsingJsonFIle(getPath("Spell"));
+//        JSONArray runeFile = parsingJsonFIleArray(getPath("Rune"));
+        JSONArray runeFile = readJsonArrayFromUrl("https://ddragon.leagueoflegends.com/cdn/12.15.1/data/ko_KR/runesReforged.json");
+        JSONObject spellFile = readJsonObjFromUrl("https://ddragon.leagueoflegends.com/cdn/12.15.1/data/ko_KR/summoner.json");
+        JSONObject itemFile = readJsonObjFromUrl("https://ddragon.leagueoflegends.com/cdn/12.15.1/data/ko_KR/item.json");
         String userPid = getUserPid(lolName);
         ArrayList matchList = getMatchId(userPid);
         for (int i = 0; i < 20; i++){
@@ -79,7 +81,7 @@ public class GameRecordService {
         userRecord.put("gameMode", (String)info.get("gameMode"));
         String championName = (String)user.get("championName");
         userRecord.put("championName", championName);
-        userRecord.put("championImg", championImgService.getChampionImg(championName));
+        userRecord.put("championUI", championImgService.getChampionImg(championName));
         setKdaWinRate(user, twentyRecord);
         matchKdaAndWinRecord(participants, user, userRecord);
         matchMetaDataSet(user, userRecord, rune, spell, item);
@@ -98,7 +100,7 @@ public class GameRecordService {
         for (int i = 0; i < 10; i++){
             getPlayers((JSONObject)participants.get(i), players, i); // get player's info
         }
-        user.put("averageTier", IntToTier((int)avgTier));
+        user.put("Tier", IntToTier((int)avgTier));
         return players;
     }
 
@@ -361,14 +363,14 @@ public class GameRecordService {
         if (kdaRound.length() >= 5)
             kdaRound = kdaRound.substring(0, 4);
         String winRound = Integer.toString((int)(gameTwentyRecord.getCalculatedWinRate() * 100));
-        json.put("kill", Double.toString(avgKill));
-        json.put("death", Double.toString(avgDeath));
-        json.put("assist", Double.toString(avgAssist));
+        json.put("averageKill", Double.toString(avgKill));
+        json.put("averageDeath", Double.toString(avgDeath));
+        json.put("averageAssist", Double.toString(avgAssist));
         json.put("win", Integer.toString(gameTwentyRecord.getWin()));
         json.put("lose", Integer.toString(gameTwentyRecord.getLose()));
         json.put("draw", Integer.toString(gameTwentyRecord.getDraw()));
         json.put("winRate", winRound + "%");
-        json.put("kda",  kdaRound);
+        json.put("averageKda",  kdaRound);
         return json;
     }
 
@@ -435,23 +437,23 @@ public class GameRecordService {
         return retNum;
     }
 
-    public JSONObject parsingJsonFIle(String realPath) throws IOException, org.json.simple.parser.ParseException {
-        FileReader reader = new FileReader(realPath);
-        JSONParser parser = new JSONParser();
-        JSONObject jsonObject = (JSONObject) parser.parse(reader);
-        return jsonObject;
-    }
-
-    public JSONArray parsingJsonFIleArray(String realPath) throws IOException, org.json.simple.parser.ParseException {
-        FileReader reader = new FileReader(realPath);
-        JSONParser parser = new JSONParser();
-        JSONArray jsonA = (JSONArray) parser.parse(reader);
-        return jsonA;
-    }
-
-    public String getPath(String path){
-        return "src/main/resources/RuneMetaData/" + path + ".json";
-    }
+//    public JSONObject parsingJsonFIle(String realPath) throws IOException, org.json.simple.parser.ParseException {
+//        FileReader reader = new FileReader(realPath);
+//        JSONParser parser = new JSONParser();
+//        JSONObject jsonObject = (JSONObject) parser.parse(reader);
+//        return jsonObject;
+//    }
+//
+//    public JSONArray parsingJsonFIleArray(String realPath) throws IOException, org.json.simple.parser.ParseException {
+//        FileReader reader = new FileReader(realPath);
+//        JSONParser parser = new JSONParser();
+//        JSONArray jsonA = (JSONArray) parser.parse(reader);
+//        return jsonA;
+//    }
+//
+//    public String getPath(String path){
+//        return "src/main/resources/RuneMetaData/" + path + ".json";
+//    }
 
     private ResponseEntity<String> getResponseEntityByUserName(String userName){
         String url="https://kr.api.riotgames.com/lol/summoner/v4/summoners/by-name/";
@@ -694,9 +696,25 @@ public class GameRecordService {
         return jsonObj;    // Returning JSON
     }
 
-    public JSONObject readJsonFromUrl(String url) throws IOException, org.json.simple.parser.ParseException {
-        JSONObject json = readJsonFromUrlMethod(url);  // calling method in order to read.
-        return json;
+    public JSONArray readJsonArrayFromUrlMethod(String link)throws io.jsonwebtoken.io.IOException, java.io.IOException, org.json.simple.parser.ParseException {
+        InputStream input = new URL(link).openStream();
+        BufferedReader re = new BufferedReader(new InputStreamReader(input, Charset.forName("UTF-8")));
+        // Buffer Reading In UTF-8
+        String text = Read(re);
+        text = text.substring(0, text.length() - 1);
+        JSONParser parser = new JSONParser();
+        Object obj = parser.parse(new StringReader(text));
+        JSONArray jsonArray = (JSONArray) obj;
+        input.close();
+        return jsonArray;    // Returning JSON
+    }
+
+    public JSONObject readJsonObjFromUrl(String url) throws IOException, org.json.simple.parser.ParseException {
+        return readJsonFromUrlMethod(url);  // calling method in order to read.
+    }
+
+    public JSONArray readJsonArrayFromUrl(String url) throws IOException, org.json.simple.parser.ParseException {
+        return readJsonArrayFromUrlMethod(url);
     }
 
     public void setItemInfo(JSONObject item, JSONArray itemArray, JSONObject user, int i){

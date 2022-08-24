@@ -113,7 +113,6 @@ public class LinePreferenceService {
             }
             else {
                 winRate = (int)map.get(key);
-                System.out.println("key = " + key);
                 linePreference.put("secondLinePreference", key);
                 linePreference.put("secondLinePlayed", String.valueOf(winRate));
             }
