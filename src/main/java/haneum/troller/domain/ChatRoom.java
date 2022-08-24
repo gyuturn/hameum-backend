@@ -22,7 +22,8 @@ public class ChatRoom {
     @Column(name = "chatRoom_id")
     private Long chatRoomId;
 
-    private String opponent;
+//    private String opponent;
+    private Long opponentId;
 
     @OneToMany(mappedBy = "chatRoom")
     private List<MemberChat> memberChats = new ArrayList<>();
@@ -31,8 +32,8 @@ public class ChatRoom {
     private List<Message> messages = new ArrayList<>();
 
     @Builder
-    public ChatRoom(String opponent){
-        this.opponent = opponent;
+    public ChatRoom(Long opponent) {
+        this.opponentId = opponent;
     }
 
 
