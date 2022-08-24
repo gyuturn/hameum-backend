@@ -34,31 +34,52 @@ public class ChatResController {
     private final MemberChatRepository memberChatRepository;
     private final MemberRepository memberRepository;
 
-
     @Operation(summary = "채팅방 생성 api", description = "채팅방 생성을 위한 api")
     @ApiResponses(
             value = {
-                    @ApiResponse(responseCode = "200",description = "정상적 조회"),
-                    @ApiResponse(responseCode = "404",description = "해당 유저가 없음")
+                    @ApiResponse(responseCode = "200", description = "이전에 만든방이 존재하였기에 이전의 방 조회"),
+                    @ApiResponse(responseCode = "201", description = "새로운 방 생성"),
+                    @ApiResponse(responseCode = "404", description = "해당 유저가 없음")
             }
     )
     @PostMapping("/room")
     @Auth
-    public ResponseEntity createChatroom(@RequestHeader("JWT-accessToken") String accessToken,@RequestParam("opponent")String lolName){
+    public ResponseEntity createChatroom(@RequestHeader("JWT-accessToken") String accessToken, @RequestParam("opponent") String lolName) {
+        Long memberId = Long.valueOf(jwtService.getSubjectByToken(accessToken));
+        Member ourSelfMember = memberRepository.findById((memberId)).get();
+        Member opponentMember = memberRepository.findByLolName(lolName).get(0);
+
+        //채팅방 존재하는지 조회
+        /**
+         1.accesstoken으로 채팅방 조회
+         2.그 중 lolname과 일치하는방이 있는지 조회
+         */
+        List<MemberChat> memberChat = memberChatRepository.findByMember(ourSelfMember);
+        for (MemberChat mchat : memberChat) {
+            ChatRoom ExistingChatRoom = chatRoomRepository.findById(mchat.getChatRoom().getChatRoomId()).get();
+            if (ExistingChatRoom.getOpponentId() == opponentMember.getMemberId()) {
+                ChatRoomDto chatRoomDto = ChatRoomDto.builder()
+                        .ChatRoomId(ExistingChatRoom.getChatRoomId())
+                        .OpponentLolName(opponentMember.getLolName())
+                        .build();
+                return new ResponseEntity(chatRoomDto, HttpStatus.OK);
+            }
+
+        }
+
+
+        //채팅방 생성
         ChatRoom chatRoom = chatRoomRepository.save(ChatRoom.builder()
-                .opponent(lolName)
+                .opponent(opponentMember.getMemberId())
                 .build());
 
-        Long memberId = Long.valueOf(jwtService.getSubjectByToken(accessToken));
-        Member member1 = memberRepository.findById((memberId)).get();
-        Member member2 = memberRepository.findByLolName(lolName).get(0);
 
         memberChatRepository.save(MemberChat.builder()
-                .member(member1)
+                .member(ourSelfMember)
                 .chatRoom(chatRoom)
                 .build());
         memberChatRepository.save(MemberChat.builder()
-                .member(member2)
+                .member(opponentMember)
                 .chatRoom(chatRoom)
                 .build());
 
@@ -67,7 +88,7 @@ public class ChatResController {
                 .ChatRoomId(chatRoom.getChatRoomId())
                 .OpponentLolName(lolName)
                 .build();
-        return new ResponseEntity(chatRoomDto, HttpStatus.OK);
+        return new ResponseEntity(chatRoomDto, HttpStatus.CREATED);
     }
 
     @Operation(summary = "채팅방 조회 api", description = "자신과 연결되어 있는 채팅방을 조회함.")
@@ -84,9 +105,12 @@ public class ChatResController {
 
         List<ChatRoomDto> chatRoomDtoList = new ArrayList<>();
         for (MemberChat memberChat : memberChatList) {
+
+            Member memberOpponent = memberRepository.findById(memberChat.getChatRoom().getOpponentId()).get();
+
             chatRoomDtoList.add(ChatRoomDto.builder()
                     .ChatRoomId(memberChat.getChatRoom().getChatRoomId())
-                    .OpponentLolName(memberChat.getChatRoom().getOpponent())
+                    .OpponentLolName(memberOpponent.getLolName())
                     .build());
         }
 
