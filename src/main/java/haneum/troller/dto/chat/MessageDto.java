@@ -14,7 +14,7 @@ import java.time.LocalDateTime;
 public class MessageDto {
     private Long chatRoomId;
 
-    private String sender;
+    private String accessToken;
 
     private String content;
 
