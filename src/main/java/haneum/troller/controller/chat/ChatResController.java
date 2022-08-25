@@ -4,10 +4,12 @@ import haneum.troller.common.aop.annotation.Auth;
 import haneum.troller.domain.ChatRoom;
 import haneum.troller.domain.Member;
 import haneum.troller.domain.MemberChat;
+import haneum.troller.domain.Message;
 import haneum.troller.dto.chat.ChatRoomDto;
 import haneum.troller.repository.ChatRoomRepository;
 import haneum.troller.repository.MemberChatRepository;
 import haneum.troller.repository.MemberRepository;
+import haneum.troller.repository.MessageRepository;
 import haneum.troller.service.security.JwtService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -33,6 +35,7 @@ public class ChatResController {
     private final JwtService jwtService;
     private final MemberChatRepository memberChatRepository;
     private final MemberRepository memberRepository;
+    private final MessageRepository messageRepository;
 
     @Operation(summary = "채팅방 생성 api", description = "채팅방 생성을 위한 api")
     @ApiResponses(
@@ -115,5 +118,18 @@ public class ChatResController {
         }
 
         return new ResponseEntity(chatRoomDtoList, HttpStatus.OK);
+    }
+
+    @Operation(summary = "채팅방 이전 메시지 조회 api", description = "채팅방에 보관된 메시지를 return")
+    @ApiResponses(
+            value = {
+                    @ApiResponse(responseCode = "200", description = "정상적 조회"),
+            }
+    )
+    @GetMapping("/rooms/messages/{roomId}")
+    public ResponseEntity selectAllChatRoom(@PathVariable Long roomId){
+        List<Message> messages = chatRoomRepository.findById(roomId).get().getMessages();
+        return new ResponseEntity(messages, HttpStatus.OK);
+
     }
 }
