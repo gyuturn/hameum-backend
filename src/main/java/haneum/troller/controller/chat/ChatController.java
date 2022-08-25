@@ -2,11 +2,14 @@ package haneum.troller.controller.chat;
 
 
 import haneum.troller.domain.ChatRoom;
+import haneum.troller.domain.Member;
 import haneum.troller.domain.Message;
 import haneum.troller.dto.chat.MessageDto;
 import haneum.troller.dto.chat.MessageReturnDto;
 import haneum.troller.repository.ChatRoomRepository;
+import haneum.troller.repository.MemberRepository;
 import haneum.troller.repository.MessageRepository;
+import haneum.troller.service.security.JwtService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.messaging.handler.annotation.MessageMapping;
@@ -20,16 +23,21 @@ public class ChatController {
     private final SimpMessageSendingOperations messagingTemplate;
     private final MessageRepository messageRepository;
     private final ChatRoomRepository chatRoomRepository;
-
+    private final JwtService jwtService;
+    private final MemberRepository memberRepository;
     //app/chat/message
     @MessageMapping("/chat/message")
     public void message(MessageDto messageDto) {
         ChatRoom chatRoom = chatRoomRepository.findById(messageDto.getChatRoomId()).get();
 
+        String accessToken = messageDto.getAccessToken();
+        Member member = memberRepository.findById(Long.valueOf(Long.valueOf(jwtService.getSubjectByToken(accessToken)))).get();
+        String lolName = member.getLolName();
+
         Message message = Message.builder()
                 .chatRoom(chatRoom)
                 .content(messageDto.getContent())
-                .sender(messageDto.getSender())
+                .sender(lolName)
                 .build();
         messageRepository.save(message);
 
