@@ -27,8 +27,8 @@ public class JwtService {
     MemberService memberService;
 
     public JwtDto makeTokensForLogin(Member member) {
-        String accessToken = createAccessToken(member.getMemberId(), 60 * 1000); //토큰 주기 1분으로 설정 (test)            String refreshToken = jwtEncoder.createRefreshToken(member.getEmail(), 60 * 1000*2); //토큰 주기 1주일으로 설정 (test)
-        String refreshToken = createRefreshToken(member.getEmail(), 60 * 1000*2); //토큰 주기 2분으로 설정 (test)
+        String accessToken = createAccessToken(member.getMemberId(), 60*1000*60*24); //토큰 주기 24시간으로 설정 (test)            String refreshToken = jwtEncoder.createRefreshToken(member.getEmail(), 60 * 1000*2); //토큰 주기 1주일으로 설정 (test)
+        String refreshToken = createRefreshToken(member.getEmail(), 60*1000*60*24); //토큰 주기 48시간으로 설정 (test)
         memberService.updateRefreshToken(member, refreshToken);
 
         log.info("accessToken: {}", accessToken);
