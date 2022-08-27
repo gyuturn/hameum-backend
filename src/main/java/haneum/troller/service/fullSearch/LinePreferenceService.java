@@ -32,7 +32,7 @@ public class LinePreferenceService {
     private static final String AcceptLanguage="ko-kr";
     private static final String AcceptCharset="application/x-www-form-urlencoded; charset=UTF-8";
     private static final String Origin="https://developer.riotgames.com";
-    private static final String ApiKey= LolApiKey.API_KEY;
+    private static final String ApiKey= LolApiKey.randomApiKey();
     private String summonerName;
     public GameRecordService gameRecordService;
 
