@@ -65,6 +65,13 @@ public class Swagger2Config {
     }
 
 
+    @Bean
+    public GroupedOpenApi dataFlowApi() {
+        return GroupedOpenApi.builder()
+                .group("DataFlow")
+                .pathsToMatch("/api/dataflow/**")
+                .build();
+    }
 
     @Bean
     public OpenAPI springShopOpenAPI() {
