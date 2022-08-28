@@ -12,12 +12,14 @@ import haneum.troller.repository.MessageRepository;
 import haneum.troller.service.security.JwtService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.simp.SimpMessageSendingOperations;
 import org.springframework.stereotype.Controller;
 
 @RequiredArgsConstructor
 @Controller
+@Slf4j
 public class ChatController {
 
     private final SimpMessageSendingOperations messagingTemplate;
