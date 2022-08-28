@@ -130,6 +130,5 @@ public class ChatResController {
     public ResponseEntity selectAllChatRoom(@PathVariable Long roomId){
         List<Message> messages = chatRoomRepository.findById(roomId).get().getMessages();
         return new ResponseEntity(messages, HttpStatus.OK);
-
     }
 }
