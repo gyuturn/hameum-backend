@@ -1,6 +1,7 @@
 package haneum.troller.domain;
 
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import haneum.troller.Enum.LoginType;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -29,6 +30,7 @@ public class ChatRoom {
     private List<MemberChat> memberChats = new ArrayList<>();
 
     @OneToMany(mappedBy = "chatRoom")
+    @JsonManagedReference
     private List<Message> messages = new ArrayList<>();
 
     @Builder

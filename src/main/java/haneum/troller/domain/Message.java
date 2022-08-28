@@ -1,6 +1,7 @@
 package haneum.troller.domain;
 
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -28,8 +29,9 @@ public class Message extends BaseTimeEntity {
     @CreatedDate
     private String createDate;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "chatRoom_id")
+    @JsonBackReference
     private ChatRoom chatRoom;
 
     @Builder
