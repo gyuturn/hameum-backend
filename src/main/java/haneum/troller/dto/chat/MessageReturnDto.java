@@ -18,4 +18,14 @@ public class MessageReturnDto {
 
     private String content;
     private String createDate;
+
+    @Override
+    public String toString() {
+        return "MessageReturnDto{" +
+                "chatRoomId=" + chatRoomId +
+                ", sender='" + sender + '\'' +
+                ", content='" + content + '\'' +
+                ", createDate='" + createDate + '\'' +
+                '}';
+    }
 }

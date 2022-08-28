@@ -48,6 +48,7 @@ public class ChatResController {
     @PostMapping("/room")
     @Auth
     public ResponseEntity createChatroom(@RequestHeader("JWT-accessToken") String accessToken, @RequestParam("opponent") String lolName) {
+        log.info("채팅방 생성 및 조회");
         Long memberId = Long.valueOf(jwtService.getSubjectByToken(accessToken));
         Member ourSelfMember = memberRepository.findById((memberId)).get();
         Member opponentMember = memberRepository.findByLolName(lolName).get(0);
@@ -65,6 +66,7 @@ public class ChatResController {
                         .ChatRoomId(ExistingChatRoom.getChatRoomId())
                         .OpponentLolName(opponentMember.getLolName())
                         .build();
+                log.info("이미 존재하는 채팅방 발견");
                 return new ResponseEntity(chatRoomDto, HttpStatus.OK);
             }
 
@@ -91,6 +93,7 @@ public class ChatResController {
                 .ChatRoomId(chatRoom.getChatRoomId())
                 .OpponentLolName(lolName)
                 .build();
+        log.info("채팅방 새로 생성");
         return new ResponseEntity(chatRoomDto, HttpStatus.CREATED);
     }
 
@@ -102,6 +105,7 @@ public class ChatResController {
     )
     @GetMapping("/rooms/all")
     public ResponseEntity selectAllChatRoom(@RequestHeader("JWT-accessToken") String accessToken) {
+        log.info("채팅방 전체 조회(관련된 채팅)");
         Long memberId = Long.valueOf(jwtService.getSubjectByToken(accessToken));
         Member member = memberRepository.findById((memberId)).get();
         List<MemberChat> memberChatList = memberChatRepository.findByMember(member);
@@ -127,7 +131,8 @@ public class ChatResController {
             }
     )
     @GetMapping("/rooms/messages/{roomId}")
-    public ResponseEntity selectAllChatRoom(@PathVariable Long roomId){
+    public ResponseEntity selectAllChatRoom(@PathVariable Long roomId) {
+        log.info("메세지 조회");
         List<Message> messages = chatRoomRepository.findById(roomId).get().getMessages();
         return new ResponseEntity(messages, HttpStatus.OK);
     }
