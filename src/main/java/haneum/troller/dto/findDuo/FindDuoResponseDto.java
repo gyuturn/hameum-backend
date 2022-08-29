@@ -5,7 +5,7 @@ import lombok.Data;
 import java.util.ArrayList;
 
 @Data
-public class FindDuoDto {
+public class FindDuoResponseDto {
     private String lolName;
 
     private ArrayList<String> mostChampion;
