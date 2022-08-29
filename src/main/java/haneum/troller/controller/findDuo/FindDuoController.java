@@ -37,7 +37,7 @@ public class FindDuoController{
     )
     @ApiResponses(
             value ={
-//                    @ApiResponse(responseCode = "201", description = ""), // 차후 규민형 컴펌 받아야 함
+//                    @ApiResponse(responseCode = "201", description = "")
 //                    @ApiResponse(responseCode = "400", description = "") // 차후 규민형 컴펌 받아야 함
             }
     )
