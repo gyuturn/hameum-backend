@@ -240,7 +240,7 @@ public class GameRecordService {
         csPerMinutes /= 10;
         int visionWard = ParseToInt(user, "visionWardsBoughtInGame");
         userRecord.put("cs", String.valueOf(cs));
-        userRecord.put("csPerMiutes", String.valueOf(csPerMinutes));
+        userRecord.put("csPerMinutes", String.valueOf(csPerMinutes));
         userRecord.put("visionWard", String.valueOf(visionWard));
     }
 
@@ -722,16 +722,16 @@ public class GameRecordService {
         JSONObject itemInfo = new JSONObject();
         int itemInt = ParseToInt(user, "item" + i);
         if (itemInt == 0){
-            itemInfo.put("item" + i, "None");
-            itemInfo.put("itemImg" + i, "None");
+            itemInfo.put("item", "None");
+            itemInfo.put("itemImg", "None");
             itemArray.add(itemInfo);
             return ;
         }
         String dataStr = Integer.toString(ParseToInt(user, "item" + i));
         JSONObject itemData = (JSONObject) data.get(dataStr);
         String itemNameStr = (String)itemData.get("name");
-        itemInfo.put("item" + i, itemNameStr);
-        itemInfo.put("item" + i + "Img", setItemImg(dataStr));
+        itemInfo.put("item", itemNameStr);
+        itemInfo.put("itemImg", setItemImg(dataStr));
         itemArray.add(itemInfo);
     }
 }
