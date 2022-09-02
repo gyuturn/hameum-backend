@@ -662,10 +662,10 @@ public class GameRecordService {
     }
 
     public String setSpellImg(String img){
-        return "http://ddragon.leagueoflegends.com/cdn/10.3.1/img/spell/" + img + ".png";
+        return "http://ddragon.leagueoflegends.com/cdn/12.15.1/img/spell/" + img + ".png";
     }
     public String setItemImg(String img){
-        return "http://ddragon.leagueoflegends.com/cdn/10.3.1/img/item/" + img + ".png";
+        return "http://ddragon.leagueoflegends.com/cdn/12.15.1/img/item/" + img + ".png";
     }
 
     public String Read(Reader re) throws io.jsonwebtoken.io.IOException, java.io.IOException {     // class Declaration
