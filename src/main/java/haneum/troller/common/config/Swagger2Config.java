@@ -68,7 +68,7 @@ public class Swagger2Config {
     @Bean
     public GroupedOpenApi findDuo() {
         return GroupedOpenApi.builder()
-                .group("Rank")
+                .group("findDuo")
                 .pathsToMatch("/api/findDuo/**")
                 .build();
     }
