@@ -73,6 +73,14 @@ public class Swagger2Config {
                 .build();
     }
 
+    public GroupedOpenApi findDuo() {
+        return GroupedOpenApi.builder()
+                .group("findDuo")
+                .pathsToMatch("/api/findDuo/**")
+                .build();
+    }
+
+
     @Bean
     public OpenAPI springShopOpenAPI() {
         return new OpenAPI()

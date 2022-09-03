@@ -30,6 +30,7 @@ public class ChatController {
     //app/chat/message
     @MessageMapping("/chat/message")
     public void message(MessageDto messageDto) {
+        log.info("채팅메세지보냄");
         ChatRoom chatRoom = chatRoomRepository.findById(messageDto.getChatRoomId()).get();
 
         String accessToken = messageDto.getAccessToken();
