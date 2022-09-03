@@ -3,6 +3,7 @@ package haneum.troller.controller.dataflow;
 
 import haneum.troller.domain.Member;
 import haneum.troller.dto.dataflow.LocalDateTimeDto;
+import haneum.troller.dto.dataflow.MemberListDto;
 import haneum.troller.repository.MemberRepository;
 import haneum.troller.service.dataflow.LocalDateService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -49,7 +50,10 @@ public class DataFlowResController {
                 forUpdateMembersId.add(member.getMemberId());
             }
         }
-        return new ResponseEntity(forUpdateMembersId, HttpStatus.OK);
+
+        return new ResponseEntity(MemberListDto.builder()
+                .memberList(forUpdateMembersId)
+                .build(), HttpStatus.OK);
     }
 
 
