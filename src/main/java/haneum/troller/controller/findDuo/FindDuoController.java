@@ -12,6 +12,7 @@ import haneum.troller.service.findDuo.FindDuoService;
 import haneum.troller.service.findDuo.FindDuoToDtoService;
 import haneum.troller.service.security.JwtService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -20,8 +21,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-@Tag(name="Duo search",description = "듀오보드 작성 및 필터링 API")// 차후 규민형 컴펌 받아야 함
-@RequestMapping("/api/findDuo")// 차후 규민형 컴펌 받아야 함
+@Tag(name="Duo search",description = "듀오보드 작성 및 필터링 API")
+@RequestMapping("/api/findDuo")
 @RestController
 @Slf4j
 @RequiredArgsConstructor
@@ -37,11 +38,10 @@ public class FindDuoController{
     )
     @ApiResponses(
             value ={
-//                    @ApiResponse(responseCode = "201", description = "")
-//                    @ApiResponse(responseCode = "400", description = "") // 차후 규민형 컴펌 받아야 함
+                    @ApiResponse(responseCode = "201", description = "듀오찾기 글 등록 생성")
             }
     )
-    @PostMapping("/exampleEndPoint/create")// 노션에 있는 내용으로 일단 사용
+    @PostMapping("/create")// 노션에 있는 내용으로 일단 사용
     @Auth
     public ResponseEntity createFindDuoBoard(@RequestHeader("JWT-accessToken")String accessToken, @RequestBody FindDuoRequestDto findDuoRequestDto)throws Exception{
 // access token 인증 및 롤네임 추출 = lolName;
@@ -54,7 +54,7 @@ public class FindDuoController{
         return new ResponseEntity(boardRepository.findAll(), HttpStatus.OK);
     }
 
-    @DeleteMapping("/exampleEndPoint/delete")
+    @DeleteMapping("/delete")
     public ResponseEntity deleteFindDuoBoard(@RequestBody FindDuoDeleteDto findDuoDeleteDto){
         long id = findDuoDeleteDto.getId();
         boardRepository.deleteById(id);
