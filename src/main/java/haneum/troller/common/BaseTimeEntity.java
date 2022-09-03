@@ -1,4 +1,4 @@
-package haneum.troller.domain;
+package haneum.troller.common;
 
 import org.apache.tomcat.jni.Local;
 import org.springframework.data.annotation.CreatedDate;

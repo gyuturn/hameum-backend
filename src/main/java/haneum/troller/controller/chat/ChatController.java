@@ -50,6 +50,8 @@ public class ChatController {
                 .content(message.getContent())
                 .sender(message.getSender())
                 .build();
+        log.info("메세지 보냄");
+        log.info("messageDto: {}", messageReturnDto);
 
         messagingTemplate.convertAndSend("/topic/chat_room/" + messageDto.getChatRoomId(), messageReturnDto);
     }
