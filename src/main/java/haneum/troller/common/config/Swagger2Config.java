@@ -73,6 +73,7 @@ public class Swagger2Config {
                 .build();
     }
 
+    @Bean
     public GroupedOpenApi findDuo() {
         return GroupedOpenApi.builder()
                 .group("findDuo")
