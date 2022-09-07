@@ -27,8 +27,8 @@ public class FindDuoService{
                 .death(Integer.parseInt(findDuoResponseDto.getDeath()))
                 .assist(Integer.parseInt(findDuoResponseDto.getAssist()))
                 .tier(findDuoResponseDto.getTier())
-                .favorChampions(findDuoResponseDto.getMostChampion())
-                .favorPosition(findDuoResponseDto.getFavorPositionDesc())
+                .favorChampions(findDuoResponseDto.getFavorChampions())
+                .favorPosition(findDuoResponseDto.getFavorPosition())
                 .lolName(findDuoResponseDto.getLolName())
                 .build();
         return board;

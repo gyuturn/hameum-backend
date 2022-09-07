@@ -51,6 +51,7 @@ public class FindDuoController{
         Board board = findDuoService.requestDtoToEntity(findDuoRequestDto);  // requestBody 에 있는 내용을 entity에 추가해야 함
         board = findDuoService.riotApiToEntity(findDuoResponseDto, board);
         // 라이엇 api 데이터 파싱한 내용을 entity에 추가해야 함
+        boardRepository.save(board);
         return new ResponseEntity(boardRepository.findAll(), HttpStatus.OK);
     }
 

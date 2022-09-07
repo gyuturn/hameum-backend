@@ -35,6 +35,7 @@ public class LinePreferenceService {
     private static final String ApiKey= LolApiKey.randomApiKey();
     private String summonerName;
     public GameRecordService gameRecordService;
+    public GetRiotApi getRiotApi;
 
 
     public LinePreferenceDto getLinePreferenceDto(String lolName) throws ParseException, IOException {
@@ -59,7 +60,7 @@ public class LinePreferenceService {
         return linePreferenceDto;
     }
     public void settingLinePreference(String matchId, ArrayList position) throws ParseException, IOException {
-        String response = getResponseEntityByMatchId(matchId);
+        String response = getRiotApi.getResponseEntityByMatchId(matchId);
 
         //FileReader reader = new FileReader("/Users/ojeongmin/Documents/lol_json/test" + Integer.toString(i) + ".json");
         JSONParser parser = new JSONParser();
@@ -218,39 +219,7 @@ public class LinePreferenceService {
 
         return response;
     }
-
-//    private ResponseEntity<String> getResponseEntityByMatchId(String matchId) {
-//        String url="https://asia.api.riotgames.com/lol/match/v5/matches/";
-//        url+=matchId;
-//        url+="?api_key=";
-//        url += ApiKey;
-//
-//        // create an instance of RestTemplate
-//        RestTemplate restTemplate = new RestTemplate();
-//
-//        // create headers
-//        HttpHeaders headers = new HttpHeaders();
-//        headers.set("User-Agent", UserAgent);
-//        headers.set("Accept-Language", AcceptLanguage);
-//            headers.set("Accept-Charset",AcceptCharset);
-////        headers.set("Origin", Origin);
-////        headers.set( "X-Riot-Token", ApiKey);
-//
-//        headers.set("User-Agent", "PostmanRuntime/7.29.0");
-//        headers.set("Accept", "*/*");
-//        headers.set("Accept-Encoding", "gzip, deflate, br");
-//        headers.set("Connection", "keep-alive");
-//
-//        HttpEntity request = new HttpEntity(headers);
-//
-//        ResponseEntity response = restTemplate.exchange(
-//                url,
-//                HttpMethod.GET,
-//                request,
-//                String.class
-//        );
-//        return response;
-//    }
+    /*
     private String getResponseEntityByMatchId(String matchId) {
         String url = "https://asia.api.riotgames.com/lol/match/v5/matches/";
         url += matchId;
@@ -274,7 +243,7 @@ public class LinePreferenceService {
             return null;
         }
         return entity;
-    }
+    } */
 
 
 }

@@ -8,7 +8,7 @@ import java.util.ArrayList;
 public class FindDuoResponseDto {
     private String lolName;
 
-    private ArrayList<String> mostChampion;
+    private ArrayList<String> favorChampions;
 
     private String tier; //png url
 
@@ -26,5 +26,5 @@ public class FindDuoResponseDto {
 
     private String leaguePoint; //setTierPoint
 
-    private String favorPositionDesc; //matchLinePreference
+    private String favorPosition; //matchLinePreference
 }
