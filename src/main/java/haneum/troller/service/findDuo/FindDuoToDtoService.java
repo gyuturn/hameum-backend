@@ -49,7 +49,7 @@ public class FindDuoToDtoService {
         setKdaWinRateDto(gameTwentyRecord, findDuoDto);
         setMostThree(champions, findDuoDto); // most three champ;
         findDuoDto.setLolName(lolName);
-        findDuoDto.setFavorPositionDesc(matchLinePreference(lines));
+        findDuoDto.setFavorPosition(matchLinePreference(lines));
         return findDuoDto;
     }
 
@@ -88,7 +88,7 @@ public class FindDuoToDtoService {
             if (i == 3)
                 break;
         }
-        findDuoDto.setMostChampion(championArray);
+        findDuoDto.setFavorChampions(championArray);
     }
 
     public String matchLinePreference(ArrayList position){

@@ -12,6 +12,7 @@ import lombok.Setter;
 @Setter
 public class FindDuoRequestDto{
     private int vaildTime;
+    private long timeStamp;
     private Boolean mike;
     private String title;
     private String content;
@@ -22,6 +23,7 @@ public class FindDuoRequestDto{
                 .mike(mike)
                 .title(title)
                 .content(content)
+                .timeStamp(timeStamp)
                 .build();
     }
 }

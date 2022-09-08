@@ -50,11 +50,13 @@ public class Board{
 
     private String content;
 
+    private long timeStamp;
+
 
     @Builder
     public Board(long id, String lolName, ArrayList favorChampions, String favorPosition, String tier,
                  int win, int lose, int killing, int death, int assist, int vaildTime, Boolean mike,
-                 String title, String content){
+                 String title, String content, long timeStamp){
         this.id = id;
         this.lolName = lolName;
         this.favorChampions = favorChampions;
@@ -69,6 +71,7 @@ public class Board{
         this.mike = mike;
         this.title = title;
         this.content = content;
+        this.timeStamp = timeStamp;
     }
 
     public Board toEntity(){
@@ -87,6 +90,7 @@ public class Board{
                 .mike(mike)
                 .title(title)
                 .content(content)
+                .timeStamp(timeStamp)
                 .build();
     }
 }
