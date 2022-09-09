@@ -11,7 +11,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @Setter
 public class FindDuoRequestDto{
-    private int vaildTime;
+    private String positionData;
     private long timeStamp;
     private Boolean mike;
     private String title;
@@ -19,7 +19,7 @@ public class FindDuoRequestDto{
 
     public Board toEntity(){
         return Board.builder()
-                .vaildTime(vaildTime)
+                .positionData(positionData)
                 .mike(mike)
                 .title(title)
                 .content(content)

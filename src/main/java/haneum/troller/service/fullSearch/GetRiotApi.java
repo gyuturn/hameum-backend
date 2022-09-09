@@ -20,22 +20,27 @@ public class GetRiotApi {
         url += "?api_key=";
         url += ApiKey;
 
+        System.out.println("debug0");
         HttpResponse response;
         String entity;
         try {
+            System.out.println("debug1111");
             HttpClient client = HttpClientBuilder.create().build();
             HttpGet request = new HttpGet(url);
 
             response = client.execute(request);
-
+            System.out.println("debug1");
             if (response.getStatusLine().getStatusCode() != 200) {
                 return null;
             }
+            System.out.println("debug2");
             entity = EntityUtils.toString(response.getEntity());
         } catch (IOException e) {
             e.printStackTrace();
+            System.out.println("debug3");
             return null;
         }
+        System.out.println("debug4");
         return entity;
     }
 }

@@ -66,13 +66,14 @@ public class FullSearchController {
     )
     @Parameter(name="lolName",description = "롤네임")
     @GetMapping("user/line")
-    public ResponseEntity getTokenForLine(@RequestParam(value = "lolName") String lolName) throws LolApiToJsonException {
+    public ResponseEntity getTokenForLine(@RequestParam(value = "lolName") String lolName) throws LolApiToJsonException, org.json.simple.parser.ParseException, IOException {
         LinePreferenceDto linePreferenceDto = null;
-        try {
-            linePreferenceDto = linePreferenceService.getLinePreferenceDto(lolName);
-        } catch (Exception e) {
-            throw new LolApiToJsonException("롤 api에 호출시 에러");
-        }
+        linePreferenceDto = linePreferenceService.getLinePreferenceDto(lolName);
+//        try {
+//            linePreferenceDto = linePreferenceService.getLinePreferenceDto(lolName);
+//        } catch (Exception e) {
+//            throw new LolApiToJsonException("롤 api에 호출시 에러");
+//        }
         return new ResponseEntity(linePreferenceDto, HttpStatus.OK);
     }
 

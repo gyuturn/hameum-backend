@@ -42,7 +42,7 @@ public class Board{
 
     private int assist;
 
-    private int vaildTime;
+    private String positionData;
 
     private Boolean mike;
 
@@ -55,7 +55,7 @@ public class Board{
 
     @Builder
     public Board(long id, String lolName, ArrayList favorChampions, String favorPosition, String tier,
-                 int win, int lose, int killing, int death, int assist, int vaildTime, Boolean mike,
+                 int win, int lose, int killing, int death, int assist, String positionData, Boolean mike,
                  String title, String content, long timeStamp){
         this.id = id;
         this.lolName = lolName;
@@ -67,7 +67,7 @@ public class Board{
         this.killing = killing;
         this.death =death;
         this.assist = assist;
-        this.vaildTime = vaildTime;
+        this.positionData = positionData;
         this.mike = mike;
         this.title = title;
         this.content = content;
@@ -86,7 +86,7 @@ public class Board{
                 .killing(killing)
                 .death(death)
                 .assist(assist)
-                .vaildTime(vaildTime)
+                .positionData(positionData)
                 .mike(mike)
                 .title(title)
                 .content(content)

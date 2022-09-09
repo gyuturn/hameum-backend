@@ -60,7 +60,7 @@ public class LinePreferenceService {
         return linePreferenceDto;
     }
     public void settingLinePreference(String matchId, ArrayList position) throws ParseException, IOException {
-        String response = getRiotApi.getResponseEntityByMatchId(matchId);
+        String response = getResponseEntityByMatchId(matchId);
 
         //FileReader reader = new FileReader("/Users/ojeongmin/Documents/lol_json/test" + Integer.toString(i) + ".json");
         JSONParser parser = new JSONParser();
@@ -219,7 +219,7 @@ public class LinePreferenceService {
 
         return response;
     }
-    /*
+
     private String getResponseEntityByMatchId(String matchId) {
         String url = "https://asia.api.riotgames.com/lol/match/v5/matches/";
         url += matchId;
@@ -243,7 +243,7 @@ public class LinePreferenceService {
             return null;
         }
         return entity;
-    } */
+    }
 
 
 }

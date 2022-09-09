@@ -37,7 +37,7 @@ public class FindDuoService{
     public Board requestDtoToEntity(FindDuoRequestDto findDuoRequestDto) {
         Board newBoard;
         newBoard = Board.builder()
-                .vaildTime(findDuoRequestDto.getVaildTime())
+                .positionData(findDuoRequestDto.getPositionData())
                 .mike(findDuoRequestDto.getMike())
                 .content(findDuoRequestDto.getContent())
                 .title(findDuoRequestDto.getTitle())
