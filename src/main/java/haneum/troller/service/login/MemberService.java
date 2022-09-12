@@ -71,6 +71,7 @@ public class MemberService {
     @Transactional(readOnly = false)
     public Member updateRefreshToken(Member member, String token) {
         member.updateRefreshToken(token);
+        memberRepository.save(member);
         return member;
     }
 

@@ -81,6 +81,14 @@ public class Swagger2Config {
                 .build();
     }
 
+//    @Bean
+//    public GroupedOpenApi machineLearning() {
+//        return GroupedOpenApi.builder()
+//                .group("findDuo")
+//                .pathsToMatch("/api/findDuo/**")
+//                .build();
+//    }
+
 
     @Bean
     public OpenAPI springShopOpenAPI() {
