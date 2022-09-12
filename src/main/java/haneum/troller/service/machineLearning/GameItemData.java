@@ -16,10 +16,23 @@ public class GameItemData extends GameItem {
 
     @Override
     public void setItemInfo(JSONObject item, JSONArray itemArray, JSONObject user, int i){
-        super.setItemInfo(item, itemArray, user, i);
+
         JSONObject data = (JSONObject) item.get("data");
         JSONObject itemInfo = new JSONObject();
         int itemInt = fullSerachUtil.ParseToInt(user, "item" + i);
-        itemInfo.put("itemNumber", 0);
+        if (itemInt == 0){
+            itemInfo.put("item", "None");
+            itemInfo.put("itemImg", "None");
+            itemInfo.put("itemNumber", 0);
+            itemArray.add(itemInfo);
+            return ;
+        }
+        String dataStr = Integer.toString(fullSerachUtil.ParseToInt(user, "item" + i));
+        JSONObject itemData = (JSONObject) data.get(dataStr);
+        String itemNameStr = (String)itemData.get("name");
+        itemInfo.put("item", itemNameStr);
+        itemInfo.put("itemImg", setItemImg(dataStr));
+        itemInfo.put("itemNumber", itemInt);
+        itemArray.add(itemInfo);
     }
 }

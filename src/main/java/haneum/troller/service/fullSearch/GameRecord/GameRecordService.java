@@ -39,7 +39,7 @@ public class GameRecordService {
     @Autowired
     private GameItem gameItem;
     @Autowired
-    private MatchDataSet matchMetaDataSet;
+    private MatchDataSet matchDataSet;
     @Autowired
     private MatchPlayer matchPlayer;
 
@@ -83,11 +83,11 @@ public class GameRecordService {
         userRecord.put("championName", championName);
         userRecord.put("championUI", championImgService.getChampionImg(championName));
         fullSearchSet.setKdaWinRateTwenty(user, twentyRecord);
-        matchMetaDataSet.matchKdaAndWinRecord(participants, user, userRecord);
-        matchMetaDataSet.matchMetaDataSetting(user, userRecord, rune, spell, item);
+        matchDataSet.matchKdaAndWinRecord(participants, user, userRecord);
+        matchDataSet.matchMetaDataSetting(user, userRecord, rune, spell, item);
         matchPlayer.getKillRate(info, user, userRecord);
-        int playTime = matchMetaDataSet.matchPlayTime(info, userRecord);
-        matchMetaDataSet.matchCsAndWard(user, userRecord, playTime);
+        int playTime = matchDataSet.matchPlayTime(info, userRecord);
+        matchDataSet.matchCsAndWard(user, userRecord, playTime);
         matchPlayer.getAvgTier(lolName, userRecord);
         JSONArray players = matchPlayer.setPlayers(user, participants); //10명의 사용자 정보 링크와 평균 티어만 구하는 함수.
         userRecord.put("players", players);

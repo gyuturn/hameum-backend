@@ -51,9 +51,13 @@ public class MatchDataSetMachineLearning extends MatchDataSet {
         userRecord.put("primaryRuneImg", primaryRuneImg);
         userRecord.put("semiRune", semiRune);
         userRecord.put("semiRuneImg", semiRuneImg);
+        userRecord.put("primaryRuneNumber", primaryRuneNum);
+        userRecord.put("semiRuneNumber", semiRuneNum);
         // -> 룬 셋팅 완료
         gameSpellData.setSpellInfo(userRecord, fullSerachUtil.ParseToInt(user, "summoner1Id"), "spell1");
         gameSpellData.setSpellInfo(userRecord, fullSerachUtil.ParseToInt(user, "summoner2Id"), "spell2");
+        userRecord.put("spellNumber1" ,fullSerachUtil.ParseToInt(user, "summoner1Id"));
+        userRecord.put("spellNumber2" ,fullSerachUtil.ParseToInt(user, "summoner2Id"));
         // -> 스펠 셋팅 완료
         JSONArray itemArray = new JSONArray();
         for (int i = 0; i < 7; i++){

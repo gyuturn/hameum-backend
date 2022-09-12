@@ -28,7 +28,7 @@ public class LinePreferenceService {
     public LinePreferenceDto getLinePreferenceDto(String lolName, int count) throws ParseException, IOException {
 
         LinePreferenceDto linePreferenceDto = new LinePreferenceDto();
-        ArrayList<String> position = new ArrayList<>(20);
+        ArrayList<String> position = new ArrayList<>(count);
         String userPid = null;
         try {
                  userPid = getRiotApiUtil.getUserPid(lolName);

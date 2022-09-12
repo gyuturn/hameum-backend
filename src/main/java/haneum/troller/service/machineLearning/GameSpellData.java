@@ -10,6 +10,6 @@ public class GameSpellData extends GameSpell {
     @Override
     public void setSpellInfo(JSONObject userRecord , int spellNum, String flag){
         super.setSpellInfo(userRecord, spellNum, flag);
-        userRecord.put("spellNumber" ,spellNum);
+//        userRecord.put("spellNumber" ,spellNum);
     }
 }

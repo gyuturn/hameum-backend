@@ -39,7 +39,7 @@ public class MachineLearningSaveDataController {
     private final GameRecordMachineLearningService gameRecordMachineLearningService;
     private final MostThreeChampionService mostThreeChampionService;
 
-    @Operation(summary = "유저의 라인정보(포지션) 머신러닝 데이터 콜렉트 api", description = "유저의 line정보와 해당 라인에 대한 판수를 json return")
+    @Operation(summary = "유저의 라인정보(포지션) 머신러닝 데이터 api", description = "유저의 line정보와 해당 라인에 대한 판수를 json return")
     @ApiResponses(
             value = {
                     @ApiResponse(responseCode = "200",description = "정상적 조회"),
@@ -48,8 +48,8 @@ public class MachineLearningSaveDataController {
             }
     )
     @Parameter(name="lolName",description = "롤네임")
-    @GetMapping("user/line")
-    public ResponseEntity getTokenForLine(@RequestParam(value = "lolName") String lolName, @RequestParam(value = "number") int count)
+    @GetMapping("user/lineMachineLearning")
+    public ResponseEntity getTokenForLine(@RequestParam(value = "lolName") String lolName, @RequestParam(value = "count", required = false, defaultValue = "20") int count)
             throws LolApiToJsonException, org.json.simple.parser.ParseException, IOException {
         LinePreferenceDto linePreferenceDto = null;
         linePreferenceDto = linePreferenceService.getLinePreferenceDto(lolName, count);
@@ -72,7 +72,7 @@ public class MachineLearningSaveDataController {
             }
     )
     @Parameter(name="lolName",description = "롤네임")
-    @GetMapping("user/most")
+    @GetMapping("user/mostMachineLearning")
     public ResponseEntity getTokenForMost(@RequestParam(value = "lolName") String lolName, @RequestParam(value = "count", required = false, defaultValue = "20") int count) throws LolApiToJsonException {
         MostThreeChampionDto mostThreeChampionDto = null;
         try{
