@@ -28,10 +28,10 @@ import java.io.IOException;
 import java.text.ParseException;
 
 
-@Tag(name="userGameRecord",description = "유저의 게임전적 조회시 사옹되는 API")
+@Tag(name="userGameRecord",description = "유저의 게임전적 조회시 데이터 저장용 API")
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/search/")
+@RequestMapping("/api/dataflow/")
 @Slf4j
 public class MachineLearningSaveDataController {
 
