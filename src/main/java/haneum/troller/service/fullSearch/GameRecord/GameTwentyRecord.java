@@ -1,4 +1,4 @@
-package haneum.troller.service.fullSearch;
+package haneum.troller.service.fullSearch.GameRecord;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -38,4 +38,6 @@ public class GameTwentyRecord {
         kda = kda / 100;
         return kda;
     }
+
+
 }

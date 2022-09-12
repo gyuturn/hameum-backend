@@ -1,4 +1,4 @@
-package haneum.troller.service.fullSearch;
+package haneum.troller.service.fullSearch.mostThreeChampion;
 
 import lombok.Getter;
 import lombok.Setter;
