@@ -39,4 +39,6 @@ public abstract class BaseTimeEntity {
     public void onPreUpdate(){
         this.modifiedDate = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss"));
     }
+
+
 }
