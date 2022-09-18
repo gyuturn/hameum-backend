@@ -81,6 +81,8 @@ public class  GameRecordMachineLearningService {
         userRecord.put("gameMode", (String)info.get("gameMode"));
         userRecord.put("matchId", matchId);
         String championName = (String)user.get("championName");
+        int hitDamageToChampion = fullSerachUtil.ParseToInt(user, "totalDamageDealtToChampions");
+        userRecord.put("hitDamageToChampion", hitDamageToChampion);
         userRecord.put("championName", championName);
         userRecord.put("championUI", championImgService.getChampionImg(championName));
         fullSearchSet.setKdaWinRateTwenty(user, twentyRecord);

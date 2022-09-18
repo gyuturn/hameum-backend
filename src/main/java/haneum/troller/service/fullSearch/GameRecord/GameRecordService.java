@@ -80,6 +80,8 @@ public class GameRecordService {
         JSONObject user = getUserFromJson(participants, lolName);
         userRecord.put("gameMode", (String)info.get("gameMode"));
         userRecord.put("matchId", matchId);
+        int hitDamageToChampion = fullSerachUtil.ParseToInt(user, "totalDamageDealtToChampions");
+        userRecord.put("hitDamageToChampion", hitDamageToChampion);
         String championName = (String)user.get("championName");
         userRecord.put("championName", championName);
         userRecord.put("championUI", championImgService.getChampionImg(championName));
