@@ -79,7 +79,7 @@ public class  GameRecordMachineLearningService {
         JSONObject userRecord = new JSONObject();
         JSONObject user = getUserFromJson(participants, lolName);
         userRecord.put("gameMode", (String)info.get("gameMode"));
-        userRecord.put("matchId", matchId)
+        userRecord.put("matchId", matchId);
         String championName = (String)user.get("championName");
         userRecord.put("championName", championName);
         userRecord.put("championUI", championImgService.getChampionImg(championName));
