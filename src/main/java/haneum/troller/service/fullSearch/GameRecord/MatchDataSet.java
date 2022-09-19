@@ -123,6 +123,9 @@ public class MatchDataSet {
     public int matchPlayTime(JSONObject info, JSONObject userRecord){
         int playTime = fullSerachUtil.ParseToInt(info, "gameDuration");
         long playBefore = Instant.now().getEpochSecond() - Math.round((Long.parseLong(String.valueOf(info.get("gameEndTimestamp"))) / 1000));
+        int h = playTime / 3600;
+        int m = (playTime - (h * 3600)) / 60;
+        userRecord.put("playtimeMinutes", m);
         userRecord.put("playtime", playTimeFormatting(playTime));
         userRecord.put("lastPlayTime", lastPlayTimeFormatting((int)playBefore));
         return playTime;
