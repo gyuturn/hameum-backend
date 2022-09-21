@@ -90,6 +90,8 @@ public class  GameRecordMachineLearningService {
         matchDataSetMachineLearning.matchMetaDataSetting(user, userRecord, rune, spell, item);
         matchPlayer.getKillRate(info, user, userRecord);
         int playTime = matchDataSetMachineLearning.matchPlayTime(info, userRecord);
+        int startTime = Math.round((Long.parseLong(String.valueOf(info.get("gameStartTimestamp"))) / 1000));
+        userRecord.put("gameStartTimeStamp", startTime);
         matchDataSetMachineLearning.matchCsAndWard(user, userRecord, playTime);
         matchPlayer.getAvgTier(lolName, userRecord);
         JSONArray players = matchPlayer.setPlayers(user, participants); //10명의 사용자 정보 링크와 평균 티어만 구하는 함수.
