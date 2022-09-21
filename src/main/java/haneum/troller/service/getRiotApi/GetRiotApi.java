@@ -52,7 +52,40 @@ public class GetRiotApi {
     public ResponseEntity<String> getResponseEntityByUserPid(String userPid, int count){
         String url="https://asia.api.riotgames.com/lol/match/v5/matches/by-puuid/";
         url+=userPid;
-        url+="/ids?start=0&count=" + Integer.toString(count);
+        url+="/ids?";
+        url+="start=0&count=" + Integer.toString(count);
+        url+="&api_key=";
+        url += ApiKey;
+
+        // create an instance of RestTemplate
+        RestTemplate restTemplate = new RestTemplate();
+
+        // create headers
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("User-Agent", UserAgent);
+        headers.set("Accept-Language", AcceptLanguage);
+        headers.set("Accept-Charset",AcceptCharset);
+        headers.set("Origin", Origin);
+
+        HttpEntity request = new HttpEntity(headers);
+
+        ResponseEntity<String> response = restTemplate.exchange(
+                url,
+                HttpMethod.GET,
+                request,
+                String.class
+        );
+
+        return response;
+    }
+
+    public ResponseEntity<String> getResponseEntityByUserPidType(String userPid, int count, String type){
+        String url="https://asia.api.riotgames.com/lol/match/v5/matches/by-puuid/";
+        url+=userPid;
+        url+="/ids?";
+        if (type.compareTo("true") == 0)
+            url+="type=ranked&";
+        url+="start=0&count=" + Integer.toString(count);
         url+="&api_key=";
         url += ApiKey;
 

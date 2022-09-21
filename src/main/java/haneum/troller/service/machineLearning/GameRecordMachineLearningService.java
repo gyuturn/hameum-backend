@@ -44,7 +44,7 @@ public class  GameRecordMachineLearningService {
     @Autowired
     private MatchPlayer matchPlayer;
 
-    public GameRecordDto getGameRecord(String lolName, int count) throws ParseException, org.json.simple.parser.ParseException, IOException {
+    public GameRecordDto getGameRecord(String lolName, int count, String type) throws ParseException, org.json.simple.parser.ParseException, IOException {
 
         GameRecordDto gameRecordDto = new GameRecordDto();
         JSONArray gameRecordArray = new JSONArray();
@@ -57,7 +57,7 @@ public class  GameRecordMachineLearningService {
         JSONObject spellFile = getJsonFromUrl.readJsonObjFromUrl("https://ddragon.leagueoflegends.com/cdn/12.15.1/data/ko_KR/summoner.json");
         JSONObject itemFile = getJsonFromUrl.readJsonObjFromUrl("https://ddragon.leagueoflegends.com/cdn/12.15.1/data/ko_KR/item.json");
         String userPid = getRiotApiUtil.getUserPid(lolName);
-        ArrayList matchList = getRiotApiUtil.getMatchId(userPid, count);
+        ArrayList matchList = getRiotApiUtil.machineLearningGetMatchId(userPid, count, type);
         for (int i = 0; i < count; i++){
             gameRecordArray.add(setGameRecord((String) matchList.get(i), gameTwentyRecord, runeFile,
                     spellFile, itemFile,lolName));

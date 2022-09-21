@@ -118,9 +118,10 @@ public class MachineLearningSaveDataController {
     )
     @Parameter(name="lolName",description = "롤네임")
     @GetMapping("user/gameRecordMachineLearning")
-    public ResponseEntity getTokenForGameRecord(@RequestParam(value = "lolName") String lolName, @RequestParam(value = "gameNumber", required = false, defaultValue = "20") int count) throws LolApiToJsonException, ParseException, org.json.simple.parser.ParseException, IOException {
+    public ResponseEntity getTokenForGameRecord(@RequestParam(value = "lolName") String lolName, @RequestParam(value = "gameNumber", required = false, defaultValue = "20") int count
+        ,@RequestParam(value = "type", required = false, defaultValue = "false") String type) throws LolApiToJsonException, ParseException, org.json.simple.parser.ParseException, IOException {
         GameRecordDto gameRecordDto = null;
-        gameRecordDto = gameRecordMachineLearningService.getGameRecord(lolName, count);
+        gameRecordDto = gameRecordMachineLearningService.getGameRecord(lolName, count, type);
 //        try {
 //            gameRecordDto = gameRecordService.getGameRecord(lolName);
 //        } catch (Exception e) {

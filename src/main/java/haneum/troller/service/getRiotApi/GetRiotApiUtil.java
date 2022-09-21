@@ -39,6 +39,18 @@ public class GetRiotApiUtil {
         return matchList;
     }
 
+    public ArrayList machineLearningGetMatchId(String pid, int count, String type) throws org.json.simple.parser.ParseException {
+        ResponseEntity<String>response = getRiotApi.getResponseEntityByUserPidType(pid, count, type);
+        JSONParser parser = new JSONParser();
+        Object obj = parser.parse(response.getBody());
+        JSONArray jsonArray = (JSONArray) obj;
+        ArrayList matchList = new ArrayList<>(count);
+        for (int i = 0; i < count; i++){
+            matchList.add(jsonArray.get(i));
+        }
+        return matchList;
+    }
+
     public JSONObject getUserFromJson(JSONArray participants){
         String userName = getSummonerName();
         JSONObject user = null;
