@@ -87,6 +87,7 @@ public class FullSearchSet {
         json.put("draw", Integer.toString(gameTwentyRecord.getDraw()));
         json.put("winRate", winRound + "%");
         json.put("averageKda",  kdaRound);
+        json.put("averageKillRate", Integer.toString(gameTwentyRecord.getTotalKillRelated()) + "%");
         return json;
     }
 

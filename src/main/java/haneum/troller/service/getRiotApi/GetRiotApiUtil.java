@@ -47,6 +47,7 @@ public class GetRiotApiUtil {
         ArrayList matchList = new ArrayList<>(count);
         for (int i = 0; i < count; i++){
             matchList.add(jsonArray.get(i));
+            System.out.println("i = " + i);
         }
         return matchList;
     }

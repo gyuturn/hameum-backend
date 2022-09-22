@@ -131,12 +131,13 @@ public class MatchDataSet {
         return playTime;
     }
 
-    public void matchCsAndWard(JSONObject user, JSONObject userRecord, int playTime){
+    public void matchCsAndWardAndLevel(JSONObject user, JSONObject userRecord, int playTime){
         int cs = fullSerachUtil.ParseToInt(user, "neutralMinionsKilled") + fullSerachUtil.ParseToInt(user, "totalMinionsKilled");
         double csPerMinutes = (double)cs / ((double)playTime / 60) * 10;
         csPerMinutes = Math.round(csPerMinutes);
         csPerMinutes /= 10;
         int visionWard = fullSerachUtil.ParseToInt(user, "visionWardsBoughtInGame");
+        userRecord.put("championLevel", String.valueOf(fullSerachUtil.ParseToInt(user, "champLevel")));
         userRecord.put("cs", String.valueOf(cs));
         userRecord.put("csPerMinutes", String.valueOf(csPerMinutes));
         userRecord.put("visionWard", String.valueOf(visionWard));

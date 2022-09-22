@@ -90,7 +90,7 @@ public class MatchPlayer {
             userRecord.put("averageTier", tier + rank);
     }
 
-    public void getKillRate(JSONObject info, JSONObject user ,JSONObject userRecord){
+    public void getKillRate(JSONObject info, JSONObject user ,JSONObject userRecord, GameTwentyRecord twentyRecord){
         int kill = fullSerachUtil.ParseToInt(user, "kills");
         int userTeamId = fullSerachUtil.ParseToInt(user ,"teamId");
         int totalKill = 0;
@@ -111,6 +111,7 @@ public class MatchPlayer {
             totalKill = totalKill = fullSerachUtil.ParseToInt(objectChamp ,"kills");
         }
         killRate = (int)(Math.round((double) kill / (double) totalKill * 100));
+        twentyRecord.setTotalKillRelated(twentyRecord.getTotalKillRelated() + killRate);
         userRecord.put("killRate", String.valueOf(killRate)+"%"); // 킬관여 세팅
     }
 

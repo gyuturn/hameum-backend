@@ -25,7 +25,7 @@ public class LinePreferenceService {
     @Autowired
     public GetRiotApiUtil getRiotApiUtil;
 
-    public LinePreferenceDto getLinePreferenceDto(String lolName, int count) throws ParseException, IOException {
+    public LinePreferenceDto getLinePreferenceDto(String lolName, int count, String type) throws ParseException, IOException {
 
         LinePreferenceDto linePreferenceDto = new LinePreferenceDto();
         ArrayList<String> position = new ArrayList<>(count);
@@ -35,7 +35,7 @@ public class LinePreferenceService {
         } catch (ParseException e) {
             e.printStackTrace();
         }
-        ArrayList matchList = getRiotApiUtil.getMatchId(userPid, count);
+        ArrayList matchList = getRiotApiUtil.machineLearningGetMatchId(userPid, count, type);
         for (int i = 0; i < count; i++){ // 원래는 i = 0 i < 20
             settingLinePreference((String)matchList.get(i), position);
         }

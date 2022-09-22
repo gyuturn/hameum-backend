@@ -71,7 +71,7 @@ public class FullSearchController {
     )
     @Parameter(name="lolName",description = "롤네임")
     @GetMapping("user/line")
-    public ResponseEntity getTokenForLine(@RequestParam(value = "lolName") String lolName)
+    public ResponseEntity getTokenForLine(@RequestParam(value = "lolName") String lolName, @RequestParam(value = "type", required = false, defaultValue = "false") String type)
             throws IOException, JSONException {
         log.info("유저 라인 조회-롤 닉네임:{}", lolName);
         Optional<GameRecord> gameRecord = gameRecordRepository.findById(lolName);
@@ -80,7 +80,6 @@ public class FullSearchController {
         String lineInfo = gameRecordJsonService.userLineFilter(gameRecord, lolName, encodedLolName);
         JSONObject lineInfoJson = new JSONObject(lineInfo);
         return new ResponseEntity(lineInfoJson.toString(4), HttpStatus.OK);
-
     }
 
 
@@ -95,7 +94,7 @@ public class FullSearchController {
     )
     @Parameter(name="lolName",description = "롤네임")
     @GetMapping("user/most")
-    public ResponseEntity getTokenForMost(@RequestParam(value = "lolName") String lolName) throws UnsupportedEncodingException, JSONException {
+    public ResponseEntity getTokenForMost(@RequestParam(value = "lolName") String lolName, @RequestParam(value = "type", required = false, defaultValue = "false") String type) throws UnsupportedEncodingException, JSONException {
         log.info("유저 모스트챔피언 조회-롤 닉네임:{}", lolName);
         Optional<GameRecord> gameRecord = gameRecordRepository.findById(lolName);
         String encodedLolName = URLEncoder.encode(lolName, "utf-8");

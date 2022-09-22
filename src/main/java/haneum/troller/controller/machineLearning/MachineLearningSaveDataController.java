@@ -73,10 +73,11 @@ public class MachineLearningSaveDataController {
     )
     @Parameter(name="lolName",description = "롤네임")
     @GetMapping("user/lineMachineLearning")
-    public ResponseEntity getTokenForLine(@RequestParam(value = "lolName") String lolName, @RequestParam(value = "count", required = false, defaultValue = "20") int count)
+    public ResponseEntity getTokenForLine(@RequestParam(value = "lolName") String lolName, @RequestParam(value = "count", required = false, defaultValue = "20") int count
+            ,@RequestParam(value = "type", required = false, defaultValue = "false") String type)
             throws LolApiToJsonException, org.json.simple.parser.ParseException, IOException {
         LinePreferenceDto linePreferenceDto = null;
-        linePreferenceDto = linePreferenceService.getLinePreferenceDto(lolName, count);
+        linePreferenceDto = linePreferenceService.getLinePreferenceDto(lolName, count, type);
 //        try {
 //            linePreferenceDto = linePreferenceService.getLinePreferenceDto(lolName);
 //        } catch (Exception e) {
@@ -97,10 +98,11 @@ public class MachineLearningSaveDataController {
     )
     @Parameter(name="lolName",description = "롤네임")
     @GetMapping("user/mostMachineLearning")
-    public ResponseEntity getTokenForMost(@RequestParam(value = "lolName") String lolName, @RequestParam(value = "count", required = false, defaultValue = "20") int count) throws LolApiToJsonException {
+    public ResponseEntity getTokenForMost(@RequestParam(value = "lolName") String lolName, @RequestParam(value = "count", required = false, defaultValue = "20") int count
+            ,@RequestParam(value = "type", required = false, defaultValue = "false") String type) throws LolApiToJsonException {
         MostThreeChampionDto mostThreeChampionDto = null;
         try{
-            mostThreeChampionDto = mostThreeChampionService.getMostThreeChampionDto(lolName, count);
+            mostThreeChampionDto = mostThreeChampionService.getMostThreeChampionDto(lolName, count, type);
         } catch (Exception e) {
             throw new LolApiToJsonException("롤 api에 호출시 에러");
         }
@@ -118,7 +120,7 @@ public class MachineLearningSaveDataController {
     )
     @Parameter(name="lolName",description = "롤네임")
     @GetMapping("user/gameRecordMachineLearning")
-    public ResponseEntity getTokenForGameRecord(@RequestParam(value = "lolName") String lolName, @RequestParam(value = "gameNumber", required = false, defaultValue = "20") int count
+    public ResponseEntity getTokenForGameRecord(@RequestParam(value = "lolName") String lolName, @RequestParam(value = "count", required = false, defaultValue = "20") int count
         ,@RequestParam(value = "type", required = false, defaultValue = "false") String type) throws LolApiToJsonException, ParseException, org.json.simple.parser.ParseException, IOException {
         GameRecordDto gameRecordDto = null;
         gameRecordDto = gameRecordMachineLearningService.getGameRecord(lolName, count, type);

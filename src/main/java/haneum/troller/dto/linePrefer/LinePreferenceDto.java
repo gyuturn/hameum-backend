@@ -15,4 +15,8 @@ public class LinePreferenceDto {
     private String firstLinePlayed;
 
     private String secondLinePlayed;
+
+//    private String firstLineWinRate;
+
+//    private String secondLineWinRate;
 }

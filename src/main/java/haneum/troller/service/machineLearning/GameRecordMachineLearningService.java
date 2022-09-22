@@ -62,6 +62,7 @@ public class  GameRecordMachineLearningService {
             gameRecordArray.add(setGameRecord((String) matchList.get(i), gameTwentyRecord, runeFile,
                     spellFile, itemFile,lolName));
         }
+        gameTwentyRecord.setTotalKillRelated(Math.round(gameTwentyRecord.getTotalKillRelated() / 20));
         gameRecordDto.setLatestTwentyRecords(fullSearchSet.setKdaWinRateDto(gameTwentyRecord, gameTwentyRecordObject));
         gameRecordDto.setGameRecord(gameRecordArray);
         return gameRecordDto;
@@ -88,11 +89,11 @@ public class  GameRecordMachineLearningService {
         fullSearchSet.setKdaWinRateTwenty(user, twentyRecord);
         matchDataSetMachineLearning.matchKdaAndWinRecord(participants, user, userRecord);
         matchDataSetMachineLearning.matchMetaDataSetting(user, userRecord, rune, spell, item);
-        matchPlayer.getKillRate(info, user, userRecord);
+        matchPlayer.getKillRate(info, user, userRecord, twentyRecord);
         int playTime = matchDataSetMachineLearning.matchPlayTime(info, userRecord);
         int startTime = Math.round((Long.parseLong(String.valueOf(info.get("gameStartTimestamp"))) / 1000));
         userRecord.put("gameStartTimeStamp", startTime);
-        matchDataSetMachineLearning.matchCsAndWard(user, userRecord, playTime);
+        matchDataSetMachineLearning.matchCsAndWardAndLevel(user, userRecord, playTime);
         matchPlayer.getAvgTier(lolName, userRecord);
         JSONArray players = matchPlayer.setPlayers(user, participants); //10명의 사용자 정보 링크와 평균 티어만 구하는 함수.
         userRecord.put("players", players);

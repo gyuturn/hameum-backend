@@ -37,7 +37,7 @@ public class MostThreeChampionService {
     @Autowired
     public FullSearchSet fullSearchSet;
 
-    public MostThreeChampionDto getMostThreeChampionDto(String lolName, int count) throws ParseException, IOException {
+    public MostThreeChampionDto getMostThreeChampionDto(String lolName, int count, String type) throws ParseException, IOException {
         MostThreeChampionDto mostThreeChampionDto = new MostThreeChampionDto();
         ArrayList<HashMap>champions = new ArrayList<>();
         String userPid = null;
@@ -46,7 +46,7 @@ public class MostThreeChampionService {
         } catch (ParseException e) {
             e.printStackTrace();
         }
-        ArrayList matchList = getRiotApiUtil.getMatchId(userPid, count);
+        ArrayList matchList = getRiotApiUtil.machineLearningGetMatchId(userPid, count, type);
         int cnt = 0;
         for (int i = 0; i < count; i++){
             settingMostChampion((String)matchList.get(i), champions, lolName);

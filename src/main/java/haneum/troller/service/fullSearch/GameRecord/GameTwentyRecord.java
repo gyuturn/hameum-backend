@@ -23,6 +23,8 @@ public class GameTwentyRecord {
 
     private int assist = 0;
 
+    private int totalKillRelated = 0;
+
     private double kda;
 
     public double getCalculatedWinRate() {
