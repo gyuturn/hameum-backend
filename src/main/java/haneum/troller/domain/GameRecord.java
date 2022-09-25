@@ -39,24 +39,48 @@ public class GameRecord extends BaseTimeEntityLocalDate {
     @Lob
     private String userInfo;
 
+    @Column(name = "full_record_rank", columnDefinition = "longtext")
+    @Lob
+    private String fullRecordRank;
+
+    @Column(name = "most_champion_rank", columnDefinition = "longtext")
+    @Lob
+    private String mostChampionRank;
+
+    @Column(name = "line_info_rank", columnDefinition = "longtext")
+    @Lob
+    private String lineInfoRank;
+
+
+
     @CreatedDate
     private LocalDateTime createDate;
 
     @LastModifiedDate
     private LocalDateTime modifiedDate;
 
-
     @Builder
-    public GameRecord(String lolName, String lineInfo, String fullRecord, String mostChampion, String userInfo) {
+    public GameRecord(String lolName, String lineInfo, String fullRecord, String mostChampion, String userInfo, String fullRecordRank, String mostChampionRank, String lineInfoRank, LocalDateTime createDate, LocalDateTime modifiedDate) {
         this.lolName = lolName;
         this.lineInfo = lineInfo;
         this.fullRecord = fullRecord;
         this.mostChampion = mostChampion;
         this.userInfo = userInfo;
+        this.fullRecordRank = fullRecordRank;
+        this.mostChampionRank = mostChampionRank;
+        this.lineInfoRank = lineInfoRank;
+        this.createDate = createDate;
+        this.modifiedDate = modifiedDate;
     }
+
 
     public GameRecord updateLineInfo(String lineInfo) {
         this.lineInfo = lineInfo;
+        return this;
+    }
+
+    public GameRecord updateLineInfoRank(String lineInfoRank) {
+        this.lineInfoRank = lineInfoRank;
         return this;
     }
 
@@ -65,8 +89,18 @@ public class GameRecord extends BaseTimeEntityLocalDate {
         return this;
     }
 
+    public GameRecord updateFullRecordRank(String fullRecordRank) {
+        this.fullRecordRank = fullRecordRank;
+        return this;
+    }
+
     public GameRecord updateMostChampion(String mostChampion) {
         this.mostChampion = mostChampion;
+        return this;
+    }
+
+    public GameRecord updateMostChampionRank(String mostChampionRank) {
+        this.mostChampionRank = mostChampionRank;
         return this;
     }
 
@@ -75,5 +109,7 @@ public class GameRecord extends BaseTimeEntityLocalDate {
         this.userInfo = userInfo;
         return this;
     }
+
+
 
 }
