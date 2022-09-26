@@ -53,9 +53,9 @@ public class  GameRecordMachineLearningService {
         GameMostChampionRecord gameMostChampionRecord;
         ArrayList<Class> champion = new ArrayList<>(20);
 
-        JSONArray runeFile = getJsonFromUrl.readJsonArrayFromUrl("https://ddragon.leagueoflegends.com/cdn/12.15.1/data/ko_KR/runesReforged.json");
-        JSONObject spellFile = getJsonFromUrl.readJsonObjFromUrl("https://ddragon.leagueoflegends.com/cdn/12.15.1/data/ko_KR/summoner.json");
-        JSONObject itemFile = getJsonFromUrl.readJsonObjFromUrl("https://ddragon.leagueoflegends.com/cdn/12.15.1/data/ko_KR/item.json");
+        JSONArray runeFile = getJsonFromUrl.readJsonArrayFromUrl("https://ddragon.leagueoflegends.com/cdn/12.18.1/data/ko_KR/runesReforged.json");
+        JSONObject spellFile = getJsonFromUrl.readJsonObjFromUrl("https://ddragon.leagueoflegends.com/cdn/12.18.1/data/ko_KR/summoner.json");
+        JSONObject itemFile = getJsonFromUrl.readJsonObjFromUrl("https://ddragon.leagueoflegends.com/cdn/12.18.1/data/ko_KR/item.json");
         String userPid = getRiotApiUtil.getUserPid(lolName);
         ArrayList matchList = getRiotApiUtil.machineLearningGetMatchId(userPid, count, type);
         for (int i = 0; i < count; i++){
