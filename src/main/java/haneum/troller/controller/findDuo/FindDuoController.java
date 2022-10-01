@@ -4,6 +4,7 @@ package haneum.troller.controller.findDuo;
 import haneum.troller.common.aop.annotation.Auth;
 import haneum.troller.domain.Board;
 import haneum.troller.dto.findDuo.FindDuoDeleteDto;
+import haneum.troller.dto.findDuo.FindDuoFilterDto;
 import haneum.troller.dto.findDuo.FindDuoRequestDto;
 import haneum.troller.dto.findDuo.FindDuoResponseDto;
 import haneum.troller.repository.BoardRepository;
@@ -15,8 +16,10 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.json.simple.parser.ParseException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -49,7 +52,7 @@ public class FindDuoController{
         String lolName = memberRepository.findById(subjectByToken).get().getLolName();
         FindDuoResponseDto findDuoResponseDto = findDuoToDtoService.getFindDuoDto(lolName);
         Board board = findDuoService.requestDtoToEntity(findDuoRequestDto);  // requestBody 에 있는 내용을 entity에 추가해야 함
-        board = findDuoService.riotApiToEntity(findDuoResponseDto, board);
+        board = findDuoService.riotApiToEntity(findDuoResponseDto, findDuoRequestDto, board);
         // 라이엇 api 데이터 파싱한 내용을 entity에 추가해야 함
         boardRepository.save(board);
         return new ResponseEntity(boardRepository.findAll(), HttpStatus.OK);
@@ -61,4 +64,40 @@ public class FindDuoController{
         boardRepository.deleteById(id);
         return new ResponseEntity(boardRepository.findAll(), HttpStatus.OK);
     }
+
+    public FindDuoRequestDto makeRequestDto(){
+        FindDuoRequestDto findDuoRequestDto = new FindDuoRequestDto();
+        findDuoRequestDto.setContent("test yap");
+        findDuoRequestDto.setPositionData("Top shin Byeong ja");
+        findDuoRequestDto.setTimeStamp(1111111111);
+        findDuoRequestDto.setMike(Boolean.FALSE);
+        findDuoRequestDto.setTitle("test title");
+        return findDuoRequestDto;
+    }
+
+    public ResponseEntity testBoard(FindDuoRequestDto findDuoRequestDto, String lolName) throws ParseException {
+        FindDuoResponseDto findDuoResponseDto = findDuoToDtoService.getFindDuoDto(lolName);
+        Board board = findDuoService.requestDtoToEntity(findDuoRequestDto);  // requestBody 에 있는 내용을 entity에 추가해야 함
+        board = findDuoService.riotApiToEntity(findDuoResponseDto, findDuoRequestDto, board);
+        // 라이엇 api 데이터 파싱한 내용을 entity에 추가해야 함
+        boardRepository.save(board);
+        return new ResponseEntity(boardRepository.findAll(), HttpStatus.OK);
+    }
+    @GetMapping("/test")
+    public void runTest() throws ParseException {
+        testBoard(makeRequestDto(), "akaps");
+        testBoard(makeRequestDto(), "봄내림");
+        testBoard(makeRequestDto(), "Tallis");
+    }
+    @GetMapping("/deleteTest")
+    public ResponseEntity deleteTest() {
+        boardRepository.deleteById(1L);
+        boardRepository.deleteById(3L);
+        return new ResponseEntity(boardRepository.findAll(), HttpStatus.OK);
+    }
+
+//    @GetMapping("/filter")
+//    public ResponseEntity filter(@RequestBody(required = false) FindDuoFilterDto findDuoFilterDto){
+//
+//    }
 }

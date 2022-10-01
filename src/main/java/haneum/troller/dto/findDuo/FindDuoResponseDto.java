@@ -2,8 +2,11 @@ package haneum.troller.dto.findDuo;
 
 
 import lombok.Data;
+import lombok.NoArgsConstructor;
+
 import java.util.ArrayList;
 
+@NoArgsConstructor
 @Data
 public class FindDuoResponseDto {
     private String lolName;
@@ -27,4 +30,8 @@ public class FindDuoResponseDto {
     private String leaguePoint; //setTierPoint
 
     private String favorPosition; //matchLinePreference
+
+    private String position;
+
+    private Double kda;
 }

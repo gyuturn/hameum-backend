@@ -1,18 +1,16 @@
 package haneum.troller.domain;
 
-import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.NoArgsConstructor;
-import org.hibernate.engine.profile.Fetch;
 //import org.springframework.data.annotation.Id;
 import javax.persistence.*;
-import javax.validation.constraints.NotBlank;
 import java.util.ArrayList;
 
 
 @Entity
+@NoArgsConstructor
 //@Table(name = "board")
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
+//@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Board{
 
     @Id
@@ -26,6 +24,7 @@ public class Board{
 //   @NotBlank
     private String lolName;
 
+    @Lob
     private ArrayList favorChampions;
 
     private String favorPosition;
@@ -36,11 +35,11 @@ public class Board{
 
     private int lose;
 
-    private int killing;
+    private double killing;
 
-    private int death;
+    private double death;
 
-    private int assist;
+    private double assist;
 
     private String positionData;
 
@@ -52,11 +51,15 @@ public class Board{
 
     private long timeStamp;
 
+    private String position;
+
+    private double kda;
 
     @Builder
     public Board(long id, String lolName, ArrayList favorChampions, String favorPosition, String tier,
-                 int win, int lose, int killing, int death, int assist, String positionData, Boolean mike,
-                 String title, String content, long timeStamp){
+                 int win, int lose, double killing, double death, double assist, String positionData, Boolean mike,
+                 String title, String content, long timeStamp, String position, double kda
+    ){
         this.id = id;
         this.lolName = lolName;
         this.favorChampions = favorChampions;
@@ -72,6 +75,8 @@ public class Board{
         this.title = title;
         this.content = content;
         this.timeStamp = timeStamp;
+        this.position = position;
+        this.kda = kda;
     }
 
     public Board toEntity(){
@@ -91,6 +96,8 @@ public class Board{
                 .title(title)
                 .content(content)
                 .timeStamp(timeStamp)
+                .position(position)
+                .kda(kda)
                 .build();
     }
 }
