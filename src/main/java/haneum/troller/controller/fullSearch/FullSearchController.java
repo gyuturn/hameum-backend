@@ -3,14 +3,18 @@ package haneum.troller.controller.fullSearch;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import haneum.troller.common.callApi.APIENV;
 import haneum.troller.common.callApi.CallApi;
 import haneum.troller.common.exception.exceptions.LolApiToJsonException;
 import haneum.troller.domain.GameRecord;
+import haneum.troller.domain.UserInfo;
+import haneum.troller.dto.dataflow.LolNameDto;
 import haneum.troller.dto.gameRecord.GameRecordDto;
 import haneum.troller.dto.linePrefer.LinePreferenceDto;
 import haneum.troller.dto.mostChampion.MostThreeChampionDto;
 import haneum.troller.dto.myPage.MyPageDto;
 import haneum.troller.repository.GameRecordRepository;
+import haneum.troller.repository.UserInfoRepository;
 import haneum.troller.service.fullSearch.GameRecord.GameRecordService;
 import haneum.troller.service.fullSearch.linePreference.LinePreferenceService;
 import haneum.troller.service.fullSearch.mostThreeChampion.MostThreeChampionService;
@@ -38,11 +42,12 @@ import java.util.Optional;
 @Tag(name="userGameRecord",description = "유저의 게임전적 조회시 사옹되는 API")
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/search/")
 @Slf4j
+@RequestMapping("/api/search/")
 public class FullSearchController {
     private final GameRecordRepository gameRecordRepository;
     private final GameRecordJsonService gameRecordJsonService;
+    private final UserInfoRepository userInfoRepository;
 
     @Operation(summary = "유저의 간략한정보 api", description = "전적검색/마이페이지에서 간략한 유저 정보를 알려주는 기능")
     @ApiResponses(
@@ -54,11 +59,29 @@ public class FullSearchController {
     @GetMapping("user/info")
     public ResponseEntity getTokenForMyPage(@RequestParam(value = "lolName") String lolName) throws UnsupportedEncodingException, JSONException {
         log.info("유저 간략정보 조회-롤 닉네임:{}", lolName);
+
         Optional<GameRecord> gameRecord = gameRecordRepository.findById(lolName);
-        String encodedLolName = URLEncoder.encode(lolName, "utf-8");
-        String userInfo = gameRecordJsonService.userInfoFilter(gameRecord, lolName, encodedLolName);
-        JSONObject userInfoJson = new JSONObject(userInfo);
-        return new ResponseEntity(userInfoJson.toString(4), HttpStatus.OK);
+        Optional<UserInfo> userInfoOptional = userInfoRepository.findById(lolName);
+
+        /**
+         * 전적검색/멀티서치 모두 해당 api를 첫번째로 불러오기에
+         * 해당 로직 추가(db에 해당 유저가 있는지 조회)
+         */
+        if (userInfoOptional.isEmpty()||gameRecord.isEmpty()) {
+            log.info("유저가 gamerecord 혹은 userInfo에 저장되어 있지않음:{}", lolName);
+            Gson gson = new Gson();
+            String toJson = gson.toJson(LolNameDto.builder().lolName(lolName).build());
+
+            CallApi.PostIncludeObject(APIENV.DATAFLOWURL, "/dataflow/record/update", toJson);
+
+            return new ResponseEntity(HttpStatus.NOT_FOUND);
+        }
+
+
+//        String encodedLolName = URLEncoder.encode(lolName, "utf-8");
+//        String userInfo = gameRecordJsonService.userInfoFilter(gameRecord, lolName, encodedLolName);
+//        JSONObject userInfoJson = new JSONObject(userInfo);
+        return new ResponseEntity(userInfoOptional.get(), HttpStatus.OK);
     }
 
     @Operation(summary = "유저의 라인정보(포지션) api", description = "유저의 line정보와 해당 라인에 대한 판수를 json return")
