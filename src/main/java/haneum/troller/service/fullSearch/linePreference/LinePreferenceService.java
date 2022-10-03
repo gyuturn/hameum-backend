@@ -89,17 +89,17 @@ public class LinePreferenceService {
         List<String> keySet = new ArrayList<>(map.keySet());
         keySet.sort((o1, o2) -> map.get(o2).compareTo(map.get(o1)));
         int i = 0;
-        int winRate = 0;
+        int played = 0;
         for (String key : keySet) {
             if (i == 0) {
-                winRate = (int)map.get(key);
+                played = (int)map.get(key);
                 linePreference.put("firstLinePreference", key);
-                linePreference.put("firstLinePlayed", String.valueOf(winRate));
+                linePreference.put("firstLinePlayed", String.valueOf(played));
             }
             else {
-                winRate = (int)map.get(key);
+                played = (int)map.get(key);
                 linePreference.put("secondLinePreference", key);
-                linePreference.put("secondLinePlayed", String.valueOf(winRate));
+                linePreference.put("secondLinePlayed", String.valueOf(played));
             }
             i++;
             if (i == 2)

@@ -64,6 +64,9 @@ dependencies {
 	//chatting
 	implementation 'org.springframework.boot:spring-boot-starter-websocket'
 	implementation 'com.google.code.gson:gson:2.8.0'
+
+	//findDuo
+	implementation 'com.google.code.gson:gson:2.8.5'
 }
 
 tasks.named('test') {

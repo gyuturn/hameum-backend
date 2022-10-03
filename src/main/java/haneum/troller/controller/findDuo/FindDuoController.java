@@ -1,6 +1,7 @@
 package haneum.troller.controller.findDuo;
 
 
+import com.google.gson.Gson;
 import haneum.troller.common.aop.annotation.Auth;
 import haneum.troller.domain.Board;
 import haneum.troller.dto.findDuo.FindDuoDeleteDto;
@@ -21,6 +22,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @Tag(name="Duo search",description = "듀오보드 작성 및 필터링 API")
 @RequestMapping("/api/findDuo")
 @RestController
@@ -33,6 +36,7 @@ public class FindDuoController{
     private final FindDuoToDtoService findDuoToDtoService;
     private final JwtService jwtService;
     private final MemberRepository memberRepository;
+    private final Gson gson;
 
     @Operation(summary = "듀오찾기 글 등록 및 필터링 api ", description = "듀오찾기 글 생성 및 조회" // 차후 규민형 컴펌 받아야 함
     )
@@ -58,13 +62,16 @@ public class FindDuoController{
         board = findDuoService.riotApiToEntity(findDuoResponseDto, findDuoRequestDto, board);
         // 라이엇 api 데이터 파싱한 내용을 entity에 추가해야 함
         boardRepository.save(board);
-        return new ResponseEntity(HttpStatus.OK);
+        List<Board> all = boardRepository.findAll();
+        System.out.println(all);
+        String json = gson.toJson(all);
+        return new ResponseEntity(all ,HttpStatus.CREATED);
     }
 
     @DeleteMapping("/delete")
     public ResponseEntity deleteFindDuoBoard(@RequestBody FindDuoDeleteDto findDuoDeleteDto){
         long id = findDuoDeleteDto.getId();
         boardRepository.deleteById(id);
-        return new ResponseEntity(boardRepository.findAll(), HttpStatus.OK);
+        return new ResponseEntity(boardRepository.findAll(), HttpStatus.CREATED);
     }
 }
