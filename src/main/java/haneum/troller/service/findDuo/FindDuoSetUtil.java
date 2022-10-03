@@ -34,13 +34,12 @@ public class FindDuoSetUtil {
         keySet.sort((o1, o2) -> (int) (map.get(o2) - map.get(o1)));
         int i = 0;
         for (String key : keySet){
-            championArray.add(championImgService.getChampionImg(String.valueOf(map.get(key))));
             if (i == 0)
-                findDuoDto.setChampion1(key);
+                findDuoDto.setChampion1(championImgService.getChampionImg(key));
             if (i == 1)
-                findDuoDto.setChampion2(key);
+                findDuoDto.setChampion2(championImgService.getChampionImg(key));
             if (i == 2)
-                findDuoDto.setChampion3(key);
+                findDuoDto.setChampion3(championImgService.getChampionImg(key));
             i++;
             if (i == 3)
                 break;
