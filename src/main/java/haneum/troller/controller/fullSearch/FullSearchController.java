@@ -11,6 +11,7 @@ import haneum.troller.dto.linePrefer.LinePreferenceDto;
 import haneum.troller.dto.mostChampion.MostThreeChampionDto;
 import haneum.troller.dto.myPage.MyPageDto;
 import haneum.troller.repository.GameRecordRepository;
+import haneum.troller.repository.UserInfoRepository;
 import haneum.troller.service.fullSearch.GameRecord.GameRecordService;
 import haneum.troller.service.fullSearch.linePreference.LinePreferenceService;
 import haneum.troller.service.fullSearch.mostThreeChampion.MostThreeChampionService;
@@ -38,11 +39,11 @@ import java.util.Optional;
 @Tag(name="userGameRecord",description = "유저의 게임전적 조회시 사옹되는 API")
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/search/")
 @Slf4j
 public class FullSearchController {
     private final GameRecordRepository gameRecordRepository;
     private final GameRecordJsonService gameRecordJsonService;
+    private final UserInfoRepository userInfoRepository;
 
     @Operation(summary = "유저의 간략한정보 api", description = "전적검색/마이페이지에서 간략한 유저 정보를 알려주는 기능")
     @ApiResponses(
@@ -54,6 +55,9 @@ public class FullSearchController {
     @GetMapping("user/info")
     public ResponseEntity getTokenForMyPage(@RequestParam(value = "lolName") String lolName) throws UnsupportedEncodingException, JSONException {
         log.info("유저 간략정보 조회-롤 닉네임:{}", lolName);
+
+        userInfoRepository.findById(lolName);
+
         Optional<GameRecord> gameRecord = gameRecordRepository.findById(lolName);
         String encodedLolName = URLEncoder.encode(lolName, "utf-8");
         String userInfo = gameRecordJsonService.userInfoFilter(gameRecord, lolName, encodedLolName);
