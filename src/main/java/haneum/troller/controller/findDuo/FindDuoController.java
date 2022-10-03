@@ -47,9 +47,15 @@ public class FindDuoController{
 // access token 인증 및 롤네임 추출 = lolName;
         Long subjectByToken = Long.valueOf(jwtService.getSubjectByToken(accessToken));
         String lolName = memberRepository.findById(subjectByToken).get().getLolName();
+//        FindDuoResponseDto findDuoResponseDto = findDuoToDtoService.getFindDuoDto(lolName);
+//        Board board = findDuoService.requestDtoToEntity(findDuoRequestDto);  // requestBody 에 있는 내용을 entity에 추가해야 함
+//        board = findDuoService.riotApiToEntity(findDuoResponseDto, board);
+//        // 라이엇 api 데이터 파싱한 내용을 entity에 추가해야 함
+//        boardRepository.save(board);
+//        return new ResponseEntity(boardRepository.findAll(), HttpStatus.OK);
         FindDuoResponseDto findDuoResponseDto = findDuoToDtoService.getFindDuoDto(lolName);
         Board board = findDuoService.requestDtoToEntity(findDuoRequestDto);  // requestBody 에 있는 내용을 entity에 추가해야 함
-        board = findDuoService.riotApiToEntity(findDuoResponseDto, board);
+        board = findDuoService.riotApiToEntity(findDuoResponseDto, findDuoRequestDto, board);
         // 라이엇 api 데이터 파싱한 내용을 entity에 추가해야 함
         boardRepository.save(board);
         return new ResponseEntity(boardRepository.findAll(), HttpStatus.OK);

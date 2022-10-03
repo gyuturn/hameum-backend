@@ -46,6 +46,7 @@ public class FindDuoToDtoService {
         ArrayList champions = new ArrayList<>();
         ArrayList retArray = new ArrayList();
         ArrayList lines = new ArrayList();
+        String preferLine = null;
         GameTwentyRecord gameTwentyRecord = new GameTwentyRecord();
         setTierPoint(lolName, findDuoDto);
         for (int i = 0; i < 20; i++){
@@ -54,7 +55,9 @@ public class FindDuoToDtoService {
         setKdaWinRateDto(gameTwentyRecord, findDuoDto);
         findDuoSetUtil.setMostThree(champions, findDuoDto); // most three champ;
         findDuoDto.setLolName(lolName);
-        findDuoDto.setFavorPosition(findDuoSetUtil.matchLinePreference(lines));
+        preferLine = findDuoSetUtil.matchLinePreference(lines);
+        findDuoDto.setFavorPosition(preferLine);
+        setFavorLine(findDuoDto, preferLine);
         return findDuoDto;
     }
 
@@ -73,6 +76,7 @@ public class FindDuoToDtoService {
     }
 
     public void setKdaWinRateDto(GameTwentyRecord gameTwentyRecord, FindDuoResponseDto dto){
+        dto.setKda(gameTwentyRecord.getCalculatedKda());
         dto.setKill(Integer.toString(gameTwentyRecord.getKill()));
         dto.setDeath(Integer.toString(gameTwentyRecord.getDeath()));
         dto.setAssist(Integer.toString(gameTwentyRecord.getAssist()));
@@ -96,5 +100,19 @@ public class FindDuoToDtoService {
 
         findDuoDto.setTier(jsonObj.get("tier").toString());
         findDuoDto.setLeaguePoint(jsonObj.get("leaguePoints").toString());
+    }
+
+    public void setFavorLine(FindDuoResponseDto findDuoDto, String line){
+        if (line.indexOf("top") != -1)
+            if (line.indexOf("top") != -1)
+                findDuoDto.setPosition("TOP");
+            else if (line.indexOf("jungle") != -1)
+                findDuoDto.setPosition("JUNGLE");
+            else if (line.indexOf("mid") != -1)
+                findDuoDto.setPosition("MID");
+            else if (line.indexOf("bottom") != -1)
+                findDuoDto.setPosition("BOTTOM");
+            else if (line.indexOf("utility") != -1)
+                findDuoDto.setPosition("UTILITY");
     }
 }

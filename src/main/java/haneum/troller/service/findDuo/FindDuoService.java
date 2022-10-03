@@ -19,23 +19,35 @@ public class FindDuoService{
     private final BoardRepository boardRepository;
     private final FindDuoToDtoService findDuoToDtoService;
 
-    public Board riotApiToEntity(FindDuoResponseDto findDuoResponseDto, Board board){
+    public Board riotApiToEntity(FindDuoResponseDto findDuoResponseDto, FindDuoRequestDto findDuoRequestDto, Board board){
+        double avgKill = getAvgKda(Integer.parseInt(findDuoResponseDto.getKill()));
+        double avgAssist = getAvgKda(Integer.parseInt(findDuoResponseDto.getAssist()));
+        double avgDeath = getAvgKda(Integer.parseInt(findDuoResponseDto.getDeath()));
         board = Board.builder()
+                .kda(findDuoResponseDto.getKda())
                 .win(Integer.parseInt(findDuoResponseDto.getWin()))
                 .lose(Integer.parseInt(findDuoResponseDto.getLose()))
-                .killing(Integer.parseInt(findDuoResponseDto.getKill()))
-                .death(Integer.parseInt(findDuoResponseDto.getDeath()))
-                .assist(Integer.parseInt(findDuoResponseDto.getAssist()))
+                .killing(avgKill)
+                .death(avgDeath)
+                .assist(avgAssist)
                 .tier(findDuoResponseDto.getTier())
-                .favorChampions(findDuoResponseDto.getFavorChampions())
                 .favorPosition(findDuoResponseDto.getFavorPosition())
+                .position(findDuoResponseDto.getPosition())
+                .champion1(findDuoResponseDto.getChampion1())
+                .champion2(findDuoResponseDto.getChampion2())
+                .champion3(findDuoResponseDto.getChampion3())
                 .lolName(findDuoResponseDto.getLolName())
+                .positionData(findDuoRequestDto.getPositionData())
+                .mike(findDuoRequestDto.getMike())
+                .content(findDuoRequestDto.getContent())
+                .title(findDuoRequestDto.getTitle())
                 .build();
         return board;
     }
 
     public Board requestDtoToEntity(FindDuoRequestDto findDuoRequestDto) {
         Board newBoard;
+        System.out.println("findDuoRequestDto.getContent() = " + findDuoRequestDto.getContent());
         newBoard = Board.builder()
                 .positionData(findDuoRequestDto.getPositionData())
                 .mike(findDuoRequestDto.getMike())
@@ -43,5 +55,15 @@ public class FindDuoService{
                 .title(findDuoRequestDto.getTitle())
                 .build();
         return newBoard;
+    }
+
+    public Double getAvgKda(int killOrDeathOrAssist){
+
+        if (killOrDeathOrAssist == 0)
+            return (double)0;
+        double n = ((double)killOrDeathOrAssist / 20) * 10;
+        n = Math.round(n);
+        double avg = n / 10 ;
+        return avg;
     }
 }

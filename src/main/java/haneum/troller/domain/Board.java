@@ -1,18 +1,16 @@
 package haneum.troller.domain;
 
-import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.NoArgsConstructor;
-import org.hibernate.engine.profile.Fetch;
 //import org.springframework.data.annotation.Id;
 import javax.persistence.*;
-import javax.validation.constraints.NotBlank;
 import java.util.ArrayList;
 
 
 @Entity
+@NoArgsConstructor
 //@Table(name = "board")
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
+//@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Board{
 
     @Id
@@ -23,10 +21,17 @@ public class Board{
     @JoinColumn(name = "member_id")
     private Member member;
 
-//   @NotBlank
+    //   @NotBlank
     private String lolName;
 
-    private ArrayList favorChampions;
+//    @Lob
+//    private ArrayList favorChampions;
+
+    private String champion1;
+
+    private String champion2;
+
+    private String champion3;
 
     private String favorPosition;
 
@@ -36,11 +41,11 @@ public class Board{
 
     private int lose;
 
-    private int killing;
+    private double killing;
 
-    private int death;
+    private double death;
 
-    private int assist;
+    private double assist;
 
     private String positionData;
 
@@ -52,14 +57,17 @@ public class Board{
 
     private long timeStamp;
 
+    private String position;
+
+    private double kda;
 
     @Builder
-    public Board(long id, String lolName, ArrayList favorChampions, String favorPosition, String tier,
-                 int win, int lose, int killing, int death, int assist, String positionData, Boolean mike,
-                 String title, String content, long timeStamp){
+    public Board(long id, String lolName, String favorPosition, String tier, String champion1,
+                 String champion2, String champion3, int win, int lose, double killing, double death, double assist, String positionData, Boolean mike,
+                 String title, String content, long timeStamp, String position, double kda
+    ){
         this.id = id;
         this.lolName = lolName;
-        this.favorChampions = favorChampions;
         this.favorPosition = favorPosition;
         this.tier = tier;
         this.win = win;
@@ -72,13 +80,17 @@ public class Board{
         this.title = title;
         this.content = content;
         this.timeStamp = timeStamp;
+        this.position = position;
+        this.kda = kda;
+        this.champion1 = champion1;
+        this.champion2 = champion2;
+        this.champion3 = champion3;
     }
 
     public Board toEntity(){
         return Board.builder()
                 .id(id)
                 .lolName(lolName)
-                .favorChampions(favorChampions)
                 .favorPosition(favorPosition)
                 .tier(tier)
                 .win(win)
@@ -91,6 +103,11 @@ public class Board{
                 .title(title)
                 .content(content)
                 .timeStamp(timeStamp)
+                .position(position)
+                .kda(kda)
+                .champion1(champion1)
+                .champion2(champion2)
+                .champion3(champion3)
                 .build();
     }
 }
