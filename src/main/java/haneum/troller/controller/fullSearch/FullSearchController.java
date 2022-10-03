@@ -147,4 +147,22 @@ public class FullSearchController {
         return new ResponseEntity(fullRecordJson.toString(4), HttpStatus.OK);
     }
 
+
+    @Operation(summary = "유저의 전적갱신 api", description = "전적검색에서 유저 전적을 갱신")
+    @ApiResponses(
+            value = {
+                    @ApiResponse(responseCode = "200",description = "정상적 조회"),
+                    @ApiResponse(responseCode = "201",description = "유저가 db에 없어서 새롭게 생성 -> 추후 회원가입시에 해당 api 사용할 수 있음"),
+                    @ApiResponse(responseCode = "404",description = "해당 유저가 없음")
+            }
+    )
+    @GetMapping("user/update")
+    public ResponseEntity updateRecord(@RequestParam(value = "lolName") String lolName) throws UnsupportedEncodingException, JSONException {
+        log.info("유저 전적갱신-롤 닉네임:{}", lolName);
+        Gson gson = new Gson();
+        String toJson = gson.toJson(LolNameDto.builder().lolName(lolName).build());
+        ResponseEntity responseEntity = CallApi.PostIncludeObject(APIENV.DATAFLOWURL, "/dataflow/record/update", toJson);
+        return new ResponseEntity(responseEntity.getStatusCode());
+    }
+
 }
