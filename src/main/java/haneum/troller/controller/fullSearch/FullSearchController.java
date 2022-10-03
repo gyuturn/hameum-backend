@@ -1,25 +1,17 @@
 package haneum.troller.controller.fullSearch;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import haneum.troller.common.callApi.APIENV;
+import haneum.troller.common.env.APIENV;
 import haneum.troller.common.callApi.CallApi;
-import haneum.troller.common.exception.exceptions.LolApiToJsonException;
+import haneum.troller.common.env.Tier;
 import haneum.troller.domain.GameRecord;
 import haneum.troller.domain.UserInfo;
 import haneum.troller.dto.dataflow.LolNameDto;
-import haneum.troller.dto.gameRecord.GameRecordDto;
-import haneum.troller.dto.linePrefer.LinePreferenceDto;
-import haneum.troller.dto.mostChampion.MostThreeChampionDto;
-import haneum.troller.dto.myPage.MyPageDto;
+import haneum.troller.dto.ml.TrollAvgDto;
 import haneum.troller.repository.GameRecordRepository;
 import haneum.troller.repository.UserInfoRepository;
-import haneum.troller.service.fullSearch.GameRecord.GameRecordService;
-import haneum.troller.service.fullSearch.linePreference.LinePreferenceService;
-import haneum.troller.service.fullSearch.mostThreeChampion.MostThreeChampionService;
+import haneum.troller.service.fullSearch.userInfo.UserInfoService;
 import haneum.troller.service.gameRecord.GameRecordJsonService;
-import haneum.troller.service.mypage.MyPageService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -36,7 +28,6 @@ import org.springframework.web.bind.annotation.*;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
-import java.text.ParseException;
 import java.util.Optional;
 
 @Tag(name="userGameRecord",description = "유저의 게임전적 조회시 사옹되는 API")
@@ -48,6 +39,7 @@ public class FullSearchController {
     private final GameRecordRepository gameRecordRepository;
     private final GameRecordJsonService gameRecordJsonService;
     private final UserInfoRepository userInfoRepository;
+    private final UserInfoService userInfoService;
 
     @Operation(summary = "유저의 간략한정보 api", description = "전적검색/마이페이지에서 간략한 유저 정보를 알려주는 기능")
     @ApiResponses(
@@ -163,6 +155,36 @@ public class FullSearchController {
         String toJson = gson.toJson(LolNameDto.builder().lolName(lolName).build());
         ResponseEntity responseEntity = CallApi.PostIncludeObject(APIENV.DATAFLOWURL, "/dataflow/record/update", toJson);
         return new ResponseEntity(responseEntity.getStatusCode());
+    }
+
+    @Operation(summary = "유저의 트롤정보 api", description = "전적검색에서 유저 트롤정보 및 해당 평균트롤점수를 알려줌")
+    @ApiResponses(
+            value = {
+                    @ApiResponse(responseCode = "200",description = "정상적 조회"),
+                    @ApiResponse(responseCode = "201",description = "유저가 db에 없어서 새롭게 생성 -> 추후 회원가입시에 해당 api 사용할 수 있음"),
+                    @ApiResponse(responseCode = "404",description = "해당 유저가 없음")
+            }
+    )
+    @GetMapping("user/troll")
+    public ResponseEntity callTrollPossibility(@RequestParam(value = "lolName") String lolName)  {
+        log.info("트롤정보 api 호출-롤 닉네임:{}", lolName);
+
+        UserInfo userInfo = userInfoRepository.findById(lolName).get();
+
+
+        TrollAvgDto trollAvgDto = TrollAvgDto.builder()
+                .trollPossibility(userInfo.getLolName())
+                .challengerAvgTroll(userInfoService.FilterTier(Tier.challenger))
+                .grandMasterAvgTroll(userInfoService.FilterTier(Tier.gmaster))
+                .masterAvgTroll(userInfoService.FilterTier(Tier.master))
+                .diamondAvgTroll(userInfoService.FilterTier(Tier.diamond))
+                .platinumAvgTroll(userInfoService.FilterTier(Tier.platinum))
+                .goldAvgTroll(userInfoService.FilterTier(Tier.gold))
+                .silverAvgTroll(userInfoService.FilterTier(Tier.silver))
+                .bronzeAvgTroll(userInfoService.FilterTier(Tier.bronze))
+                .ironAvgTroll(userInfoService.FilterTier(Tier.iron)).build();
+
+        return new ResponseEntity(trollAvgDto,HttpStatus.OK);
     }
 
 }

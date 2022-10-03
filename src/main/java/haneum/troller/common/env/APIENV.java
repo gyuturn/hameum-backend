@@ -1,4 +1,4 @@
-package haneum.troller.common.callApi;
+package haneum.troller.common.env;
 
 public class APIENV {
     public static final String APPURL = "http://3.37.22.89:8080/api";
