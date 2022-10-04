@@ -30,6 +30,7 @@ public class UserInfo extends BaseTimeEntityLocalDate {
     private String icon;
     private String level;
     private String trollPossibility;
+    private String cluster;
 
     @CreatedDate
     private LocalDateTime createDate;
@@ -38,7 +39,7 @@ public class UserInfo extends BaseTimeEntityLocalDate {
     private LocalDateTime modifiedDate;
 
     @Builder
-    public UserInfo(String lolName, String encryptedLolName, String tier, String rank, String point, String winRate, String win, String lose, String icon, String level, String trollPossibility, LocalDateTime createDate, LocalDateTime modifiedDate) {
+    public UserInfo(String lolName, String encryptedLolName, String tier, String rank, String point, String winRate, String win, String lose, String icon, String level, String trollPossibility, LocalDateTime createDate, LocalDateTime modifiedDate, String cluster) {
         this.lolName = lolName;
         this.encryptedLolName = encryptedLolName;
         this.tier = tier;
@@ -52,6 +53,7 @@ public class UserInfo extends BaseTimeEntityLocalDate {
         this.trollPossibility = trollPossibility;
         this.createDate = createDate;
         this.modifiedDate = modifiedDate;
+        this.cluster = cluster;
     }
 
     public UserInfo updateUserInfo(String lolName, String encryptedLolName, String tier, String rank, String point, String winRate, String win, String lose, String icon, String level, String trollPossibility) {
@@ -72,6 +74,11 @@ public class UserInfo extends BaseTimeEntityLocalDate {
 
     public UserInfo updateTrollPossibility(String trollPossibility) {
         this.trollPossibility = trollPossibility;
+        return this;
+    }
+
+    public UserInfo updateCluster(String cluster) {
+        this.cluster = cluster;
         return this;
     }
 

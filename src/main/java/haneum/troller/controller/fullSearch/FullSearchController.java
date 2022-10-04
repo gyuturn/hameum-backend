@@ -7,11 +7,13 @@ import haneum.troller.common.env.Tier;
 import haneum.troller.domain.GameRecord;
 import haneum.troller.domain.UserInfo;
 import haneum.troller.dto.dataflow.LolNameDto;
+import haneum.troller.dto.ml.DuoDto;
 import haneum.troller.dto.ml.TrollAvgDto;
 import haneum.troller.repository.GameRecordRepository;
 import haneum.troller.repository.UserInfoRepository;
 import haneum.troller.service.fullSearch.userInfo.UserInfoService;
 import haneum.troller.service.gameRecord.GameRecordJsonService;
+import haneum.troller.service.machineLearning.KMeansService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -28,6 +30,9 @@ import org.springframework.web.bind.annotation.*;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 
 @Tag(name="userGameRecord",description = "유저의 게임전적 조회시 사옹되는 API")
@@ -40,6 +45,7 @@ public class FullSearchController {
     private final GameRecordJsonService gameRecordJsonService;
     private final UserInfoRepository userInfoRepository;
     private final UserInfoService userInfoService;
+    private final KMeansService kMeansService;
 
     @Operation(summary = "유저의 간략한정보 api", description = "전적검색/마이페이지에서 간략한 유저 정보를 알려주는 기능")
     @ApiResponses(
@@ -173,7 +179,7 @@ public class FullSearchController {
 
 
         TrollAvgDto trollAvgDto = TrollAvgDto.builder()
-                .trollPossibility(userInfo.getLolName())
+                .trollPossibility(userInfo.getTrollPossibility())
                 .challengerAvgTroll(userInfoService.FilterTier(Tier.challenger))
                 .grandMasterAvgTroll(userInfoService.FilterTier(Tier.gmaster))
                 .masterAvgTroll(userInfoService.FilterTier(Tier.master))
@@ -186,5 +192,24 @@ public class FullSearchController {
 
         return new ResponseEntity(trollAvgDto,HttpStatus.OK);
     }
+
+
+    @Operation(summary = "유저의 듀오찾기(클러스터링 기반) api", description = "전적검색에서 트롤점수를 기반으로 클러스터된 유저 5명을 알려줌")
+    @ApiResponses(
+            value = {
+                    @ApiResponse(responseCode = "200",description = "정상적 조회")
+            }
+    )
+    @GetMapping("user/cluster")
+    public ResponseEntity callCluster(@RequestParam(value = "lolName") String lolName)  {
+        log.info("클러스터 api 호출-롤 닉네임:{}", lolName);
+        UserInfo userInfo = userInfoRepository.findById(lolName).get();
+        List<DuoDto> fiveUser = kMeansService.getDuoDtos(userInfo);
+
+
+        return new ResponseEntity(fiveUser,HttpStatus.OK);
+    }
+
+
 
 }
