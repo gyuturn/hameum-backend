@@ -9,5 +9,6 @@ import java.util.List;
 public interface UserInfoRepository extends JpaRepository<UserInfo,String> {
     List<UserInfo> findByTrollPossibility(String trollPossibility);
     List<UserInfo> findByTier(String tier);
+    List<UserInfo> findByCluster(String cluster);
 
 }
