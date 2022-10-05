@@ -67,8 +67,8 @@ public class FullSearchSet {
         int cs = fullSerachUtil.ParseToInt(user ,"neutralMinionsKilled") +
                 fullSerachUtil.ParseToInt(user, "totalMinionsKilled");
         double csPerMinutes = Math.round((double)cs / ((double)playTime / 60) * 10) / 10.0;
-        gameMostChampionRecord.setCs(cs);
-        gameMostChampionRecord.setCsPerMinutes(csPerMinutes);
+        gameMostChampionRecord.setCs(gameMostChampionRecord.getCs() + cs);
+        gameMostChampionRecord.setCsPerMinutes(gameMostChampionRecord.getCsPerMinutes() + csPerMinutes);
     }
 
     public JSONObject setKdaWinRateDto(GameTwentyRecord gameTwentyRecord, JSONObject json){

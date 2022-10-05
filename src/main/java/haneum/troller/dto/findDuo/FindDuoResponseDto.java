@@ -11,7 +11,13 @@ import java.util.ArrayList;
 public class FindDuoResponseDto {
     private String lolName;
 
-    private ArrayList<String> favorChampions;
+//    private ArrayList<String> favorChampions;
+
+    private String champion1;
+
+    private String champion2;
+
+    private String champion3;
 
     private String tier; //png url
 

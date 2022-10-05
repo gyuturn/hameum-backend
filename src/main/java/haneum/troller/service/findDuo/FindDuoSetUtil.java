@@ -3,6 +3,8 @@ package haneum.troller.service.findDuo;
 import haneum.troller.dto.findDuo.FindDuoResponseDto;
 import haneum.troller.service.dataDragon.ChampionImgService;
 import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -35,11 +37,16 @@ public class FindDuoSetUtil {
         int i = 0;
         for (String key : keySet){
             championArray.add(championImgService.getChampionImg(String.valueOf(map.get(key))));
+            if (i == 0)
+                findDuoDto.setChampion1(championImgService.getChampionImg(key));
+            if (i == 1)
+                findDuoDto.setChampion2(championImgService.getChampionImg(key));
+            if (i == 2)
+                findDuoDto.setChampion3(championImgService.getChampionImg(key));
             i++;
             if (i == 3)
                 break;
         }
-        findDuoDto.setFavorChampions(championArray);
     }
 
     public String matchLinePreference(ArrayList position){
@@ -77,13 +84,14 @@ public class FindDuoSetUtil {
         for (String key : keySet) {
             if (i == 0) {
                 line = String.valueOf(map.get(key));
-                if (line == "TOP")
+                System.out.println("key = " + key);
+                if (key == "TOP")
                     line = "https://raw.communitydragon.org/latest/plugins/rcp-fe-lol-clash/global/default/assets/images/position-selector/positions/icon-position-top-blue.png";
-                else if (line == "JUNGLE")
+                else if (key == "JUNGLE")
                     line = "https://raw.communitydragon.org/latest/plugins/rcp-fe-lol-clash/global/default/assets/images/position-selector/positions/icon-position-jungle-blue.png";
-                else if (line == "MID")
+                else if (key == "MID")
                     line = "https://raw.communitydragon.org/latest/plugins/rcp-fe-lol-clash/global/default/assets/images/position-selector/positions/icon-position-mid-blue.png";
-                else if (line == "BOTTOM")
+                else if (key == "BOTTOM")
                     line = "https://raw.communitydragon.org/latest/plugins/rcp-fe-lol-clash/global/default/assets/images/position-selector/positions/icon-position-bottom-blue.png";
                 else
                     line = "https://raw.communitydragon.org/latest/plugins/rcp-fe-lol-clash/global/default/assets/images/position-selector/positions/icon-position-utility-blue.png";
@@ -91,5 +99,10 @@ public class FindDuoSetUtil {
             }
         }
         return line;
+    }
+
+    public JSONObject stringToJson(String jsonStr) throws ParseException {
+        JSONParser parser = new JSONParser();
+        return (JSONObject) parser.parse(jsonStr);
     }
 }

@@ -24,8 +24,14 @@ public class Board{
 //   @NotBlank
     private String lolName;
 
-    @Lob
-    private ArrayList favorChampions;
+//    @Lob
+//    private ArrayList favorChampions;
+
+    private String champion1;
+
+    private String champion2;
+
+    private String champion3;
 
     private String favorPosition;
 
@@ -56,13 +62,12 @@ public class Board{
     private double kda;
 
     @Builder
-    public Board(long id, String lolName, ArrayList favorChampions, String favorPosition, String tier,
-                 int win, int lose, double killing, double death, double assist, String positionData, Boolean mike,
+    public Board(long id, String lolName, String favorPosition, String tier, String champion1,
+                 String champion2, String champion3, int win, int lose, double killing, double death, double assist, String positionData, Boolean mike,
                  String title, String content, long timeStamp, String position, double kda
     ){
         this.id = id;
         this.lolName = lolName;
-        this.favorChampions = favorChampions;
         this.favorPosition = favorPosition;
         this.tier = tier;
         this.win = win;
@@ -77,13 +82,15 @@ public class Board{
         this.timeStamp = timeStamp;
         this.position = position;
         this.kda = kda;
+        this.champion1 = champion1;
+        this.champion2 = champion2;
+        this.champion3 = champion3;
     }
 
     public Board toEntity(){
         return Board.builder()
                 .id(id)
                 .lolName(lolName)
-                .favorChampions(favorChampions)
                 .favorPosition(favorPosition)
                 .tier(tier)
                 .win(win)
@@ -98,6 +105,9 @@ public class Board{
                 .timeStamp(timeStamp)
                 .position(position)
                 .kda(kda)
+                .champion1(champion1)
+                .champion2(champion2)
+                .champion3(champion3)
                 .build();
     }
 }

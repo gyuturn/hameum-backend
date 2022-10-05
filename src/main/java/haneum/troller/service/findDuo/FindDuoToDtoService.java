@@ -1,6 +1,8 @@
 package haneum.troller.service.findDuo;
 
 import haneum.troller.common.apiKey.LolApiKey;
+import haneum.troller.domain.Board;
+import haneum.troller.dto.findDuo.FindDuoRequestDto;
 import haneum.troller.dto.findDuo.FindDuoResponseDto;
 import haneum.troller.service.dataDragon.ChampionImgService;
 import haneum.troller.service.fullSearch.GameRecord.GameTwentyRecord;
@@ -39,70 +41,136 @@ public class FindDuoToDtoService {
     @Autowired
     private FindDuoSetUtil findDuoSetUtil;
 
-    public FindDuoResponseDto getFindDuoDto(String lolName) throws ParseException {
-        FindDuoResponseDto findDuoDto = new FindDuoResponseDto();
-        String userPid = getRiotApiUtil.getUserPid(lolName);
-        ArrayList matchList = getRiotApiUtil.getMatchId(userPid, 20);
-        ArrayList champions = new ArrayList<>();
-        ArrayList retArray = new ArrayList();
-        ArrayList lines = new ArrayList();
-        String preferLine = null;
-        GameTwentyRecord gameTwentyRecord = new GameTwentyRecord();
-        setTierPoint(lolName, findDuoDto);
-        for (int i = 0; i < 20; i++){
-            setGameRecord((String)matchList.get(i), gameTwentyRecord, lines, champions);
+    public void getMostChamp(String mostChampJson, String lolName, FindDuoBoard findDuoBoard) throws ParseException {
+        JSONObject jsonObj = findDuoSetUtil.stringToJson(mostChampJson);
+        JSONArray chapArray = (JSONArray) jsonObj.get("mostThreeChampion");
+        JSONObject mostChamp = null;
+        for (int i = 0; i < 3; i++){
+            mostChamp = (JSONObject) chapArray.get(i);
+            if (i == 0)
+                findDuoBoard.setChampion1((String) mostChamp.get("championUi"));
+            else if (i == 1)
+                findDuoBoard.setChampion2((String) mostChamp.get("championUi"));
+            else
+                findDuoBoard.setChampion3((String) mostChamp.get("championUi"));
         }
-        setKdaWinRateDto(gameTwentyRecord, findDuoDto);
-        findDuoSetUtil.setMostThree(champions, findDuoDto); // most three champ;
-        findDuoDto.setLolName(lolName);
-        preferLine = findDuoSetUtil.matchLinePreference(lines);
-        findDuoDto.setFavorPosition(preferLine);
-        setFavorLine(findDuoDto, preferLine);
-        return findDuoDto;
     }
 
-    public void setGameRecord(String matchId,GameTwentyRecord twentyRecord, ArrayList lines ,ArrayList champions) throws org.json.simple.parser.ParseException {
-        String response = getRiotApi.getResponseEntityByMatchId(matchId);
-
-        JSONParser parser = new JSONParser();
-        Object obj = parser.parse(response);
-        JSONObject jsonObj = (JSONObject) obj;
-        JSONObject info = (JSONObject) jsonObj.get("info");
-        JSONArray participants = (JSONArray) info.get("participants");
-        JSONObject user = getRiotApiUtil.getUserFromJson(participants);
-        fullSearchSet.setKdaWinRateTwenty(user, twentyRecord);
-        champions.add(user.get("championName")); // 20판에서 챔피언 기록.
-        lines.add(user.get("teamPosition")); // 20판에서 라인 기록.
+    public void getUserInfo(String userInfoJson, String lolName, FindDuoBoard findDuoBoard) throws ParseException {
+        JSONObject jsonObj = findDuoSetUtil.stringToJson(userInfoJson);
+        findDuoBoard.setTier((String)jsonObj.get("tier"));
+//        findDuoBoard.setlolName(lolName);
     }
 
-    public void setKdaWinRateDto(GameTwentyRecord gameTwentyRecord, FindDuoResponseDto dto){
-        dto.setKda(gameTwentyRecord.getCalculatedKda());
-        dto.setKill(Integer.toString(gameTwentyRecord.getKill()));
-        dto.setDeath(Integer.toString(gameTwentyRecord.getDeath()));
-        dto.setAssist(Integer.toString(gameTwentyRecord.getAssist()));
-        dto.setWin(Integer.toString(gameTwentyRecord.getWin()));
-        dto.setLose(Integer.toString(gameTwentyRecord.getLose()));
-        dto.setWinRate(Double.toString(gameTwentyRecord.getWinRate()));
+    public void getLinePrefer(String linePreferJson, String lolName, FindDuoBoard findDuoBoard) throws ParseException {
+        JSONObject jsonObj = findDuoSetUtil.stringToJson(linePreferJson);
+        String line = (String)jsonObj.get("firstLinePreference");
+        String lineImg;
+        lineImg = "https://raw.communitydragon.org/latest/plugins/rcp-fe-lol-clash/global/default/assets/images/position-selector/positions/icon-position-"
+                + line
+                + "-blue.png";
+        findDuoBoard.setFavorPosition(line);
     }
 
-    public void setTierPoint(String lolName, FindDuoResponseDto findDuoDto) throws ParseException {
-        ResponseEntity<String> response = getRiotApi.getResponseEntityByUserName(lolName);
-
-        JSONParser parser = new JSONParser();
-        Object obj = parser.parse(response.getBody());
-        JSONObject jsonObj = (JSONObject)obj;
-        String encryptedId = (String)jsonObj.get("id");
-
-        ResponseEntity<String> response2 = getRiotApi.getResponseEntityByEncryptedUserId(encryptedId);
-        obj = parser.parse(response2.getBody());
-        JSONArray jsonArray = (JSONArray)obj;
-        jsonObj = (JSONObject)jsonArray.get(0);
-
-        findDuoDto.setTier(jsonObj.get("tier").toString());
-        findDuoDto.setLeaguePoint(jsonObj.get("leaguePoints").toString());
+    public void getFullRecord(String FullRecordJson, String lolName, FindDuoBoard findDuoBoard) throws ParseException {
+        JSONObject jsonObj = findDuoSetUtil.stringToJson(FullRecordJson);
+        JSONObject twentyRecords = (JSONObject) jsonObj.get("latestTwentyRecords");
+        findDuoBoard.setWin((Integer) twentyRecords.get("win"));
+        findDuoBoard.setLose((Integer) twentyRecords.get("lose"));
+        findDuoBoard.setKilling((Double) twentyRecords.get("averageKill"));
+        findDuoBoard.setDeath((Double) twentyRecords.get("averageDeath"));
+        findDuoBoard.setAssist((Double) twentyRecords.get("averageAssist"));
+        findDuoBoard.setKda((Double) twentyRecords.get("averageKda"));
     }
+
+    public Board setFindDto(FindDuoBoard findDuoBoard, FindDuoRequestDto findDuoRequestDto, String lolName){
+        Board board = Board.builder()
+                .kda(findDuoBoard.getKda())
+                .win(findDuoBoard.getWin())
+                .lose(findDuoBoard.getLose())
+                .killing(findDuoBoard.getKilling())
+                .death(findDuoBoard.getDeath())
+                .assist(findDuoBoard.getAssist())
+                .tier(findDuoBoard.getTier())
+                .favorPosition(findDuoBoard.getFavorPosition())
+//                .position(findDuoResponseDto.getPosition())
+                .champion1(findDuoBoard.getChampion1())
+                .champion2(findDuoBoard.getChampion2())
+                .champion3(findDuoBoard.getChampion3())
+                .lolName(lolName)
+                .positionData(findDuoRequestDto.getPositionData())
+                .mike(findDuoRequestDto.getMike())
+                .content(findDuoRequestDto.getContent())
+                .title(findDuoRequestDto.getTitle())
+                .build();
+        return board;
+    }
+
+//    public FindDuoResponseDto getFindDuoDto(String lolName) throws ParseException {
+//        FindDuoResponseDto findDuoDto = new FindDuoResponseDto();
+//        String userPid = getRiotApiUtil.getUserPid(lolName);
+//        ArrayList matchList = getRiotApiUtil.getMatchId(userPid, 20);
+//        ArrayList champions = new ArrayList<>();
+//        ArrayList retArray = new ArrayList();
+//        ArrayList lines = new ArrayList();
+//        String preferLine = null;
+//        GameTwentyRecord gameTwentyRecord = new GameTwentyRecord();
+//        setTierPoint(lolName, findDuoDto);
+//        for (int i = 0; i < 20; i++){
+//            setGameRecord((String)matchList.get(i), gameTwentyRecord, lines, champions);
+//        }
+//        setKdaWinRateDto(gameTwentyRecord, findDuoDto);
+//        findDuoSetUtil.setMostThree(champions, findDuoDto); // most three champ;
+//        findDuoDto.setLolName(lolName);
+//        preferLine = findDuoSetUtil.matchLinePreference(lines);
+//        findDuoDto.setFavorPosition(preferLine);
+//        setFavorLine(findDuoDto, preferLine);
+//        return findDuoDto;
+//    }
+//
+//    public void setGameRecord(String matchId,GameTwentyRecord twentyRecord, ArrayList lines ,ArrayList champions) throws org.json.simple.parser.ParseException {
+//        String response = getRiotApi.getResponseEntityByMatchId(matchId);
+//
+//        JSONParser parser = new JSONParser();
+//        Object obj = parser.parse(response);
+//        JSONObject jsonObj = (JSONObject) obj;
+//        JSONObject info = (JSONObject) jsonObj.get("info");
+//        JSONArray participants = (JSONArray) info.get("participants");
+//        JSONObject user = getRiotApiUtil.getUserFromJson(participants);
+//        fullSearchSet.setKdaWinRateTwenty(user, twentyRecord);
+//        champions.add(user.get("championName")); // 20판에서 챔피언 기록.
+//        lines.add(user.get("teamPosition")); // 20판에서 라인 기록.
+//    }
+//
+//    public void setKdaWinRateDto(GameTwentyRecord gameTwentyRecord, FindDuoResponseDto dto){
+//        dto.setKda(gameTwentyRecord.getCalculatedKda());
+//        dto.setKill(Integer.toString(gameTwentyRecord.getKill()));
+//        dto.setDeath(Integer.toString(gameTwentyRecord.getDeath()));
+//        dto.setAssist(Integer.toString(gameTwentyRecord.getAssist()));
+//        dto.setWin(Integer.toString(gameTwentyRecord.getWin()));
+//        dto.setLose(Integer.toString(gameTwentyRecord.getLose()));
+//        dto.setWinRate(Double.toString(gameTwentyRecord.getWinRate()));
+//    }
+//
+//    public void setTierPoint(String lolName, FindDuoResponseDto findDuoDto) throws ParseException {
+//        ResponseEntity<String> response = getRiotApi.getResponseEntityByUserName(lolName);
+//
+//        JSONParser parser = new JSONParser();
+//        Object obj = parser.parse(response.getBody());
+//        JSONObject jsonObj = (JSONObject)obj;
+//        String encryptedId = (String)jsonObj.get("id");
+//
+//        ResponseEntity<String> response2 = getRiotApi.getResponseEntityByEncryptedUserId(encryptedId);
+//        obj = parser.parse(response2.getBody());
+//        JSONArray jsonArray = (JSONArray)obj;
+//        jsonObj = (JSONObject)jsonArray.get(0);
+//
+//        findDuoDto.setTier(jsonObj.get("tier").toString());
+//        findDuoDto.setLeaguePoint(jsonObj.get("leaguePoints").toString());
+//    }
 
     public void setFavorLine(FindDuoResponseDto findDuoDto, String line){
+        if (line.indexOf("top") != -1)
         if (line.indexOf("top") != -1)
             findDuoDto.setPosition("TOP");
         else if (line.indexOf("jungle") != -1)
