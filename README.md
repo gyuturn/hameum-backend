@@ -9,7 +9,7 @@
 
  
 
-# 프로젝트 DESCRIPTION
+# About Project
 ### URL
 - front
   - http://3.37.22.89:3000
