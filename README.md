@@ -10,7 +10,11 @@
 - https://www.youtube.com/watch?v=vtUlxVK2w5E (프로젝트 소개영상 링크)
 - 현재 서버비용문제로 서버는 닫은상태입니다.
 
- 
+# 관련 GitHub
+- ML/Flask: https://github.com/gyuturn/haneum-ml
+- DataFlow: https://github.com/gyuturn/haneum-troll911-dataflow
+- Backend: https://github.com/gyuturn/hameum-backend
+- Front: https://github.com/gyuturn/haneum-front
 
 # About Project
 ### URL
